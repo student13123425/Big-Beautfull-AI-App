@@ -5,6 +5,7 @@ import Main from './pages/Main';
 import "./scss/main.scss";
 import NetworkErrorPage from './pages/NetworkErrorPage';
 import LMStudioConnectionError from './pages/LMStudioConnectionError';
+import LoginPage from './pages/LoginPage';
 
 async function update_data(setGlobalData:Function, setError:Function){
   await get_data(setGlobalData, setError);
@@ -27,7 +28,7 @@ function App() {
   const [IsLmstudio, setIsLmstudio] = useState<string>("all valid");
   const [config, setConfig] = useState<null | Config>(null);
   const [SupportedModels,setSupportedModel]=useState<string[]>([])
-  
+  const [LogInToken,setLogInToken]=useState<string|null>(null);
   useEffect(() => {
     update_data(setGlobalData,setError)
     update_config(setConfig,setError)
@@ -37,6 +38,9 @@ function App() {
   if (Error != null) console.log(Error);
   
   if (Error == null) {
+    if(LogInToken==null){
+      return <LoginPage onLogin={(u:string,p:string)=>{}} setError={setError} />
+    }
     return (
       <>
         <Main SupportedModels={SupportedModels} setConfig={setConfig} config={config} onError={setError} GlobalData={GlobalData} />

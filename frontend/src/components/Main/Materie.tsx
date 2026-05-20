@@ -5,7 +5,7 @@ import type { FileD, Materie as Mt, StudyGroup } from '../../scripts/objects'
 import { get_file_elements, get_selected } from '../../scripts/aox'
 import MaterieMenu from './MaterieMenu'
 import Browser from './Browser'
-import Sinteza from './sinteza'
+import Sinteza from './Sinteza'
 import Quizs from './Quizs'
 
 const Container = styled.div`

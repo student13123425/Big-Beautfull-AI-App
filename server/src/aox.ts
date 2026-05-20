@@ -1,4 +1,5 @@
 import fs, { constants } from "fs/promises"
+import { createHash } from 'crypto';
 import { AiServerError, Config, FishierMaterie, Global, Quiz, QuiZRequestItem, StudyGroup } from "./objects.js";
 import { BaseLoadModelOpts, Chat,  LLMLoadModelConfig, LMStudioClient, ModelInfo } from "@lmstudio/sdk";
 import libre from 'libreoffice-convert';
@@ -578,12 +579,28 @@ export async function countLinesInFolder(rootDir: string): Promise<number> {
   return total;
 }
 
-export async function evaluate_code_complexity(){
-  const paths:string[]=[`C:\\lmstudio-client\\lmstudio-client\\server\\src`,`C:\\lmstudio-client\\lmstudio-client\\study\\src`]
-  let size=0;
-  size+=await countLinesInFolder(paths[0])
-  size+=await countLinesInFolder(paths[1])
-  console.log(`your code of this app has ${size} lines of code`);
+export async function evaluate_code_complexity(): Promise<void> {
+  const targetPaths: string[] = [
+    '../server/src',
+    '../study/src'
+  ];
+
+  let totalLines = 0;
+
+  for (const dirPath of targetPaths) {
+    try {
+      const resolvedPath = path.resolve(dirPath);
+      const stats = await fs.stat(resolvedPath);
+      if (!stats.isDirectory()) continue;
+
+      console.log(`Counting lines in: ${resolvedPath}`);
+      totalLines += await countLinesInFolder(resolvedPath);
+    } catch (error) {
+      console.warn(`Could not access path "${dirPath}". Skipping.`, error);
+    }
+  }
+
+  console.log(`Your code of this app has ${totalLines.toLocaleString()} lines of code`);
 }
 
 export async function imageContainsText(
@@ -1105,8 +1122,90 @@ export async function check_dependecys():Promise<boolean[]> {
   return [is_ocr,is_libre_office];
 }
 
+
+
 export async function isFolderSizeBiggerThan(size: number): Promise<boolean> {
   const folderPath:string="./data"
   const bytes = await getFolderSize(folderPath);
   return bytes > size * 1024 ** 3;
 } 
+
+
+
+export function generateUserFolderId(email: string, userId: number): string {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail || !Number.isInteger(userId) || userId <= 0) {
+    throw new Error('Invalid email or userId');
+  }
+
+  const input = `${normalizedEmail}:${userId}`;
+
+  return createHash('sha256').update(input).digest('hex').slice(0, 25);
+}
+
+export type ComplexityScore = 1 | 2 | 3 | 4 | 5;
+
+export interface PasswordEvaluation {
+  score: ComplexityScore;
+  feedback: string[];
+}
+
+export function evaluatePasswordComplexity(password: string): PasswordEvaluation {
+  const feedback: string[] = [];
+  let score = 1;
+
+  if (!password) {
+    return { score: 1, feedback: ["Password is empty."] };
+  }
+
+  const len = password.length;
+  if (len < 6) {
+    feedback.push("Too short.");
+    return { score: 1, feedback };
+  } else if (len >= 12) {
+    score += 2;
+  } else if (len >= 8) {
+    score += 1;
+  }
+
+  const hasLower = /[a-z]/.test(password);
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+  const varietyCount = [hasLower, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
+
+  if (varietyCount <= 1) {
+    feedback.push("Use a mix of uppercase, lowercase, numbers, and symbols.");
+    score = Math.min(score, 2);
+  } else if (varietyCount === 2) {
+    score += 1;
+  } else if (varietyCount === 3) {
+    score += 1;
+  } else if (varietyCount === 4) {
+    score += 1;
+  }
+
+  const isSequential = /(abc|123|qwerty|password)/i.test(password);
+  if (isSequential) {
+    feedback.push("Avoid common sequences or predictable patterns.");
+    score = Math.max(1, score - 2);
+  }
+
+  const finalScore = Math.min(Math.max(score, 1), 5) as ComplexityScore;
+
+  if (finalScore >= 4) {
+    feedback.push("Strong password!");
+  } else if (finalScore === 3) {
+    feedback.push("Moderate security.");
+  } else {
+    feedback.push("Weak password. Try adding more variety or length.");
+  }
+
+  return {
+    score: finalScore,
+    feedback: [...new Set(feedback)],
+  };
+}
+

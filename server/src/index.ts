@@ -130,38 +130,30 @@ getLmStudioDevice().then((it)=>{
   device_ip=it
 })
 async function getLmStudioDevice(): Promise<string|null> {
-  try {
-    const devices = await getDevices();
-    const ips = [...devices.map(d => d.ip), "localhost", "127.0.0.1"];
+  const targetIp = "127.0.0.1"; 
+  const address = `ws://${targetIp}:1234`;
 
-    for (const ip of ips) {
-      const address = `ws://${ip}:1234`;
-      try {
-        const client = new LMStudioClient({ baseUrl: address });
-        const models = await withTimeout(
-          client.system.listDownloadedModels(),
-          2000,
-          'Request timed out'
-        );
-        
-        ai_models_available = models;
-        device_ip = address;
-        return address;
-      } catch (e) {
-        console.debug(`No LM Studio at ${ip}:`, (e as Error).message);
-      }
-    }
-    throw new Error('LM Studio server not found');
+  try {
+    console.log(`Attempting to connect to LM Studio at ${address}...`);
+    
+    const client = new LMStudioClient({ baseUrl: address });
+    
+    const models = await withTimeout(
+      client.system.listDownloadedModels(),
+      2000, 
+      'Request timed out'
+    );
+
+    ai_models_available = models;
+    device_ip = address;
+    
+    console.log(`Successfully connected to LM Studio at ${address}`);
+    return address;
   } catch (err) {
     console.error("LM Studio discovery failed:", err);
     return null;
   }
 }
-
-async function getDevices(): Promise<any[]> {
-  return findDevices();
-}
-
 function withTimeout<T>(
   promise: Promise<T>,
   ms: number,
@@ -215,10 +207,11 @@ app.get('/ip', async (req, res) => {
 });
 
 app.get('/config', async (req, res) => {
-  res.json({
-    message: 'Use WebSocket connection for real-time config data updates',
-    endpoint: 'ws://localhost:3000/config'
-  });
+  res.json(config);
+  // res.json({
+  //   message: 'Use WebSocket connection for real-time config data updates',
+  //   endpoint: 'ws://localhost:3000/config'
+  // });
 });
 
 app.get("/configDirect", (req, res) => {
@@ -843,10 +836,11 @@ app.get("/models_costum_format", async (req, res) => {
 });
 
 app.get("/study", (req, res) => {
-  res.json({
-    message: 'Use WebSocket connection for real-time study data updates',
-    endpoint: 'ws://localhost:3000/study'
-  });
+  res.json(data_study);
+  // res.json({
+  //   message: 'Use WebSocket connection for real-time study data updates',
+  //   endpoint: 'ws://localhost:3000/study'
+  // });
 });
 
 app.get("/studyDirect", (req, res) => {
@@ -929,4 +923,3 @@ server.on('upgrade', (request, socket, head) => {
 
 evaluate_code_complexity();
 evaluateDataSize();
-getLmStudioDevice().catch(console.error);
