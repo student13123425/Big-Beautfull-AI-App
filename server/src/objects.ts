@@ -1,6 +1,11 @@
 import { ModelInfo } from "@lmstudio/sdk"
 import fs from "fs"
-import { clampNumber, extract_text, generate_quiz_json_prompt, get_compleation, get_content_filled_file_list, get_json_from_text, get_model, get_question_prompt, getDirectoryContent, getSupportedLanguages, is_file_image,  LimitString,  prompt_sumarizare, promptEvaluareIntrebare } from "./aox.js";
+import { clampNumber, get_model, LimitString } from "./helpers.js";
+import { getSupportedLanguages } from "./services/ocr.js";
+import { generate_quiz_json_prompt, get_question_prompt, prompt_sumarizare, promptEvaluareIntrebare } from "./ai/prompts.js";
+import { get_compleation } from "./services/llm.js";
+import { get_json_from_text } from "./services/data_validation.js";
+import { extract_text, get_content_filled_file_list, getDirectoryContent } from "./services/file-processor.js";
 class Config {
   model_token_limit: number;
   ip: string | null;

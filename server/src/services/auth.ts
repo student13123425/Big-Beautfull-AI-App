@@ -2,7 +2,7 @@ import sqlite3 from 'sqlite3';
 import fs from 'fs';
 import path from 'path';
 import { createHash } from 'crypto';
-import { generateUserFolderId } from './aox'; 
+import { generateUserFolderId } from '../helpers.js';
 
 const DIR = path.join(process.cwd(), 'users');
 const DB_PATH = path.join(DIR, 'users.db');

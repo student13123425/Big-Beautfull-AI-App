@@ -5,11 +5,14 @@ import { createReadStream, existsSync, promises as fs, statSync, unlinkSync } fr
 import { LMStudioClient, ModelInfo } from '@lmstudio/sdk';
 import findDevices from 'local-devices';
 import {AiModel, AiServerError, AiTextCorectionElement, Config, Quiz, QuiZRequestItem, StudyGroup} from "./objects.js"
-import { check_dependecys, compareConfigs, compareStudyGroup, convertPowerPointToPDF, evaluate_code_complexity, evaluateDataSize, extractTextFromImage, get_file_name, getDirectoryContent, getServerOS, getSupportedLanguages, isFolderSizeBiggerThan, isValidQuizItem, onFileCreate, sanitizeFilename, sanitizePath, testConversion} from './aox.js';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
+import { convertPowerPointToPDF, get_file_name, getDirectoryContent, onFileCreate, sanitizeFilename, sanitizePath } from './services/file-processor.js';
+import { getSupportedLanguages } from './services/ocr.js';
+import { check_evaluation_parameters, compareConfigs, compareStudyGroup, isValidQuizItem } from './services/data_validation.js';
+import { checkDependencies, evaluateCodeComplexity, evaluateDataSize, getServerOS, isFolderSizeBiggerThan } from './services/environment.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,7 +30,7 @@ const TEMP_UPLOAD_DIR = path.join(__dirname, 'temp_uploads');
 const max_size:number=20;
 let isMemOverflow = false;
 let is_dependecy:boolean[]=[]
-check_dependecys().then((e)=>{
+checkDependencies().then((e)=>{
   is_dependecy=e;
 })
 // WebSocket setup
@@ -757,7 +760,6 @@ app.post("/DeactivateErrorMessage", async (req, res) => {
   res.send("y");
 });
 
-import { check_evaluation_parameters} from "./aox.js"
 
 app.post("/Evaluare", async (req, res) => {
   const { quiz, raspunsuri } = req.body;
@@ -921,5 +923,5 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-evaluate_code_complexity();
+evaluateCodeComplexity();
 evaluateDataSize();
