@@ -1,4 +1,5 @@
-import { Quiz, QuiZRequestItem, FishierMaterie } from "../objects.js";
+import { Quiz, QuiZRequestItem } from "../objects/quiz.js";
+import { FishierMaterie } from "../objects/subjects.js";
 
 export function compareStudyGroup(a: any, b: any): boolean {
   if (a == null || b === null) return false;

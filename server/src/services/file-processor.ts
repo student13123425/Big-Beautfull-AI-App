@@ -5,7 +5,8 @@ import { spawn, exec } from 'child_process';
 import { promisify } from 'util';
 import { getTextExtractor } from 'office-text-extractor';
 import { existsSync, readFileSync, readdirSync } from 'fs';
-import { StudyGroup } from "../objects.js";
+import { extractTextFromImage } from "./ocr.js";
+import { StudyGroup } from "../objects/StudyGroup.js";
 
 const execPromise = promisify(exec);
 

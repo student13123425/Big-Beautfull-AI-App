@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { broadcastConfigData, config, is_dependecy} from "../index.js";
 import { getSupportedLanguages } from "../services/ocr.js";
+import { server_os } from "../services/state.js";
 
 export async function getConfig(req: Request, res: Response): Promise<void> {
   res.json(config);

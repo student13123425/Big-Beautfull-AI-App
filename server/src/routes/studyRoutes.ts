@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { mkdir, mkdirSync, rmSync } from "fs";
 import { broadcastStudyData, config} from "../index.js";
-import { AiServerError } from "../objects.js";
 import { get_file_name, getDirectoryContent } from "../services/file-processor.js";
 import { ai_models_available, data_study, device_ip } from "../services/state.js";
+import { AiServerError } from "../objects/AiTypes.js";
 
 export async function addMaterie(req: Request, res: Response): Promise<void> {
   if (!req.body.name) {

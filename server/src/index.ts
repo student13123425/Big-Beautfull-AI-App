@@ -4,7 +4,6 @@ import os from 'node:os';
 import { createReadStream, existsSync, promises as fs, statSync, unlinkSync } from 'fs';
 import { LMStudioClient, ModelInfo } from '@lmstudio/sdk';
 import findDevices from 'local-devices';
-import {AiModel, AiServerError, AiTextCorectionElement, Config, Quiz, QuiZRequestItem, StudyGroup} from "./objects.js"
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -20,7 +19,9 @@ import { checkExisting, deleteFile, getFile, sendFile } from './routes/fileRoute
 import { getConfig, getDependencies, getOS, setContextSize, setLanguage, setSystemPrompt } from './routes/configRoutes.js';
 import { getIP, getModelPaths, getModels, getSelectedModel, setSelectedModel } from './routes/aiRoutes.js';
 import { allowedExtensions, configClients, data_study, deniedExtensions, lastConfigData, lastStudyData, port, setLastConfigData, setLastStudyData, studyClients, v_interval } from './services/state.js';
-
+import { AiModel } from './objects/AiTypes.js';
+import { Config } from './objects/Config.js';
+import { __dirname } from './services/state.js';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);

@@ -1,6 +1,7 @@
 import { BaseLoadModelOpts, Chat, LLMLoadModelConfig, LMStudioClient, ModelInfo } from "@lmstudio/sdk";
-import { AiServerError, Config } from "../objects.js"; 
 import { extractFinalContent, removeXmlStyleTags } from "../ai/prompts.js";
+import { AiServerError } from "../objects/AiTypes.js";
+import { Config } from "node-tesseract-ocr";
 
 export async function getCompletion(
   content: string,

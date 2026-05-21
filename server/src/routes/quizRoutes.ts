@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { ModelInfo } from "@lmstudio/sdk";
-import { AiServerError, Config, Quiz, QuiZRequestItem, StudyGroup } from "../objects.js";
 import { isValidQuizItem } from "../services/data_validation.js";
 
 import {broadcastStudyData, config, ai_models_available, device_ip } from '../index.js';
 import { data_study } from '../services/state.js';
+import { Quiz, QuiZRequestItem } from '../objects/quiz.js';
+import { AiServerError } from '../objects/AiTypes.js';
 
 export async function generateQuiz(req: Request, res: Response): Promise<void> {
   if (!req.body.data || typeof req.body.data !== "object") {

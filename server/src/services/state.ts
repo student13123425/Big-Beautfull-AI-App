@@ -1,9 +1,11 @@
 import { LMStudioClient, ModelInfo } from "@lmstudio/sdk";
 import { compareConfigs, compareStudyGroup } from "./data_validation.js";
 import { getServerOS, isFolderSizeBiggerThan, checkDependencies } from "./environment.js";
-import { Config, StudyGroup } from "../objects.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import { Config } from "node-tesseract-ocr";
+import { StudyGroup } from "../objects/StudyGroup.js";
+import { Config } from "../objects/Config.js";
 export const port = 3000;
 export const max_size: number = 20;
 export const supported_models: string[] = [
