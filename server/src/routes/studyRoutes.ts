@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { mkdir, mkdirSync, rmSync } from "fs";
 import { broadcastStudyData, config} from "../index.js";
 import { get_file_name, getDirectoryContent } from "../services/file-processor.js";
-import { ai_models_available, data_study, device_ip } from "../services/state.js";
+import { ai_models_available, data_study, device_ip, htmlStyles } from "../services/state.js";
 import { AiServerError } from "../objects/AiTypes.js";
 
 export async function addMaterie(req: Request, res: Response): Promise<void> {
@@ -126,4 +126,8 @@ export async function genereazSinteza(req: Request, res: Response){
    data_study.AiServerError.push(error);
    broadcastStudyData();
    res.send("n");
+}
+
+export function getSintezaHtmlPosilbleStyles(req: Request, res: Response){
+  res.send(htmlStyles);
 }

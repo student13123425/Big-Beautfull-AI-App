@@ -3,9 +3,10 @@ import { compareConfigs, compareStudyGroup } from "./data_validation.js";
 import { getServerOS, isFolderSizeBiggerThan, checkDependencies } from "./environment.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import { Config } from "node-tesseract-ocr";
 import { StudyGroup } from "../objects/StudyGroup.js";
 import { Config } from "../objects/Config.js";
+import { StyleConfigList } from "../objects/html_styles.js";
+import { log } from "console";
 export const port = 3000;
 export const max_size: number = 20;
 export const supported_models: string[] = [
@@ -28,8 +29,7 @@ export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 export let lastStudyData = null;
 export let lastConfigData = null;
-
-// Initialize dependency check on module load
+export let htmlStyles: StyleConfigList=new  StyleConfigList();
 checkDependencies().then((deps) => {
   is_dependecy = deps;
 });

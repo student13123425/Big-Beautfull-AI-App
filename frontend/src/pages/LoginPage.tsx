@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaLock, FaUser, FaArrowRight, FaUserPlus, FaShieldAlt } from 'react-icons/fa';
+import { FaLock, FaUser, FaArrowRight, FaUserPlus, FaShieldAlt, FaExclamationTriangle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { evaluatePasswordComplexity } from '../scripts/aox';
+import { registerUser, loginUser } from '../scripts/network';
+import AcknowledgeModal from '../components/Misc/AcknowledgeModal';
+import useKeyPress from '../hooks/useKeyPress';
 
 const scaleIn = keyframes`
   from { transform: scale(0.95); opacity: 0; }
@@ -12,6 +15,18 @@ const pulse = keyframes`
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
+`;
+
+const shake = keyframes`
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-8px); }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const PageContainer = styled.div`
@@ -25,7 +40,7 @@ const PageContainer = styled.div`
   overflow: hidden;
 `;
 
-const Card = styled.div`
+const Card = styled.div<{ $isError?: boolean }>`
   background: rgba(255, 255, 255, 0.95);
   padding: 3rem 2.5rem;
   border-radius: 24px;
@@ -33,7 +48,7 @@ const Card = styled.div`
   width: 100%;
   max-width: 400px;
   text-align: center;
-  animation: ${scaleIn} 0.4s cubic-bezier(0.215, 0.610, 0.355, 1);
+  animation: ${props => props.$isError ? shake : scaleIn} 0.4s cubic-bezier(0.215, 0.610, 0.355, 1);
 `;
 
 const LogoIcon = styled.div`
@@ -84,10 +99,28 @@ const InputIcon = styled.div`
   align-items: center;
 `;
 
-const StyledInput = styled.input`
+const PasswordToggle = styled.button`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  z-index: 2;
+  &:hover {
+    color: #3b82f6;
+  }
+`;
+
+const StyledInput = styled.input<{ $isError?: boolean }>`
   width: 100%;
-  padding: 12px 12px 12px 42px;
-  border: 1px solid #e2e8f0;
+  padding: 12px 42px 12px 42px;
+  border: ${props => props.$isError ? '2px solid #ef4444' : '1px solid #e2e8f0'};
   border-radius: 10px;
   font-size: 1rem;
   font-family: 'Inter', sans-serif;
@@ -97,8 +130,8 @@ const StyledInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    border-color: ${props => props.$isError ? '#ef4444' : '#3b82f6'};
+    box-shadow: 0 0 0 3px ${props => props.$isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)'};
   }
 `;
 
@@ -110,12 +143,7 @@ const ComplexityContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: fadeIn 0.3s ease;
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  animation: ${fadeIn} 0.3s ease;
 `;
 
 const ScoreBar = styled.div<{ $score: number }>`
@@ -200,6 +228,14 @@ interface AuthProps {
 
 const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isLoginFailed, setIsLoginFailed] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [modalConfig, setModalConfig] = useState<{
+    show: boolean;
+    title: string;
+    message: string;
+  } | null>(null);
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -210,33 +246,86 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
 
   const complexity = evaluatePasswordComplexity(formData.password);
 
+  // Handle Enter key press to submit form
+  useKeyPress('Enter', () => {
+    const form = document.querySelector('form');
+    if (form) form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  });
+
+  const triggerModal = (title: string, message: string) => {
+    setModalConfig({ show: true, title, message });
+  };
+
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isLoginFailed || modalConfig) {
+      setIsLoginFailed(false);
+      setModalConfig(null);
+    }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!formData.username || !formData.password || (isRegistering && !formData.email)) {
-      onError?.("Please fill in all required fields");
+      triggerModal("Missing Info", "Please fill in all required fields.");
       return;
     }
 
     if (isRegistering && formData.password !== formData.confirmPassword) {
-      onError?.("Passwords do not match");
+      triggerModal("Mismatch", "Passwords do not match.");
       return;
     }
 
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      let success = false;
+      if (isRegistering) {
+        success = await registerUser(formData.username, formData.email, formData.password, (msg) => {
+          triggerModal("Registration Error", msg);
+          onError?.(msg);
+        });
+      } else {
+        success = await loginUser(formData.username, formData.password, (msg) => {
+          triggerModal("Login Failed", msg);
+          onError?.(msg);
+        });
+      }
+
+      if (success) {
+        setIsLoginFailed(false);
+        onLoginSuccess("authenticated");
+      } else {
+        if (!isRegistering) {
+          setIsLoginFailed(true);
+          triggerModal("Access Denied", "Invalid username or password.");
+        }
+      }
+    } catch (err) {
+      triggerModal("Error", "An unexpected error occurred during authentication.");
+    } finally {
       setIsLoading(false);
-      onLoginSuccess(null);
-    }, 1500);
+    }
   };
 
   return (
     <PageContainer>
-      <Card>
+      {modalConfig && (
+        <AcknowledgeModal
+          title={modalConfig.title}
+          message={modalConfig.message}
+          icon={<FaExclamationTriangle size={40} />}
+          iconColor="#ef4444"
+          onClose={() => setModalConfig(null)}
+        />
+      )}
+
+      <Card $isError={!isRegistering && isLoginFailed}>
         <LogoIcon>
           {isRegistering ? <FaUserPlus /> : <FaLock />}
         </LogoIcon>
@@ -275,14 +364,18 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
             <InputIcon><FaLock size={16} /></InputIcon>
             <StyledInput
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
+              $isError={!isRegistering && isLoginFailed}
             />
+            <PasswordToggle type="button" onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+            </PasswordToggle>
           </InputGroup>
 
-          {formData.password && (
+          {isRegistering && formData.password && (
             <ComplexityContainer>
               <ScoreBar $score={complexity.score} />
               <FeedbackText $score={complexity.score}>
@@ -297,11 +390,14 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
               <InputIcon><FaLock size={16} /></InputIcon>
               <StyledInput
                 name="confirmPassword"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
+              <PasswordToggle type="button" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </PasswordToggle>
             </InputGroup>
           )}
 
@@ -313,6 +409,9 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
 
         <SwitchButton onClick={() => {
           setIsRegistering(!isRegistering);
+          setIsLoginFailed(false);
+          setModalConfig(null);
+          setShowPassword(false);
           setFormData({ username: '', email: '', password: '', confirmPassword: '' });
         }}>
           {isRegistering 

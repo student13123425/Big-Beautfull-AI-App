@@ -12,7 +12,7 @@ import { convertPowerPointToPDF, get_file_name, getDirectoryContent, onFileCreat
 import { getSupportedLanguages } from './services/ocr.js';
 import { check_evaluation_parameters, compareConfigs, compareStudyGroup, isValidQuizItem } from './services/data_validation.js';
 import { checkDependencies, evaluateCodeComplexity, evaluateDataSize, getServerOS, isFolderSizeBiggerThan } from './services/environment.js';
-import { addMaterie, deleteMaterie, genereazSinteza, getStudy, regenereazSinteza } from './routes/studyRoutes.js';
+import { addMaterie, deleteMaterie, genereazSinteza, getSintezaHtmlPosilbleStyles, getStudy, regenereazSinteza } from './routes/studyRoutes.js';
 import { askFileQuestion, ClearEvaluare, DeactivateErrorMessage, processEvaluare, stopAnsweringQuestion } from './routes/evaluationRoutes.js';
 import { deleteQuiz, generateQuiz, regenerateQuiz } from './routes/quizRoutes.js';
 import { checkExisting, deleteFile, getFile, sendFile } from './routes/fileRoutes.js';
@@ -22,6 +22,8 @@ import { allowedExtensions, configClients, data_study, deniedExtensions, lastCon
 import { AiModel } from './objects/AiTypes.js';
 import { Config } from './objects/Config.js';
 import { __dirname } from './services/state.js';
+import { loginEndpoint, registerEndpoint, verifyTokenEndpoint } from './routes/auth.js';
+import { initializeUserDatabase } from './services/auth.js';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
@@ -29,6 +31,7 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
+
 export let config = new Config();
 config.load();
 export let ai_models_available: ModelInfo[] = [];
@@ -62,7 +65,7 @@ export function broadcastStudyData() {
 export function broadcastConfigData() {
   const currentData = config;
   
-  if (!compareConfigs(lastConfigData, currentData)) {
+  if (!compareConfigs(lastConfigData, lastConfigData)) {
     setLastConfigData(JSON.parse(JSON.stringify(currentData)));
     
     const message = JSON.stringify({
@@ -94,16 +97,16 @@ export async function refresh() {
 refresh();
 setInterval(refresh, 0);
 if (!existsSync(TEMP_UPLOAD_DIR)) {
-    fs.mkdir(TEMP_UPLOAD_DIR, { recursive: true });
+  fs.mkdir(TEMP_UPLOAD_DIR, { recursive: true });
 }
 
 const tempStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, TEMP_UPLOAD_DIR);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
+  destination: (req, file, cb) => {
+    cb(null, TEMP_UPLOAD_DIR);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
 });
 
 const upload = multer({ storage: tempStorage ,limits:{fileSize:200 * 1024 * 1024},fileFilter:(req,file,cb)=>{
@@ -235,6 +238,18 @@ app.post("/set_system_prompt", async (req, res) => {
   setSystemPrompt(req,res);
 });
 
+app.post("/register", async (req, res) => {
+  registerEndpoint(req, res);
+});
+
+app.post("/login", async (req, res) => {
+  loginEndpoint(req, res);
+});
+
+app.post("/verify_token", async (req, res) => {
+  verifyTokenEndpoint(req, res);
+});
+
 app.post("/get_file", async (req, res) => {
   getFile(req,res);
 });
@@ -304,6 +319,10 @@ app.get('/get_valid_study_lmstudio', async (req, res) => {
   res.send("all valid");
 });
 
+app.get('/sintezaStyles',async (req,res)=>{
+  getSintezaHtmlPosilbleStyles(req,res);
+})
+
 app.use((req, res, next) => {
   const start = process.hrtime();
 
@@ -320,57 +339,63 @@ app.use((req, res, next) => {
   next();
 });
 
-// Create HTTP server
-const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`Server listening on http://localhost:${port}`);
-});
-server.on('error', (err) => {
-  console.error('Server listen error:', err);
-});
-// Create WebSocket server
-const wss = new WebSocketServer({ noServer: true });
+(async () => {
+  try {
+    await initializeUserDatabase();
+    console.log('✅ User database initialized successfully.');
 
-// Handle WebSocket connections
-wss.on('connection', (ws, request) => {
-  const url = new URL(request.url, `http://${request.headers.host}`);
-  const pathname = url.pathname;
-  
-  if (pathname === '/study') {
-    studyClients.add(ws);
-    
-    // Send initial data immediately
-    ws.send(JSON.stringify({
-      type: 'study_update',
-      data: data_study
-    }));
-    
-    ws.on('close', () => {
-      studyClients.delete(ws);
+    // Create HTTP server
+    const server = app.listen(port, '0.0.0.0', () => {
+      console.log(`🚀 Server listening on http://localhost:${port}`);
     });
-    
-  } else if (pathname === '/config') {
-    configClients.add(ws);
-    
-    // Send initial data immediately
-    ws.send(JSON.stringify({
-      type: 'config_update',
-      data: config
-    }));
-    
-    ws.on('close', () => {
-      configClients.delete(ws);
+    server.on('error', (err) => {
+      console.error('Server listen error:', err);
     });
-  } else {
-    ws.close();
+
+    const wss = new WebSocketServer({ noServer: true });
+
+    wss.on('connection', (ws, request) => {
+      const url = new URL(request.url, `http://${request.headers.host}`);
+      const pathname = url.pathname;
+      
+      if (pathname === '/study') {
+        studyClients.add(ws);
+        
+        ws.send(JSON.stringify({
+          type: 'study_update',
+          data: data_study
+        }));
+        
+        ws.on('close', () => {
+          studyClients.delete(ws);
+        });
+        
+      } else if (pathname === '/config') {
+        configClients.add(ws);
+        
+        ws.send(JSON.stringify({
+          type: 'config_update',
+          data: config
+        }));
+        
+        ws.on('close', () => {
+          configClients.delete(ws);
+        });
+      } else {
+        ws.close();
+      }
+    });
+
+    server.on('upgrade', (request, socket, head) => {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    });
+  } catch (err) {
+    console.error('❌ Failed to initialize database or start server:', err);
+    process.exit(1);
   }
-});
-
-// Handle HTTP server upgrades for WebSockets
-server.on('upgrade', (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request);
-  });
-});
+})();
 
 evaluateCodeComplexity();
 evaluateDataSize();

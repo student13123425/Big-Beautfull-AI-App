@@ -1,0 +1,227 @@
+[
+  {
+    "name": "Academic Journal",
+    "description": "University courses, research handouts, formal assessments",
+    "base": {
+      "layout": { "containerMaxWidth": 780, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["Playfair Display", "Merriweather", "serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.8rem" },
+        "lineHeight": 1.5,
+        "letterSpacing": "-0.5px",
+        "weightScale": { "bold": 700 }
+      },
+      "colors": { "background": "#faf9f6", "surface": "#ffffff", "text": "#2c2c2c", "primary": "#8b3a4a" },
+      "effects": { "borderRadius": "0", "boxShadow": ["none"], "hoverTransform": "none" },
+      "components": {
+        "cards": { "padding": "1.5rem 2rem", "background": "#ffffff", "borderLeftWidth": "4px", "borderColor": "#8b3a4a" },
+        "lists": { "bulletStyle": "none", "icon": "A) B) C) D)" }
+      },
+      "print": { "pageSize": "A4", "margins": "2cm", "colorAdjust": "exact", "pageBreaks": true },
+      "accessibility": { "contrastRatio": 7, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#8b3a4a", "--bg": "#faf9f6" }
+    }
+  },
+  {
+    "name": "Dark Mode / Cyberpunk Tech",
+    "description": "Digital platforms, modern e-learning, tech-focused audiences",
+    "base": {
+      "layout": { "containerMaxWidth": 1000, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["Space Grotesk", "Inter", "sans-serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.6,
+        "letterSpacing": "-0.02em"
+      },
+      "colors": { "background": "#0f172a", "surface": "rgba(30,41,59,0.6)", "text": "#e2e8f0", "primary": "#3b82f6", "secondary": "#06b6d4" },
+      "effects": {
+        "borderRadius": "8px",
+        "boxShadow": ["0 0 20px rgba(59,130,246,0.15)"],
+        "border": "1px solid #334155",
+        "hoverTransform": "translateY(-2px)",
+        "animations": { "fadeUp": { "duration": "0.2s", "easing": "ease" } }
+      },
+      "components": { "cards": { "padding": "1.5rem 2rem", "background": "rgba(30,41,59,0.6)" } },
+      "interactivity": { "hoverEffects": true, "transitionDuration": "0.2s" },
+      "accessibility": { "contrastRatio": 7, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#3b82f6", "--accent": "#06b6d4", "--bg": "#0f172a" }
+    }
+  },
+  {
+    "name": "Swiss Design / International Typographic Style",
+    "description": "Institutional reports, minimalist branding, high-readability documents",
+    "base": {
+      "layout": { "containerMaxWidth": 780, "padding": "2rem", "gap": "1.5rem", "alignment": "start" },
+      "typography": {
+        "fontFamily": ["Helvetica", "Inter", "sans-serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.5,
+        "letterSpacing": "-0.5px",
+        "weightScale": { "bold": 800 }
+      },
+      "colors": { "background": "#ffffff", "surface": "#ffffff", "text": "#000000", "primary": "#ff3b30" },
+      "effects": { "borderRadius": "0", "boxShadow": ["none"], "border": "2px solid #000", "hoverTransform": "none" },
+      "components": { "cards": { "padding": "2rem 2.5rem", "background": "#ffffff", "border": "2px solid #000" } },
+      "responsive": { "fluidTypography": false, "breakpoints": { "mobile": { "layout": { "containerMaxWidth": 600, "padding": "1rem" } } } },
+      "accessibility": { "contrastRatio": 21, "focusVisible": true, "reducedMotion": true },
+      "cssVariables": { "--primary": "#ff3b30", "--bg": "#ffffff" }
+    }
+  },
+  {
+    "name": "Retro / Vintage Paper",
+    "description": "Editorial quizzes, nostalgic branding, humanities courses",
+    "base": {
+      "layout": { "containerMaxWidth": 800, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["EB Garamond", "Crimson Text", "serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.6,
+        "letterSpacing": "0px"
+      },
+      "colors": { "background": "#f5f1e8", "surface": "#fffdf9", "text": "#5c4033", "primary": "#d4af37" },
+      "effects": { "borderRadius": "0", "boxShadow": ["none"], "border": "2px double #d4af37", "hoverTransform": "none" },
+      "components": { "cards": { "padding": "1.5rem 2rem", "background": "#fffdf9", "border": "2px double #d4af37" }, "lists": { "bulletStyle": "none", "icon": "○" } },
+      "print": { "pageSize": "Letter", "margins": "1.5cm", "colorAdjust": "exact", "pageBreaks": true },
+      "accessibility": { "contrastRatio": 7, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#d4af37", "--bg": "#f5f1e8" }
+    }
+  },
+  {
+    "name": "Glassmorphism / Modern SaaS",
+    "description": "Web apps, interactive portals, contemporary learning platforms",
+    "base": {
+      "layout": { "containerMaxWidth": 1200, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["Inter", "SF Pro Display", "sans-serif"],
+        "baseFontSize": "clamp(0.9rem, 1vw, 1rem)",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.6,
+        "letterSpacing": "-0.02em"
+      },
+      "colors": { "background": "#667eea", "surface": "rgba(255,255,255,0.65)", "text": "#4c1d95", "primary": "#7c3aed", "accent": ["#667eea", "#764ba2"] },
+      "effects": {
+        "borderRadius": "20px",
+        "boxShadow": ["0 8px 32px rgba(0,0,0,0.1)"],
+        "border": "1px solid rgba(255,255,255,0.3)",
+        "backdropBlur": "12px",
+        "hoverTransform": "translateY(-3px)"
+      },
+      "components": { "cards": { "padding": "2rem", "background": "rgba(255,255,255,0.65)", "borderRadius": "20px" } },
+      "interactivity": { "hoverEffects": true, "transitionDuration": "0.2s" },
+      "accessibility": { "contrastRatio": 4.5, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#7c3aed", "--surface-bg": "rgba(255,255,255,0.65)", "--blur": "12px" }
+    }
+  },
+  {
+    "name": "Brutalist / Raw Web",
+    "description": "Design portfolios, anti-corporate aesthetics, high-impact digital displays",
+    "base": {
+      "layout": { "containerMaxWidth": 900, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["JetBrains Mono", "monospace"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.5,
+        "letterSpacing": "-0.03em",
+        "weightScale": { "bold": 900 }
+      },
+      "colors": { "background": "#ffffff", "surface": "#ffffff", "text": "#000000", "primary": "#facc15", "secondary": "#ef4444" },
+      "effects": { "borderRadius": "0", "boxShadow": ["none"], "border": "3px solid #000", "hoverTransform": "none" },
+      "components": { "cards": { "padding": "2rem", "background": "#ffffff", "border": "3px solid #000" } },
+      "interactivity": { "hoverEffects": true, "transitionDuration": "0.1s" },
+      "accessibility": { "contrastRatio": 21, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#facc15", "--bg": "#ffffff" }
+    }
+  },
+  {
+    "name": "Nature / Eco-Friendly",
+    "description": "Environmental courses, sustainability campaigns, policy education",
+    "base": {
+      "layout": { "containerMaxWidth": 900, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["Nunito", "Quicksand", "sans-serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.7,
+        "letterSpacing": "-0.01em"
+      },
+      "colors": { "background": "#ecfdf5", "surface": "#ffffff", "text": "#166534", "primary": "#4ade80", "secondary": "#78350f" },
+      "effects": { "borderRadius": "24px", "boxShadow": ["0 10px 30px rgba(22,101,52,0.08)"], "border": "none", "hoverTransform": "scale(1.01)" },
+      "components": { "cards": { "padding": "1.5rem 2rem", "background": "#ffffff", "borderRadius": "24px" }, "lists": { "bulletStyle": "none", "icon": "🌱" } },
+      "interactivity": { "hoverEffects": true, "transitionDuration": "0.2s" },
+      "accessibility": { "contrastRatio": 7, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#4ade80", "--bg": "#ecfdf5" }
+    }
+  },
+  {
+    "name": "Corporate / Institutional EU Style",
+    "description": "Official documents, government training, formal assessments",
+    "base": {
+      "layout": { "containerMaxWidth": 960, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["Inter", "system-ui", "sans-serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.4rem" },
+        "lineHeight": 1.6,
+        "letterSpacing": "0px",
+        "weightScale": { "bold": 700 }
+      },
+      "colors": { "background": "#f8fafc", "surface": "#ffffff", "text": "#1e3a8a", "primary": "#003399", "secondary": "#ffcc00" },
+      "effects": { "borderRadius": "0", "boxShadow": ["none"], "hoverTransform": "none" },
+      "components": { "cards": { "padding": "1.5rem 2rem", "background": "#ffffff", "borderTopWidth": "5px", "borderColor": "#003399" }, "lists": { "bulletStyle": "none", "icon": "A) B) C) D)" } },
+      "print": { "pageSize": "A4", "margins": "2cm", "colorAdjust": "exact", "pageBreaks": true },
+      "accessibility": { "contrastRatio": 7, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#003399", "--accent": "#ffcc00", "--bg": "#f8fafc" }
+    }
+  },
+  {
+    "name": "Playful / EdTech Gamified",
+    "description": "Student engagement, mobile learning, interactive quizzes",
+    "base": {
+      "layout": { "containerMaxWidth": 1000, "padding": "2rem", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["Poppins", "DM Sans", "sans-serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.6,
+        "letterSpacing": "-0.02em"
+      },
+      "colors": { "background": "#fafafa", "surface": "#ffffff", "text": "#1f2937", "primary": "#7c3aed", "secondary": "#0d9488", "accent": ["#7c3aed", "#0d9488"] },
+      "effects": {
+        "borderRadius": "20px",
+        "boxShadow": ["0 6px 20px rgba(124,58,237,0.1)"],
+        "hoverTransform": "translateY(-2px)",
+        "animations": { "fadeIn": { "duration": "0.4s", "easing": "ease-out" } }
+      },
+      "components": { "cards": { "padding": "1.5rem 2rem", "background": "#ffffff", "borderRadius": "20px" }, "lists": { "bulletStyle": "none", "icon": "⚪" } },
+      "interactivity": { "hoverEffects": true, "transitionDuration": "0.2s", "scrollReveal": true },
+      "accessibility": { "contrastRatio": 4.5, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#7c3aed", "--accent": "#f43f5e", "--bg": "#fafafa" }
+    }
+  },
+  {
+    "name": "Minimalist Monochrome",
+    "description": "Print-heavy workflows, editorial focus, timeless design",
+    "base": {
+      "layout": { "containerMaxWidth": 720, "padding": "2rem 0", "gap": "1.5rem" },
+      "typography": {
+        "fontFamily": ["Manrope", "Inter", "sans-serif"],
+        "baseFontSize": "1rem",
+        "headingSizes": { "h1": "2.4rem", "h2": "1.6rem" },
+        "lineHeight": 1.8,
+        "letterSpacing": "-0.5px",
+        "weightScale": { "bold": 700 }
+      },
+      "colors": { "background": "#ffffff", "surface": "#ffffff", "text": "#111827", "primary": "#4f46e5" },
+      "effects": { "borderRadius": "0", "boxShadow": ["none"], "hoverTransform": "none" },
+      "components": { "cards": { "padding": "2rem 0", "background": "transparent", "borderBottomWidth": "1px", "borderColor": "#e5e7eb" }, "lists": { "bulletStyle": "none", "icon": "A) B) C) D)" } },
+      "print": { "pageSize": "Letter", "margins": "1.5cm", "colorAdjust": "exact", "pageBreaks": true },
+      "accessibility": { "contrastRatio": 21, "focusVisible": true, "reducedMotion": false },
+      "cssVariables": { "--primary": "#4f46e5", "--bg": "#ffffff" }
+    }
+  }
+]

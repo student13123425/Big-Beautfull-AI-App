@@ -299,3 +299,37 @@ export function evaluatePasswordComplexity(password: string): PasswordEvaluation
     feedback: [...new Set(feedback)],
   };
 }
+
+export function checkIfMeetAcountCrationContidions(email: string, username: string, password: string): string | null {
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Invalid email address.";
+  }
+
+  if (!username) return "Username is required.";
+  if (username.length < 3 || username.length > 20) return "Username must be between 3 and 20 characters.";
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) return "Username can only contain letters, numbers, and underscores.";
+
+  const evaluation = evaluatePasswordComplexity(password);
+  if (evaluation.score < 3) {
+    let reasons: string[] = [];
+    if (password.length < 6) reasons.push("Too short.");
+    if (!/[a-z]/.test(password)) reasons.push("Missing lowercase letters.");
+    if (!/[A-Z]/.test(password)) reasons.push("Missing uppercase letters.");
+    if (!/[0-9]/.test(password)) reasons.push("No numbers.");
+    if (!/[^A-Za-z0-9]/.test(password)) reasons.push("No special characters.");
+    if (/(abc|123|qwerty|password)/i.test(password)) reasons.push("Contains common sequences.");
+
+    return reasons.length > 0 ? reasons.join(" ") : "Password is too weak.";
+  }
+
+  const getAlphaSequences = (str: string) => str.toLowerCase().match(/[a-z]{6,}/g) || [];
+  const sequences = [...new Set([...getAlphaSequences(username), ...getAlphaSequences(email)])];
+
+  for (const seq of sequences) {
+    if (password.toLowerCase().includes(seq)) {
+      return "Password cannot contain more than 5 consecutive letters from your username or email.";
+    }
+  }
+
+  return null;
+}
