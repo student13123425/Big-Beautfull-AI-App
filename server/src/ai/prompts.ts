@@ -207,7 +207,7 @@ export function extractFinalContent(text: string): string {
 
   result = text.substring(contentStart, contentEnd).trim();
   return result; 
-
+}
 export function removeXmlStyleTags(text: string): string {
   if (text.includes("<|message|>"))
     return text.split("<|message|>").pop() || "";
@@ -238,7 +238,7 @@ export function generateConversionMarkdownToHTMLPrompt(markdownContent: string, 
 
   const styleStr = JSON.stringify(parsedStyle, null, 2);
 
-  return `You are an expert frontend developer and UI designer specializing in semantic HTML5 and CSS3. Your task is to convert the provided Markdown content into a single, self-contained, production-ready HTML file that strictly adheres to the provided JSON style configuration.
+return `You are an expert frontend developer and UI designer specializing in semantic HTML5 and CSS3. Your task is to convert the provided Markdown content into a single, self-contained, production-ready HTML file that strictly adheres to the provided JSON style configuration.
 
 
 === INPUT MARKDOWN ===
