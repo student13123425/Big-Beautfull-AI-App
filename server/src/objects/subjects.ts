@@ -2,10 +2,11 @@ import { ModelInfo } from "@lmstudio/sdk";
 import { Config } from "node-tesseract-ocr";
 import { AiServerError } from "./AiTypes.js";
 import { extract_text } from "../services/file-processor.js";
-import { prompt_sumarizare } from "../ai/prompts.js";
+import { generateConversionMarkdownToHTMLPrompt, prompt_sumarizare } from "../ai/prompts.js";
 import { get_model } from "../helpers.js";
 import { get_compleation } from "../services/llm.js";
 import { Quiz } from "./quiz.js";
+import { htmlStyles } from "../services/state.js";
 
 export class Materie{
   name:string
@@ -47,6 +48,7 @@ export class Materie{
 export class FishierMaterie{
   path:string
   sinteza:string|null=null
+  html_file:string|null=null
   is_computing=false;
   content:string|null=null
   materie:string
@@ -111,6 +113,51 @@ export class FishierMaterie{
   async regenerate_sinteza(models:ModelInfo[],url:string|null,onUpdate:Function,config:Config,setError:(error:AiServerError)=>void){
     this.sinteza=null;
     this.genereaza_sinteza(models,url,onUpdate,config,setError);
+  }
+  async generateHTML(models:ModelInfo[],url:string|null,onUpdate:Function,config:Config,setError:(error:AiServerError)=>void,style:number){
+    console.log(this.content === null, url === null , this.sinteza != null,this.is_computing);
+    if (this.content === null || url === null ||this.is_computing) return;
+    console.log("generating html");
+    this.is_computing = true;
+    if(this.sinteza==null){
+      let front_end_error_message=new AiServerError("sinteza is not generated");
+      setError(front_end_error_message)
+      return;
+    }
+    if(style<0||style>=10){
+      let front_end_error_message=new AiServerError("invalid style");
+      setError(front_end_error_message)
+    }
+    let prompt = generateConversionMarkdownToHTMLPrompt(this.sinteza,JSON.stringify(htmlStyles.getStyles()[style]),config.limba);
+    let nume_model:string=config.ai_model_sinteza[0].toLowerCase();
+    const model_full =  get_model(nume_model,models);
+    if (!model_full) {
+      let front_end_error_message=new AiServerError("Invalid Model",`Model not found: ${nume_model} not frond on lmstudio server`);
+      setError(front_end_error_message)
+      console.error(`Model not found: ${nume_model}`);
+      this.is_computing = false;
+      return;
+    }
+        try {
+      this.html_file=await get_compleation(prompt,config.system_prompt,
+        ()=>this.is_computing,
+        url,
+        model_full.path,
+        null,
+        (s:string)=>{
+          this.sinteza=s;
+        },
+        setError,
+        `generare html pentru ${this.path}`,
+        config)
+      onUpdate();
+    }catch(e){
+      let front_end_error_message=new AiServerError("Eroare generare sinteza",`Erroare generare sinteza pentru ${this.path} useing model ${nume_model}`);
+      setError(front_end_error_message)
+      console.log("Error "+e);
+    } finally {
+      this.is_computing = false;
+    }
   }
   stopGeneratingSinteza(): void {
     if (this.is_computing) {``

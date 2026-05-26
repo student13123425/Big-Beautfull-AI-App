@@ -227,7 +227,7 @@ export function get_output_content(out: string): string {
   return out.slice(7).split("</think>")[1];
 }
 
-export function generateConversionMarkdownToHTMLPrompt(markdownContent: string, styleConfigJson: string): string {
+export function generateConversionMarkdownToHTMLPrompt(markdownContent: string, styleConfigJson: string,language:string): string {
   let parsedStyle: Record<string, unknown>;
 
   try {
@@ -278,6 +278,6 @@ ${styleStr}
 - DO NOT include any explanations, comments outside the HTML structure, or extra text before/after the document.
 - The response must start exactly with <!DOCTYPE html> and end with </html>.
 - Ensure valid, well-formed HTML5 that passes W3C validation standards.
-
+- Respond in the language:${language}
 BEGIN OUTPUT NOW:`;
 }
