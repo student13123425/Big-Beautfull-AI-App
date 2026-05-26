@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { broadcastConfigData, config, is_dependecy} from "../index.js";
 import { getSupportedLanguages } from "../services/ocr.js";
-import { server_os } from "../services/state.js";
+import { htmlStyles, server_os } from "../services/state.js";
 
 export async function getConfig(req: Request, res: Response): Promise<void> {
   res.json(config);
@@ -66,4 +66,21 @@ export async function getDependencies(req: Request, res: Response): Promise<void
 
 export async function getOS(req: Request, res: Response): Promise<void> {
   res.json([server_os]);
+}
+
+export async function getHtmlStyle(req: Request, res: Response): Promise<void> {
+  res.send(htmlStyles.getStyles()[config.html_style].name);
+}
+
+
+export async function setHtmlStyle(req: Request, res: Response): Promise<void> {
+  if (!req.body.style || typeof req.body.style !== "number") {
+    res.status(400).send("name");
+    return;
+  }
+  
+  const style: number = req.body.style;
+  config.set_html_style(style);
+  broadcastConfigData();
+  res.send("y");
 }

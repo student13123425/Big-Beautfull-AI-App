@@ -16,7 +16,7 @@ import { addMaterie, deleteMaterie, genereazHTML, genereazSinteza, getSintezaHtm
 import { askFileQuestion, ClearEvaluare, DeactivateErrorMessage, processEvaluare, stopAnsweringQuestion } from './routes/evaluationRoutes.js';
 import { deleteQuiz, generateQuiz, regenerateQuiz } from './routes/quizRoutes.js';
 import { checkExisting, deleteFile, getFile, sendFile } from './routes/fileRoutes.js';
-import { getConfig, getDependencies, getOS, setContextSize, setLanguage, setSystemPrompt } from './routes/configRoutes.js';
+import { getConfig, getDependencies, getHtmlStyle, getOS, setContextSize, setHtmlStyle, setLanguage, setSystemPrompt } from './routes/configRoutes.js';
 import { getIP, getModelPaths, getModels, getSelectedModel, setSelectedModel } from './routes/aiRoutes.js';
 import { allowedExtensions, configClients, data_study, deniedExtensions, lastConfigData, lastStudyData, port, setLastConfigData, setLastStudyData, studyClients, v_interval } from './services/state.js';
 import { AiModel } from './objects/AiTypes.js';
@@ -286,6 +286,14 @@ app.post("/DeactivateErrorMessage", async (req, res) => {
 app.post("/Evaluare", async (req, res) => {
   processEvaluare(req,res);
 });
+
+app.get('/htmlStyle',async (req,res)=>{
+  getHtmlStyle(req,res);
+})
+
+app.post('/htmlStyle',async (req,res)=>{
+  setHtmlStyle(req,res);
+})
 
 
 app.get("/ClearEvaluare", async (req, res) => {
