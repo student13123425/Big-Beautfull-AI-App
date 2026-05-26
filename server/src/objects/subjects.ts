@@ -72,6 +72,7 @@ export class FishierMaterie{
     })
   }
   async genereaza_sinteza(models: ModelInfo[], url: string | null, onUpdate: Function,config:Config,setError:(error:AiServerError)=>void) {
+    this.html_file=null;
     console.log(this.content === null, url === null , this.sinteza != null,this.is_computing);
     if (this.content === null || url === null || this.sinteza != null||this.is_computing) return;
     console.log("generating sinteza");

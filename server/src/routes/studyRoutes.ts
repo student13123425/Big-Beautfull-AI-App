@@ -128,6 +128,60 @@ export async function genereazSinteza(req: Request, res: Response){
    res.send("n");
 }
 
+export async function genereazHTML(req: Request, res: Response){
+	if (!req.body.name_materie || !req.body.file_name) {
+		res.send("n");
+		return;
+	}
+	const name_materie: string = req.body.name_materie;
+	const file_name: string = req.body.file_name;
+	const style_index: number | undefined = req.body.style_index;
+
+	if (style_index === undefined || !Number.isInteger(style_index) || style_index < 0 || style_index > 9) {
+		const error:AiServerError=new AiServerError(`Invalid style index`,`style_index must be an integer between 0 and 9`);
+		data_study.AiServerError.push(error);
+		broadcastStudyData();
+		res.send("n");
+		return;
+	}
+
+	for (let it of data_study.data) {
+		if (it.name === name_materie) {
+			for (let j of it.files) {
+				let name: string = get_file_name(j.path);
+				if (name === file_name) {
+					const onUpdate = () => {
+						data_study.save();
+						broadcastStudyData();
+					};
+
+					const setError = (error:AiServerError)=>{
+						j.is_computing=false;
+						j.html_file=null;
+						data_study.AiServerError.push(error);
+						broadcastStudyData();
+					}
+
+					j.generateHTML(ai_models_available, device_ip, onUpdate, config, setError, style_index)
+						.then(()=>{
+							data_study.save();
+							broadcastStudyData();
+						});
+
+					res.send("y");
+					return;
+				}
+			}
+		}
+	}
+	const error:AiServerError=new AiServerError(`parametri invalizi html`,`errorare generare html datele name_materie:${name_materie} file_name:${file_name} sunt invalide`)
+	data_study.AiServerError.push(error);
+	broadcastStudyData();
+	res.send("n");
+}
+
+
+
 export function getSintezaHtmlPosilbleStyles(req: Request, res: Response){
   res.send(htmlStyles);
 }
