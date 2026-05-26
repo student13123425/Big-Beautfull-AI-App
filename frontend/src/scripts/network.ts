@@ -804,3 +804,69 @@ export async function verifyToken(
     return false;
   }
 }
+
+export async function generateHTML(
+  name_materie: string,
+  file_name: string,
+  style_index: number | undefined,
+  setError: Function
+): Promise<boolean> {
+  try {
+    const response = await axios.post<string>(
+      `${addr}/genereaza_html`,
+      { name_materie, file_name, style_index },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    if (response.data === "y") return true;
+    if (response.data === "n") return false;
+    setError(`generateHTML: Unexpected response "${response.data}"`);
+    return false;
+  } catch (error: any) {
+    if (error.response) {
+      const status = error.response.status;
+      let errorMsg = `Server error (${status}): `;
+      if (typeof error.response.data === 'string') {
+        errorMsg += error.response.data;
+      } else if (error.response.data && typeof error.response.data.message === 'string') {
+        errorMsg += error.response.data.message;
+      } else {
+        errorMsg += 'No additional error information';
+      }
+      setError(`generateHTML: ${errorMsg}`);
+    } else if (error.request) {
+      setError('generateHTML: No response from server');
+    } else {
+      setError(`generateHTML: Request setup error: ${error.message}`);
+    }
+    return false;
+  }
+}
+
+
+export async function getAvailableStyles(
+  setStyles: Function,
+  setError: Function
+): Promise<void> {
+  try {
+    const response = await axios.get<string[]>(`${addr}/sintezaStyles`);
+    setStyles(response.data);
+  } catch (error: any) {
+    if (error.response) {
+      const status = error.response.status;
+      let errorMsg = `Server error (${status}): `;
+      if (typeof error.response.data === 'string') {
+        errorMsg += error.response.data;
+      } else if (error.response.data && typeof error.response.data.message === 'string') {
+        errorMsg += error.response.data.message;
+      } else {
+        errorMsg += 'No additional error information';
+      }
+      setError(`getAvailableStyles: ${errorMsg}`);
+    } else if (error.request) {
+      setError('getAvailableStyles: No response from server');
+    } else {
+      setError(`getAvailableStyles: Request setup error: ${error.message}`);
+    }
+  }
+}
