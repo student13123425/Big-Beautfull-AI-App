@@ -1,21 +1,29 @@
-import React, { useState, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { FaChevronDown } from 'react-icons/fa';
 import { getTopLevePath } from '../../scripts/aox';
 import type { AiModel } from '../../scripts/objects';
 
-// Keyframes for animations
-const fadeIn = keyframes`
+const fadeInBottom = keyframes`
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const fadeOut = keyframes`
+const fadeOutBottom = keyframes`
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-8px); }
 `;
 
-// Container with positioning and z-index
+const fadeInTop = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const fadeOutTop = keyframes`
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(8px); }
+`;
+
 const Container = styled.div`
   position: relative;
   width: 100%;
@@ -23,7 +31,6 @@ const Container = styled.div`
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `;
 
-// Select button styling with conditional props
 const SelectButton = styled.button<{ $isOpen: boolean }>`
   display: flex;
   justify-content: space-between;
@@ -46,7 +53,7 @@ const SelectButton = styled.button<{ $isOpen: boolean }>`
   &:hover {
     border-color: #9ca3af;
     transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
 
   &:focus {
@@ -64,7 +71,6 @@ const SelectButton = styled.button<{ $isOpen: boolean }>`
   }
 `;
 
-// Chevron icon with animation
 const IconWrapper = styled.span<{ $isOpen: boolean }>`
   display: flex;
   align-items: center;
@@ -76,12 +82,9 @@ const IconWrapper = styled.span<{ $isOpen: boolean }>`
   margin-left: 0.75rem;
 `;
 
-// Options list with animation
-const OptionsList = styled.ul<{ $isClosing: boolean }>`
+const OptionsList = styled.ul<{ $isClosing: boolean; $placement: 'top' | 'bottom' }>`
   position: absolute;
   width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.5rem 0;
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -90,11 +93,31 @@ const OptionsList = styled.ul<{ $isClosing: boolean }>`
   list-style: none;
   max-height: 280px;
   overflow-y: auto;
-  transform-origin: top center;
-  animation: ${({ $isClosing }) =>
-    $isClosing
-      ? css`${fadeOut} 0.25s ease-out forwards`
-      : css`${fadeIn} 0.25s ease-out forwards`};
+  padding: 0.5rem 0;
+
+  ${({ $placement }) =>
+    $placement === 'top'
+      ? css`
+          bottom: 100%;
+          margin-bottom: 0.5rem;
+          transform-origin: bottom center;
+        `
+      : css`
+          top: 100%;
+          margin-top: 0.5rem;
+          transform-origin: top center;
+        `}
+
+  animation: ${({ $isClosing, $placement }) => {
+    if ($placement === 'top') {
+      return $isClosing
+        ? css`${fadeOutTop} 0.25s ease-out forwards`
+        : css`${fadeInTop} 0.25s ease-out forwards`;
+    }
+    return $isClosing
+      ? css`${fadeOutBottom} 0.25s ease-out forwards`
+      : css`${fadeInBottom} 0.25s ease-out forwards`;
+  }};
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -108,7 +131,6 @@ const OptionsList = styled.ul<{ $isClosing: boolean }>`
   }
 `;
 
-// Option item with conditional styling
 const OptionItem = styled.li<{ $isSelected: boolean }>`
   padding: 0.75rem 1rem;
   cursor: pointer;
@@ -123,11 +145,13 @@ const OptionItem = styled.li<{ $isSelected: boolean }>`
   }
 
   z-index: 99999;
-  ${({ $isSelected }) => $isSelected && css`
-    background-color: #eff6ff;
-    color: #1d4ed8;
-    font-weight: 600;
-  `}
+  ${({ $isSelected }) =>
+    $isSelected &&
+    css`
+      background-color: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 600;
+    `}
 `;
 
 interface AnimatedDropdownProps {
@@ -137,7 +161,6 @@ interface AnimatedDropdownProps {
   placeholder?: string;
 }
 
-// Helper type for normalized options
 interface NormalizedOption {
   value: string;
   label: string;
@@ -147,55 +170,96 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   options,
   onSelect,
   selectedOption,
-  placeholder = "Select an option"
+  placeholder = 'Select an option',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [placement, setPlacement] = useState<'top' | 'bottom'>('bottom');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Normalize options to common format
   const normalizedOptions = useMemo<NormalizedOption[]>(() => {
-    return options.map(option => {
-      if (typeof option === 'string') {
-        return { value: option, label: option };
-      } else {
-        return { value: option.path, label: getTopLevePath(option.path) };
+    if (!Array.isArray(options)) {
+      console.error(
+        `AnimatedDropdown Error: The "options" parameter is invalid. Expected an array, but received type: ${typeof options}`
+      );
+      return [];
+    }
+
+    return options.reduce((acc, option, index) => {
+      if (option === undefined || option === null) {
+        console.warn(
+          `AnimatedDropdown Warning: The "options" parameter contains a null/undefined value at index ${index}. Skipping.`
+        );
+        return acc;
       }
-    });
+
+      if (typeof option === 'string') {
+        acc.push({ value: option, label: option });
+      } else {
+        const model = option as AiModel;
+        if (!model || typeof model !== 'object' || !('path' in model)) {
+          console.error(
+            `AnimatedDropdown Error: The "options" parameter contains an invalid object at index ${index}. Missing required "path" property. Value:`,
+            option
+          );
+          return acc;
+        }
+        acc.push({ value: model.path, label: getTopLevePath(model.path) });
+      }
+      return acc;
+    }, [] as NormalizedOption[]);
   }, [options]);
 
-  // Find selected option label
   const selectedLabel = useMemo(() => {
     if (selectedOption === null) return placeholder;
-    
-    const foundOption = normalizedOptions.find(
-      opt => opt.value === selectedOption
-    );
-    
+    const foundOption = normalizedOptions.find(opt => opt.value === selectedOption);
     return foundOption ? foundOption.label : placeholder;
   }, [selectedOption, normalizedOptions, placeholder]);
 
-  // Close dropdown on click outside
-  const handleClickOutside = useCallback((event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      closeDropdown();
+  const calculatePlacement = useCallback(() => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const dropdownHeight = 300; 
+
+      if (spaceBelow < dropdownHeight && rect.top > spaceBelow) {
+        setPlacement('top');
+      } else {
+        setPlacement('bottom');
+      }
     }
   }, []);
 
-  // Handle closing animation
-  const closeDropdown = () => {
+  const closeDropdown = useCallback(() => {
     if (!isOpen) return;
     setIsClosing(true);
     setTimeout(() => {
       setIsOpen(false);
       setIsClosing(false);
     }, 250);
-  };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        closeDropdown();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, closeDropdown]);
 
   const toggleDropdown = () => {
     if (isOpen) {
       closeDropdown();
     } else {
+      calculatePlacement();
       setIsOpen(true);
     }
   };
@@ -207,10 +271,11 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
 
   return (
     <Container ref={dropdownRef}>
-      <SelectButton
-        $isOpen={isOpen}
-        onClick={toggleDropdown}
-        aria-haspopup="listbox"
+      <SelectButton 
+        ref={buttonRef}
+        $isOpen={isOpen} 
+        onClick={toggleDropdown} 
+        aria-haspopup="listbox" 
         aria-expanded={isOpen}
       >
         <span>{selectedLabel}</span>
@@ -218,12 +283,8 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
           <FaChevronDown size={12} />
         </IconWrapper>
       </SelectButton>
-      
       {isOpen && (
-        <OptionsList
-          role="listbox"
-          $isClosing={isClosing}
-        >
+        <OptionsList role="listbox" $isClosing={isClosing} $placement={placement}>
           {normalizedOptions.map((option, index) => (
             <OptionItem
               key={`${option.value}-${index}`}

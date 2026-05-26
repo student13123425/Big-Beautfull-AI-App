@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import type { AiServerError, Config, StudyGroup } from '../scripts/objects'
+import type { AiServerError, Config, StudyGroup, StyleConfigList } from '../scripts/objects'
 import TopBar from '../components/Main/TopBar'
 import Materie from '../components/Main/Materie'
 import SettingsPage from './SettingsPage'
@@ -34,7 +34,8 @@ export default function Main(props: {
   onError: Function
   config:Config,
   setConfig:Function,
-  SupportedModels:string[]
+  SupportedModels:string[],
+  HtmlPosibleStyles:StyleConfigList|null
 }) {
   const [Selected, setSelected] = useState<null | string>(null);
   const [IsSetings,setIsSetings]=useState<boolean>(false)
@@ -60,7 +61,7 @@ export default function Main(props: {
           data={props.GlobalData}
         />
         <ContentArea>
-          {IsSetings===true?<SettingsPage SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError}/>:(<>
+          {IsSetings===true?<SettingsPage HtmlPosibleStyles={props.HtmlPosibleStyles} SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError}/>:(<>
             <Materie 
                 setError={props.onError} 
                 selected={Selected} 

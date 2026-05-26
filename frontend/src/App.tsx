@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { Config, StudyGroup } from './scripts/objects';
-import { get_config, get_data, getSupportedModels, getValidStudyLmstudio} from './scripts/network';
+import type { Config, StudyGroup, StyleConfigList } from './scripts/objects';
+import { get_config, get_data, getAvailableStyles, getSupportedModels, getValidStudyLmstudio} from './scripts/network';
 import Main from './pages/Main';
 import "./scss/main.scss";
 import NetworkErrorPage from './pages/NetworkErrorPage';
@@ -28,11 +28,13 @@ function App() {
   const [IsLmstudio, setIsLmstudio] = useState<string>("all valid");
   const [config, setConfig] = useState<null | Config>(null);
   const [SupportedModels,setSupportedModel]=useState<string[]>([])
-  const [LogInToken,setLogInToken]=useState<string|null>(null);
+  const [LogInToken,setLogInToken]=useState<string|null>('dsgds');
+  const [HtmlPosibleStyles,setHtmlPosibleStyles]=useState<StyleConfigList|null>(null)
   useEffect(() => {
     update_data(setGlobalData,setError)
     update_config(setConfig,setError)
     getSupportedModels(setSupportedModel,setError)
+    getAvailableStyles(setHtmlPosibleStyles,setError);
   }, []);
 
   if (Error != null) console.log(Error);
@@ -43,7 +45,7 @@ function App() {
     }
     return (
       <>
-        <Main SupportedModels={SupportedModels} setConfig={setConfig} config={config} onError={setError} GlobalData={GlobalData} />
+        <Main HtmlPosibleStyles={HtmlPosibleStyles} SupportedModels={SupportedModels} setConfig={setConfig} config={config} onError={setError} GlobalData={GlobalData} />
       </>
     );
   } else if (IsLmstudio !== "all valid") {

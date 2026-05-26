@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { setContextSizeConfig, setLanguageConfig, setSystemPromptConfig, selectModel } from '../scripts/network';
-import { type Config } from '../scripts/objects';
+import { StyleConfigList, type Config, type StyleBundle, type StyleConfig } from '../scripts/objects';
 import AnimatedDropdown from '../components/Settings/AnimatedDropdownProps';
 import { getSupportedLanguages } from '../scripts/aox';
 import ContextSizeSelector from '../components/Settings/ContextSizeSelector';
@@ -16,8 +16,8 @@ const PageContainer = styled.div`
   display: flex;
   justify-content: center;
   overflow-y: auto;
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE 10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   
   &::-webkit-scrollbar {
     width: 0px;
@@ -37,7 +37,6 @@ const SettingsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding-bottom: 10px;
 `;
 
 const SettingsHeader = styled.header`
@@ -103,6 +102,12 @@ const SettingsCard = styled.div`
   padding: 24px;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+
+  &:focus-within {
+    z-index: 100;
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -149,20 +154,21 @@ const TextArea = styled.textarea`
   }
 `;
 
-const SpaceBottom=styled.div`
-  height: 0;
-  color:#0000;
-`
+const SpaceBottom = styled.div`
+  height: 300px;
+  flex-shrink: 0;
+  pointer-events: none;
+`;
 
-export default function SettingsPage(props: { setError: Function, config: Config, setConfig: Function, close: Function, SupportedModels: string[] }) {
+export default function SettingsPage(props: { setError: Function, config: Config, setConfig: Function, close: Function, SupportedModels: string[],HtmlPosibleStyles:StyleConfigList}) {
     const [contextSize, setContextSize] = useState<number>(props.config.model_token_limit);
     const [tempPrompt, setTempPrompt] = useState(props.config.system_prompt);
     const [language, setLanguage] = useState<string>(props.config.limba);
-
+    const [SelectedStyle,setSelectedStyle]=useState<number>(0);
     const supportedLanguages: string[] = getSupportedLanguages();
     const models = ["lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf","lmstudio-community/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q3_K_L.gguf", "openai/gpt-oss-20b"];
     const tags = ["Quality","Balanced", "Speed"];
-
+    const HtmlPosibleStyles=props.HtmlPosibleStyles;
     useKeyPress("Escape", props.close);
 
     useEffect(() => {
@@ -170,7 +176,7 @@ export default function SettingsPage(props: { setError: Function, config: Config
             if (tempPrompt !== props.config.system_prompt) {
                 setSystemPromptConfig(tempPrompt, props.setError);
             }
-        }, 500); // Increased debounce for better user experience
+        }, 500);
         return () => clearTimeout(handler);
     }, [tempPrompt, props.config.system_prompt, props.setError]);
 
@@ -186,6 +192,11 @@ export default function SettingsPage(props: { setError: Function, config: Config
     const handleModelSelect = (selectedTag: string) => {
       const modelPath = models[tags.indexOf(selectedTag)];
       selectModel(modelPath, props.setError);
+    };
+
+    const handleStyleSelect= (selectedStyle : string) => {
+      const modelPath = HtmlPosibleStyles.getStyles().map((it:StyleBundle)=>it.base.name).indexOf(selectedStyle);
+      setSelectedStyle(modelPath);
     };
 
     return (
@@ -236,7 +247,15 @@ export default function SettingsPage(props: { setError: Function, config: Config
                         onSelect={handleModelSelect}
                     />
                 </SettingsCard>
-                <SpaceBottom>0</SpaceBottom>
+                  <SettingsCard>
+                    <SectionTitle>HTML Style</SectionTitle>
+                    <AnimatedDropdown
+                        selectedOption={HtmlPosibleStyles.getStyles().map((it:any)=>it.name)[SelectedStyle]}
+                        options={HtmlPosibleStyles.getStyles().map((it:any)=>it.name)}
+                        onSelect={handleStyleSelect}
+                    />
+                </SettingsCard>
+                <SpaceBottom />
             </SettingsWrapper>
         </PageContainer>
     );

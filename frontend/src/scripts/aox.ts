@@ -333,3 +333,4 @@ export function checkIfMeetAcountCrationContidions(email: string, username: stri
 
   return null;
 }
+

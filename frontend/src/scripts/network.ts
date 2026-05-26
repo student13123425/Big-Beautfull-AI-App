@@ -1,5 +1,5 @@
 import axios from "axios"
-import { AiModel, compareStudyGroup, Config, Quiz, QuiZRequestItem, StudyGroup } from "./objects";
+import { AiModel, compareStudyGroup, Config, Quiz, QuiZRequestItem, StudyGroup, StyleConfigList } from "./objects";
 
 export const addr: string = "http://localhost:3000";
 
@@ -167,6 +167,8 @@ export async function getSupportedModels(
     }
   }
 }
+
+
 
 export async function selectModel(
   name: string,
@@ -849,8 +851,8 @@ export async function getAvailableStyles(
   setError: Function
 ): Promise<void> {
   try {
-    const response = await axios.get<string[]>(`${addr}/sintezaStyles`);
-    setStyles(response.data);
+    const response = await axios.get<string>(`${addr}/sintezaStyles`);
+    setStyles(new StyleConfigList(response.data));
   } catch (error: any) {
     if (error.response) {
       const status = error.response.status;
