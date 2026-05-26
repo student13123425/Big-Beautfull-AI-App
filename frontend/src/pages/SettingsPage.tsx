@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { setContextSizeConfig, setLanguageConfig, setSystemPromptConfig, selectModel } from '../scripts/network';
+import { setContextSizeConfig, setLanguageConfig, setSystemPromptConfig, selectModel, getHtmlStyleConfig, setHtmlStyleConfig } from '../scripts/network';
 import { StyleConfigList, type Config, type StyleBundle, type StyleConfig } from '../scripts/objects';
 import AnimatedDropdown from '../components/Settings/AnimatedDropdownProps';
 import { getSupportedLanguages } from '../scripts/aox';
@@ -169,6 +169,9 @@ export default function SettingsPage(props: { setError: Function, config: Config
     const models = ["lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf","lmstudio-community/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q3_K_L.gguf", "openai/gpt-oss-20b"];
     const tags = ["Quality","Balanced", "Speed"];
     const HtmlPosibleStyles=props.HtmlPosibleStyles;
+    useEffect(()=>{
+      getHtmlStyleConfig((it:any)=>setSelectedStyle(HtmlPosibleStyles.getStyles().map((it:any)=>it.name).indexOf(it)),props.setError);
+    },[])
     useKeyPress("Escape", props.close);
 
     useEffect(() => {
@@ -195,8 +198,9 @@ export default function SettingsPage(props: { setError: Function, config: Config
     };
 
     const handleStyleSelect= (selectedStyle : string) => {
-      const modelPath = HtmlPosibleStyles.getStyles().map((it:StyleBundle)=>it.base.name).indexOf(selectedStyle);
-      setSelectedStyle(modelPath);
+      const index = HtmlPosibleStyles.getStyles().map((it:StyleBundle)=>it.name).indexOf(selectedStyle);
+      setHtmlStyleConfig(index,props.setError);
+      setSelectedStyle(index);
     };
 
     return (

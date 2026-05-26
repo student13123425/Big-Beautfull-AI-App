@@ -74,12 +74,14 @@ export async function getHtmlStyle(req: Request, res: Response): Promise<void> {
 
 
 export async function setHtmlStyle(req: Request, res: Response): Promise<void> {
-  if (!req.body.style || typeof req.body.style !== "number") {
+  if (req.body.style === undefined || typeof req.body.style !== "number") {
     res.status(400).send("name");
     return;
   }
-  
+
   const style: number = req.body.style;
+  console.log(style);
+  
   config.set_html_style(style);
   broadcastConfigData();
   res.send("y");

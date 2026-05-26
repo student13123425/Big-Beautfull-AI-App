@@ -872,3 +872,65 @@ export async function getAvailableStyles(
     }
   }
 }
+
+export async function getHtmlStyleConfig(
+  setHtmlStyleValue: Function,
+  setError: Function
+): Promise<void> {
+  try {
+    const { data } = await axios.get(`${addr}/htmlStyle`);
+    setHtmlStyleValue(data);
+  } catch (err: any) {
+    if (err.response) {
+      const { status, data: respData, statusText } = err.response;
+      const serverMsg =
+        respData?.message ||
+        respData?.error ||
+        statusText ||
+        "Unknown server error";
+      setError(
+        `Unable to load html_style — server responded with ${status}: ${serverMsg}.`
+      );
+    } else if (err.request) {
+      setError(
+        `Network error — no response received when attempting to reach ${addr}/htmlStyle.`
+      );
+    } else {
+      setError(`Unexpected error while fetching html_style: ${err.message}`);
+    }
+  }
+}
+
+
+export async function setHtmlStyleConfig(
+  style: number,
+  setError: Function
+): Promise<void> {
+  try {
+    const { data } = await axios.post<string>(`${addr}/htmlStyle`, { style });
+
+    if (data === 'y') {
+      return;
+    }
+
+    setError(`Server rejected html_style selection: received "${data}".`);
+  } catch (err: any) {
+    if (err.response) {
+      const { status, data: respData, statusText } = err.response;
+      const serverMsg =
+        respData?.message ||
+        respData?.error ||
+        statusText ||
+        "Unknown server error";
+      setError(
+        `Unable to set html_style — server responded with ${status}: ${serverMsg}.`
+      );
+    } else if (err.request) {
+      setError(
+        `Network error — no response received when attempting to reach ${addr}/htmlStyle.`
+      );
+    } else {
+      setError(`Unexpected error while setting html_style: ${err.message}`);
+    }
+  }
+}
