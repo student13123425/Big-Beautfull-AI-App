@@ -191,14 +191,12 @@ export function extractFinalContent(text: string): string {
   let lastIndex = 0;
   let result = "";
 
-  // Find the LAST occurrence only
   const lastStartIndex = text.lastIndexOf(startMarker);
   if (lastStartIndex === -1) {
-    return ""; // No start marker found
+    return ""; 
   }
   const contentStart = lastStartIndex + startMarker.length;
 
-  // Find the earliest end marker after the start
   let contentEnd = text.length;
   for (const marker of endMarkers) {
     const markerIndex = text.indexOf(marker, contentStart);
@@ -207,10 +205,8 @@ export function extractFinalContent(text: string): string {
     }
   }
 
-  // Extract only the content from the LAST occurrence
   result = text.substring(contentStart, contentEnd).trim();
-  return result; // Fixed: was returning empty in original code
-}
+  return result; 
 
 export function removeXmlStyleTags(text: string): string {
   if (text.includes("<|message|>"))
@@ -229,4 +225,59 @@ export function get_chain_of_reason(out: string): string {
 export function get_output_content(out: string): string {
   if (!out.includes("<think>")) return out;
   return out.slice(7).split("</think>")[1];
+}
+
+export function generateConversionMarkdownToHTMLPrompt(markdownContent: string, styleConfigJson: string): string {
+  let parsedStyle: Record<string, unknown>;
+
+  try {
+    parsedStyle = JSON.parse(styleConfigJson);
+  } catch (e) {
+    throw new Error('Invalid JSON format for style configuration. Please provide a valid JSON string.');
+  }
+
+  const styleStr = JSON.stringify(parsedStyle, null, 2);
+
+  return `You are an expert frontend developer and UI designer specializing in semantic HTML5 and CSS3. Your task is to convert the provided Markdown content into a single, self-contained, production-ready HTML file that strictly adheres to the provided JSON style configuration.
+
+
+=== INPUT MARKDOWN ===
+${markdownContent}
+=== END MARKDOWN ===
+
+
+=== STYLE CONFIGURATION (JSON) ===
+${styleStr}
+=== END STYLE CONFIG ===
+
+
+### INSTRUCTIONS
+1. **Parse & Implement Style Config:** Extract every property from the JSON and implement it as CSS inside a <style> tag in the document head. This includes:
+   - cssVariables: Define all custom properties exactly as specified.
+   - typography: Apply font families, sizes, line heights, letter spacing, and weight scales to appropriate elements.
+   - layout: Enforce containerMaxWidth, padding, gap, and use Flexbox/Grid for structure.
+   - colors: Map background, surface, text, and primary colors using the defined variables.
+   - effects: Apply border-radius, box-shadow, hover transforms exactly as specified (even if "none").
+   - components: Style tables, lists, cards/sections according to the JSON specs (padding, borders, bullet styles/icons).
+   - print: Implement exact @media print rules for page size, margins, color adjustment, and page breaks.
+   - accessibility: Ensure contrast ratios meet/exceed requirements, add focus-visible states, and respect reduced-motion preferences if specified.
+
+
+2. **Semantic HTML Structure:** Convert the Markdown into clean, semantic HTML5:
+   - Use <article> or <main> for the root container.
+   - Map # headings to <h1>, ## to <h2>, etc.
+   - Convert tables to <table> with proper <thead>, <tbody>, <tr>, <th>, <td>.
+   - Convert lists to <ul> or <ol> based on context, applying the JSON's bullet/icon rules.
+   - Preserve all emojis, study tips, and blockquotes exactly as they appear in meaning/structure.
+
+
+3. **Self-Contained Output:** Do NOT use external CSS, JS, fonts, or frameworks. All styles must be inline within <style>. Use system font fallbacks if specified. Ensure responsive behavior within the containerMaxWidth constraint.
+
+### STRICT OUTPUT CONSTRAINTS
+- Output ONLY the raw HTML code.
+- DO NOT include any explanations, comments outside the HTML structure, or extra text before/after the document.
+- The response must start exactly with <!DOCTYPE html> and end with </html>.
+- Ensure valid, well-formed HTML5 that passes W3C validation standards.
+
+BEGIN OUTPUT NOW:`;
 }
