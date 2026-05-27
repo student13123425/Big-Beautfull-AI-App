@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { MdRefresh, MdHelpOutline } from 'react-icons/md';
-import { ImFileEmpty } from 'react-icons/im';
-import MarkdownRenderer from '../Misc/MarkdownRenderer';
 import { FileIcon, Fullscreen, Maximize2, Minimize2, ZoomIn, ZoomOut } from 'lucide-react';
 import useKeyPress from '../../hooks/useKeyPress';
 import type { AskQuestion, FileD, FishierMaterie, Materie } from '../../scripts/objects';
@@ -11,8 +9,11 @@ import axios from 'axios';
 import { addr } from '../../scripts/network';
 import AskQuestionPage from './AskQuestionPage';
 import FilePlaceholder from '../Misc/FilePlaceholder';
-import { extractMarkdown, get_output_content } from '../../scripts/aox';
 import { FcImageFile } from 'react-icons/fc';
+import { FaHtml5 } from "react-icons/fa";
+import DisplaySintezaItemContentMarkdown from './DisplaySintezaItemContentMarkdown';
+import { AiFillFileMarkdown } from "react-icons/ai";
+import { getIsHtmlState, setIsHtmlState } from '../../scripts/aox';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -331,11 +332,20 @@ export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,
   const originalPositionRef = useRef<DOMRect | null>(null);
   const [Zoom,setZoom]=useState<number>(100)
   const [IsAskingQuestion,setIsAskingQuestion]=useState<boolean>(false);
-  
+  const [IsHtml, setIsHtml] = useState<boolean>(() => getIsHtmlState());
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsHtmlState(IsHtml); 
+    }
+  }, [IsHtml]);
+
   useEffect(() => {
     setIsOpen(true);
   }, [props.selected]);
-
+  useEffect(()=>{
+    setIsHtmlState(getIsHtmlState())
+  },[])
   useEffect(()=>{
     const new_value:boolean=props.file?props.file.is_computing:false;
     if(new_value!==isGenerating)
@@ -462,6 +472,14 @@ export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,
             </Button>
           </ZoomControls>
         )}
+        <Button 
+          onClick={()=>{
+            setIsHtml(!IsHtml);
+          }}
+          aria-label={"generare html"}
+        >
+          {!IsHtml?<FaHtml5 size={24}/>:<AiFillFileMarkdown  size={24}/>}
+        </Button>
         {props.file.sinteza !== null && (
           <Button 
             onClick={() => setIsAskingQuestion(true)}
@@ -470,6 +488,7 @@ export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,
             <MdHelpOutline size={24}/>
           </Button>
         )}
+        
         <Button 
           onClick={toggleFullscreen}
           aria-label={isFullScreen ? "Exit fullscreen" : "Enter fullscreen"}
@@ -484,34 +503,14 @@ export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,
           <RefreshIcon size={20} $isRefreshing={isRefreshing || isGenerating} />
         </Button>
       </TopBar>
-      <ContentContainer 
-        $isOpen={isOpen}
-        $fullscreen={isFullScreen}
-      >
-        {props.file.sinteza === null || get_output_content(props.file.sinteza).length === 0 ? (
-          <EmptyContent>
-            <EmptyIcon>
-              <ImFileEmpty size={64} />
-            </EmptyIcon>
-            <EmptyLabel>
-              Synthesis for this file hasn't been generated yet
-            </EmptyLabel>
-            <GenerateButton 
-              onClick={() => startSynthesisGeneration()}
-              $isGenerating={isGenerating}
-              disabled={isGenerating}
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshIcon size={18} $isRefreshing={true} /> Generating...
-                </>
-              ) : 'Generate Synthesis'}
-            </GenerateButton>
-          </EmptyContent>
-        ) : (
-          <MarkdownRenderer zoom={Zoom/100} content={extractMarkdown(get_output_content(props.file.sinteza))} />
-        )}
-      </ContentContainer>
+    <DisplaySintezaItemContentMarkdown
+      file={props.file} 
+      Zoom={Zoom} 
+      isFullScreen={isFullScreen} 
+      isOpen={isOpen} 
+      isGenerating={isGenerating} 
+      startSynthesisGeneration={startSynthesisGeneration} 
+    />
     </Container>
   )
 }

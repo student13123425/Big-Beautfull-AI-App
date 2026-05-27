@@ -334,3 +334,19 @@ export function checkIfMeetAcountCrationContidions(email: string, username: stri
   return null;
 }
 
+export function getIsHtmlState(): boolean {
+  try {
+    const stored = localStorage.getItem('isHtml');
+    return stored === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export function setIsHtmlState(value: boolean): void {
+  try {
+    localStorage.setItem('isHtml', String(value));
+  } catch (error) {
+    console.warn('Failed to persist isHtml:', error);
+  }
+}
