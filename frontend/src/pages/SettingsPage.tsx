@@ -18,7 +18,7 @@ const PageContainer = styled.div`
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  
+
   &::-webkit-scrollbar {
     width: 0px;
     background: transparent;
@@ -43,20 +43,17 @@ const SettingsHeader = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   position: sticky;
   top: 10px;
   width: 100%;
   height: auto;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: #2d6de5;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px 24px;
   z-index: 100;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
 
   @media (max-width: 768px) {
     padding: 12px 16px;
@@ -76,7 +73,7 @@ const HeaderTitle = styled.h1`
 `;
 
 const CloseButton = styled.button`
-  background: rgba(255, 255, 255, 0.2);
+  background: #ef4444;
   border: none;
   border-radius: 5px;
   width: 40px;
@@ -87,11 +84,13 @@ const CloseButton = styled.button`
   color: white;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+
   &:hover {
-    background-color:#fff6;
+    background-color: #dc2626;
   }
+
   &:active {
-    background-color:rgba(255, 255, 255, 0.2);
+    background-color: #b91c1c;
   }
 `;
 
@@ -113,7 +112,7 @@ const SettingsCard = styled.div`
 const SectionTitle = styled.h2`
   font-size: 18px;
   font-weight: 500;
-  color: #fffe;
+  color: #ffffff;
   margin: 0 0 16px 0;
   font-family: 'Inter', sans-serif;
 `;
@@ -130,19 +129,19 @@ const TextArea = styled.textarea`
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid transparent;
-  background: rgba(255,255,255,.95);
+  background: rgba(255, 255, 255, .95);
   color: #1e293b;
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
   line-height: 1.6;
-  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
   transition: all .3s ease;
-
-  overflow-y: auto;           
-  -ms-overflow-style: none;    
-  scrollbar-width: none;      
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   resize: none;
-  &::-webkit-scrollbar {   
+
+  &::-webkit-scrollbar {
     width: 0;
     height: 0;
   }
@@ -150,7 +149,7 @@ const TextArea = styled.textarea`
   &:focus {
     outline: none;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59,130,246,.3);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .3);
   }
 `;
 
@@ -160,107 +159,126 @@ const SpaceBottom = styled.div`
   pointer-events: none;
 `;
 
-export default function SettingsPage(props: { setError: Function, config: Config, setConfig: Function, close: Function, SupportedModels: string[],HtmlPosibleStyles:StyleConfigList}) {
-    const [contextSize, setContextSize] = useState<number>(props.config.model_token_limit);
-    const [tempPrompt, setTempPrompt] = useState(props.config.system_prompt);
-    const [language, setLanguage] = useState<string>(props.config.limba);
-    const [SelectedStyle,setSelectedStyle]=useState<number>(0);
-    const supportedLanguages: string[] = getSupportedLanguages();
-    const models = ["lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf","lmstudio-community/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q3_K_L.gguf", "openai/gpt-oss-20b"];
-    const tags = ["Quality","Balanced", "Speed"];
-    const HtmlPosibleStyles=props.HtmlPosibleStyles;
-    useEffect(()=>{
-      getHtmlStyleConfig((it:any)=>setSelectedStyle(HtmlPosibleStyles.getStyles().map((it:any)=>it.name).indexOf(it)),props.setError);
-    },[])
-    useKeyPress("Escape", props.close);
+export default function SettingsPage(props: {
+  setError: Function;
+  config: Config;
+  setConfig: Function;
+  close: Function;
+  SupportedModels: string[];
+  HtmlPosibleStyles: StyleConfigList;
+}) {
+  const [contextSize, setContextSize] = useState<number>(props.config.model_token_limit);
+  const [tempPrompt, setTempPrompt] = useState(props.config.system_prompt);
+  const [language, setLanguage] = useState<string>(props.config.limba);
+  const [SelectedStyle, setSelectedStyle] = useState<number>(0);
 
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            if (tempPrompt !== props.config.system_prompt) {
-                setSystemPromptConfig(tempPrompt, props.setError);
-            }
-        }, 500);
-        return () => clearTimeout(handler);
-    }, [tempPrompt, props.config.system_prompt, props.setError]);
+  const supportedLanguages: string[] = getSupportedLanguages();
+  const models = [
+    "lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf",
+    "lmstudio-community/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q3_K_L.gguf",
+    "openai/gpt-oss-20b"
+  ];
+  const tags = ["Quality", "Balanced", "Speed"];
+  const HtmlPosibleStyles = props.HtmlPosibleStyles;
 
-    useEffect(() => {
-        setContextSizeConfig(contextSize, props.setError);
-    }, [contextSize, props.setError]);
-
-    const handleLanguageSelect = (selectedLanguage: string) => {
-        setLanguage(selectedLanguage);
-        setLanguageConfig(selectedLanguage, props.setError);
-    };
-    
-    const handleModelSelect = (selectedTag: string) => {
-      const modelPath = models[tags.indexOf(selectedTag)];
-      selectModel(modelPath, props.setError);
-    };
-
-    const handleStyleSelect= (selectedStyle : string) => {
-      const index = HtmlPosibleStyles.getStyles().map((it:StyleBundle)=>it.name).indexOf(selectedStyle);
-      setHtmlStyleConfig(index,props.setError);
-      setSelectedStyle(index);
-    };
-
-    return (
-        <PageContainer>
-            <SettingsWrapper>
-                <SettingsHeader>
-                    <HeaderTitle>Application Settings</HeaderTitle>
-                    <CloseButton onClick={props.close} aria-label="Close settings">
-                        <FaTimes size={20} />
-                    </CloseButton>
-                </SettingsHeader>
-                
-                <SettingsCard>
-                    <SectionTitle>AI System Prompt</SectionTitle>
-                    <TextArea
-                        onChange={(e) => setTempPrompt(e.target.value)}
-                        value={tempPrompt}
-                        placeholder="Define the AI's role and behavior here..."
-                    />
-                </SettingsCard>
-                
-                <SectionGrid>
-                    <SettingsCard>
-                        <SectionTitle>Language</SectionTitle>
-                        <AnimatedDropdown
-                            selectedOption={language}
-                            options={supportedLanguages}
-                            onSelect={handleLanguageSelect}
-                        />
-                    </SettingsCard>
-
-                    <SettingsCard>
-                        <SectionTitle>Max Context Size</SectionTitle>
-                        <ContextSizeSelector
-                            value={contextSize}
-                            step={1000}
-                            setValue={setContextSize}
-                            bounds={[20 * 1000, 64 * 1000]}
-                        />
-                    </SettingsCard>
-                </SectionGrid>
-                
-                <SettingsCard>
-                    <SectionTitle>AI Model Preference</SectionTitle>
-                    <AnimatedDropdown
-                        selectedOption={tags[models.indexOf(props.config.ai_model_quiz[0])]}
-                        options={tags}
-                        onSelect={handleModelSelect}
-                    />
-                </SettingsCard>
-                  <SettingsCard>
-                    <SectionTitle>HTML Style</SectionTitle>
-                    <AnimatedDropdown
-                        selectedOption={HtmlPosibleStyles.getStyles().map((it:any)=>it.name)[SelectedStyle]}
-                        options={HtmlPosibleStyles.getStyles().map((it:any)=>it.name)}
-                        onSelect={handleStyleSelect}
-                    />
-                </SettingsCard>
-                <SpaceBottom />
-            </SettingsWrapper>
-        </PageContainer>
+  useEffect(() => {
+    getHtmlStyleConfig(
+      (it: any) => setSelectedStyle(HtmlPosibleStyles.getStyles().map((style: StyleBundle) => style.name).indexOf(it)),
+      props.setError
     );
+  }, []);
+
+  useKeyPress("Escape", props.close);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (tempPrompt !== props.config.system_prompt) {
+        setSystemPromptConfig(tempPrompt, props.setError);
+      }
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [tempPrompt, props.config.system_prompt, props.setError]);
+
+  useEffect(() => {
+    setContextSizeConfig(contextSize, props.setError);
+  }, [contextSize, props.setError]);
+
+  const handleLanguageSelect = (selectedLanguage: string) => {
+    setLanguage(selectedLanguage);
+    setLanguageConfig(selectedLanguage, props.setError);
+  };
+
+  const handleModelSelect = (selectedTag: string) => {
+    const modelPath = models[tags.indexOf(selectedTag)];
+    selectModel(modelPath, props.setError);
+  };
+
+  const handleStyleSelect = (selectedStyle: string) => {
+    const index = HtmlPosibleStyles.getStyles().map((it: StyleBundle) => it.name).indexOf(selectedStyle);
+    setHtmlStyleConfig(index, props.setError);
+    setSelectedStyle(index);
+  };
+
+  return (
+    <PageContainer>
+      <SettingsWrapper>
+        <SettingsHeader>
+          <HeaderTitle>Application Settings</HeaderTitle>
+          <CloseButton onClick={props.close} aria-label="Close settings">
+            <FaTimes size={20} />
+          </CloseButton>
+        </SettingsHeader>
+
+        <SettingsCard>
+          <SectionTitle>AI System Prompt</SectionTitle>
+          <TextArea
+            onChange={(e) => setTempPrompt(e.target.value)}
+            value={tempPrompt}
+            placeholder="Define the AI's role and behavior here..."
+          />
+        </SettingsCard>
+
+        <SectionGrid>
+          <SettingsCard>
+            <SectionTitle>Language</SectionTitle>
+            <AnimatedDropdown
+              selectedOption={language}
+              options={supportedLanguages}
+              onSelect={handleLanguageSelect}
+            />
+          </SettingsCard>
+
+          <SettingsCard>
+            <SectionTitle>Max Context Size</SectionTitle>
+            <ContextSizeSelector
+              value={contextSize}
+              step={1000}
+              setValue={setContextSize}
+              bounds={[20 * 1000, 64 * 1000]}
+            />
+          </SettingsCard>
+        </SectionGrid>
+
+        <SettingsCard>
+          <SectionTitle>AI Model Preference</SectionTitle>
+          <AnimatedDropdown
+            selectedOption={tags[models.indexOf(props.config.ai_model_quiz[0])]}
+            options={tags}
+            onSelect={handleModelSelect}
+          />
+        </SettingsCard>
+
+        <SettingsCard>
+          <SectionTitle>HTML Style</SectionTitle>
+          <AnimatedDropdown
+            selectedOption={HtmlPosibleStyles.getStyles().map((it: any) => it.name)[SelectedStyle]}
+            options={HtmlPosibleStyles.getStyles().map((it: any) => it.name)}
+            onSelect={handleStyleSelect}
+          />
+        </SettingsCard>
+
+        <SpaceBottom />
+      </SettingsWrapper>
+    </PageContainer>
+  );
 }

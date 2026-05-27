@@ -16,14 +16,12 @@ import type { Quiz, FileD, FishierMaterie } from '../../scripts/objects';
 import { delete_file, DeleteQuiz } from '../../scripts/network';
 import ConfirmModal from './ConfirmModal';
 
-// Animation for computing state
 const computingPulse = keyframes`
   0% { background-color: #fff6; }
   50% { background-color: #f0f9ff; }
   100% { background-color: #fff6; }
 `;
 
-// Styled components
 const Container = styled.div<{ 
   $isOpen: boolean, 
   $active: boolean,
@@ -32,7 +30,7 @@ const Container = styled.div<{
   display: flex;
   gap: ${props => props.$isOpen ? '12px' : '0'};
   padding: ${props => props.$isOpen ? '12px' : '8px'};
-  background-color:#fff6;
+  background-color: #fff6;
   align-items: center;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -40,19 +38,19 @@ const Container = styled.div<{
   cursor: ${props => props.$isComputing ? 'wait' : 'pointer'};
   overflow: hidden;
   width: 100%;
-  height:3.6rem;
-  min-height:3.6rem;
+  height: 3.6rem;
+  min-height: 3.6rem;
   animation: ${props => 
     props.$isComputing 
       ? css`${computingPulse} 1.5s ease infinite` 
       : 'none'};
-  
+
   &:hover {
     background-color: ${props => 
       props.$isComputing ? '#f0f9ff' : '#fff9'};
     box-shadow: 0 4px 8px rgba(0,0,0,0.08);
   }
-  
+
   * {
     user-select: none;
   }
@@ -103,36 +101,33 @@ const DeleteButton = styled.button<{ $isOpen: boolean }>`
   align-items: center;
   height: 36px;
   width: ${props => props.$isOpen ? '36px' : '0'};
-  border-radius: 8px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  background: #ef4444;
+  border: none;
+  color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease-in-out;
   opacity: ${props => props.$isOpen ? 1 : 0};
   visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
   overflow: hidden;
   flex-shrink: 0;
-  
+  user-select: none;
+
   &:hover {
-    background-color: #fee2e2;
-    border-color: #fecaca;
-    
-    > * {
-      color: #ef4444;
-    }
+    background-color: #dc2626;
   }
-  
+
+  &:active {
+    background-color: #b91c1c;
+  }
+
   &:disabled {
     cursor: not-allowed;
     background-color: #f8fafc;
-    border-color: #e2e8f0;
-    
     > * {
       color: #cbd5e1;
     }
   }
-  
-  user-select: none;
 `;
 
 const iconConfig: Record<string, React.ReactNode> = {
@@ -157,7 +152,7 @@ interface BrowserItemProps {
   setError: Function;
   selectedItem: Quiz | FileD | null;
   materie_name?: string;
-  list:FishierMaterie[]|null;
+  list: FishierMaterie[] | null;
 }
 
 const BrowserItem: React.FC<BrowserItemProps> = ({ 
@@ -178,12 +173,13 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
     if (type === 'quiz') {
       const quiz = item as Quiz;
       setIsComputing(quiz.is_computing || false);
-    }else if(list){
-      const buf:FishierMaterie|undefined=list.find((it)=>it.path.includes((item as FileD).nume));
-      if(buf)
-        setIsComputing(buf.is_computing)
+    } else if (list) {
+      const buf: FishierMaterie | undefined = list.find((it) => it.path.includes((item as FileD).nume));
+      if (buf) {
+        setIsComputing(buf.is_computing);
+      }
     }
-  }, [item, type]);
+  }, [item, type, list]);
 
   let icon: React.ReactNode;
   let name: string;
@@ -193,8 +189,8 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
   if (type === 'quiz') {
     const quiz = item as Quiz;
     icon = quiz.is_grila ? 
-      <MdFormatListNumbered color="#1E88E5" size={22}/> : 
-      <MdTextFields size={22} color="#1E88E5"/>;
+      <MdFormatListNumbered color="#1E88E5" size={22} /> : 
+      <MdTextFields size={22} color="#1E88E5" />;
     name = quiz.title.toUpperCase();
     isActive = selectedItem !== null && 
       'title' in selectedItem && 
@@ -212,7 +208,7 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
   }
 
   const handleClick = () => {
-    if (isComputing&&type==="quiz") return;
+    if (isComputing && type === "quiz") return;
     setItem(isActive ? null : item);
   };
 
@@ -244,7 +240,6 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
         <FileIcon $active={isActive}>
           {icon}
         </FileIcon>
-        
         <FileInfo $isOpen={isOpen}>
           <FileName title={name}>
             {name}
@@ -252,17 +247,15 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
           </FileName>
           {type === 'file' && <FileType>.{extension}</FileType>}
         </FileInfo>
-        
         <DeleteButton 
           $isOpen={isOpen}
           disabled={isComputing}
           onClick={handleDelete}
           aria-label={`Delete ${type}`}
         >
-          <FaTrash size={14} color="#94a3b8" />
+          <FaTrash size={14} color="#ffffff" />
         </DeleteButton>
       </Container>
-      
       {isModalOpen && (
         <ConfirmModal 
           title={`Delete ${type === 'quiz' ? 'Quiz' : 'File'}`}
