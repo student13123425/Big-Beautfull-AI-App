@@ -1,9 +1,9 @@
-import { AiFillFileMarkdown } from "react-icons/ai";
+import React from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { MdRefresh } from 'react-icons/md';
-import MarkdownRenderer from '../Misc/MarkdownRenderer';
-import type { FileD, FishierMaterie, Materie } from '../../scripts/objects';
-import { extractMarkdown, get_output_content } from '../../scripts/aox';
+import { ImFileEmpty } from 'react-icons/im';
+import { FaHtml5 } from "react-icons/fa";
+import type { FishierMaterie } from '../../scripts/objects';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -88,15 +88,45 @@ const GenerateButton = styled.button<{ $isGenerating: boolean }>`
   @media (max-width: 500px) { padding: 8px 16px; font-size: 12px; min-width: 140px; }
 `;
 
-export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScreen,isOpen,isGenerating,startSynthesisGeneration}: Props) {
+const HtmlFrame = styled.iframe`
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: white;
+`;
+
+// Wrapper to handle the CSS transform scaling for the iframe
+const ZoomWrapper = styled.div<{ $zoomFactor: number }>`
+  transform: scale(${props => props.$zoomFactor});
+  transform-origin: top left;
+  width: ${props => (100 / props.$zoomFactor) + '%'};
+  height: ${props => (100 / props.$zoomFactor) + '%'};
+`;
+
+export default function DisplaySintezaItemContentHTML({ 
+  file, 
+  Zoom, 
+  isFullScreen, 
+  isOpen, 
+  isGenerating, 
+  startSynthesisGeneration 
+}: Props) {
   if (file === null) return null;
+
+  // Check if html_file exists and is not an empty string
+  const hasHtml = !!file.html_file && file.html_file.trim() !== '';
+  
+  // Convert [20, 200] range to [0.2, 2.0] scale factor
+  const zoomFactor = Math.max(0.2, Math.min(2.0, Zoom / 100));
 
   return (
     <ContentContainer $isOpen={isOpen} $fullscreen={isFullScreen}>
-      {file.sinteza === null || get_output_content(file.sinteza).length === 0 ? (
+      {!hasHtml ? (
         <EmptyContent>
-          <EmptyIcon><AiFillFileMarkdown size={64} /></EmptyIcon>
-          <EmptyLabel>Synthesis for this file hasn't been generated yet</EmptyLabel>
+          <EmptyIcon>
+            <FaHtml5 size={64} />
+          </EmptyIcon>
+          <EmptyLabel>HTML version for this file hasn't been generated yet</EmptyLabel>
           <GenerateButton 
             onClick={() => startSynthesisGeneration()}
             $isGenerating={isGenerating}
@@ -106,11 +136,17 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
               <>
                 <RefreshIcon size={18} $isRefreshing={true} /> Generating...
               </>
-            ) : 'Generate Synthesis'}
+            ) : 'Generate HTML'}
           </GenerateButton>
         </EmptyContent>
       ) : (
-        <MarkdownRenderer zoom={Zoom/100} content={extractMarkdown(get_output_content(file.sinteza))} />
+        <ZoomWrapper $zoomFactor={zoomFactor}>
+          <HtmlFrame 
+            src={file.html_file ?? ''} 
+            title="HTML Synthesis"
+            sandbox="allow-scripts allow-same-origin"
+          />
+        </ZoomWrapper>
       )}
     </ContentContainer>
   );

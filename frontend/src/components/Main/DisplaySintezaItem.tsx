@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { MdRefresh, MdHelpOutline } from 'react-icons/md';
-import { FileIcon, Fullscreen, Maximize2, Minimize2, ZoomIn, ZoomOut } from 'lucide-react';
+import { Maximize2, Minimize2, ZoomIn, ZoomOut } from 'lucide-react';
 import useKeyPress from '../../hooks/useKeyPress';
 import type { AskQuestion, FileD, FishierMaterie, Materie } from '../../scripts/objects';
-import { FaFile, FaFilePdf, FaFilePowerpoint, FaFileWord, FaQuestionCircle } from 'react-icons/fa';
+import { FaFile, FaFilePdf, FaFilePowerpoint, FaFileWord } from 'react-icons/fa';
 import axios from 'axios';
 import { addr } from '../../scripts/network';
 import AskQuestionPage from './AskQuestionPage';
@@ -14,6 +14,7 @@ import { FaHtml5 } from "react-icons/fa";
 import DisplaySintezaItemContentMarkdown from './DisplaySintezaItemContentMarkdown';
 import { AiFillFileMarkdown } from "react-icons/ai";
 import { getIsHtmlState, setIsHtmlState } from '../../scripts/aox';
+import DisplaySintezaItemContentHTML from './DisplaySintezaItemContenHTML';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -67,7 +68,6 @@ const TopBar = styled.div`
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   height: 60px;
   padding: 0 10px;
-  display: flex;
   align-items: center;
   gap: 12px;
   z-index: 10;
@@ -77,42 +77,6 @@ const TopBar = styled.div`
     height: 40px;
     padding: 0 8px;
   }
-`;
-
-const ContentContainer = styled.div<{ $isOpen: boolean; $fullscreen?: boolean }>`
-  overflow: ${props => props.$isOpen ? 'auto' : 'hidden'};
-  opacity: ${props => props.$isOpen ? '1' : '0'};
-  padding: ${props => props.$isOpen ? '24px' : '0'};
-  background-color: #f8fafc;
-  min-height: 0;
-  ${({ $isOpen, $fullscreen }) => 
-    $isOpen && $fullscreen ? css`
-      flex: 1;
-    ` : css`
-      flex: none;
-    `}
-  transition: 
-    max-height 0.4s cubic-bezier(0.215, 0.610, 0.355, 1),
-    opacity 0.3s ease,
-    padding 0.4s cubic-bezier(0.215, 0.610, 0.355, 1);
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  flex: 1;
-  &::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-`;
-
-const EmptyContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 240px;
-  padding: 24px;
-  text-align: center;
-  color: #64748b;
 `;
 
 const Label = styled.h2`
@@ -173,16 +137,16 @@ const Button = styled.button`
   transition: all 0.2s ease;
   color: rgba(255, 255, 255, 0.9);
   flex-shrink: 0;
-  
+
   &:hover {
     background-color: rgba(255, 255, 255, 0.25);
     color: white;
   }
-  
+
   &:active {
     transform: scale(0.92);
   }
-  
+
   &:focus {
     outline: 2px solid rgba(255, 255, 255, 0.5);
   }
@@ -194,45 +158,25 @@ const Button = styled.button`
   }
 `;
 
-const EmptyIcon = styled.div`
-  margin-bottom: 16px;
-  opacity: 0.7;
-  
-  svg {
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
-  }
-`;
-
-const EmptyLabel = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  max-width: 280px;
-  line-height: 1.6;
-
-  @media (max-width: 500px) {
-    font-size: 14px;
-  }
-`;
-
 const RefreshIcon = styled(MdRefresh)<{ $isRefreshing: boolean }>`
   transition: transform 0.3s ease;
-  
-  ${({ $isRefreshing }) => $isRefreshing && css`
-    animation: ${rotate} 0.8s linear infinite;
-  `}
+  ${({ $isRefreshing }) =>
+    $isRefreshing &&
+    css`
+      animation: ${rotate} 0.8s linear infinite;
+    `}
 `;
 
 const StatusIndicator = styled.div<{ $isGenerating: boolean }>`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: ${props => props.$isGenerating ? '#f59e0b' : '#10b981'};
+  background-color: ${(props) => (props.$isGenerating ? '#f59e0b' : '#10b981')};
   margin-left: 8px;
   box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
-  animation: ${props => props.$isGenerating 
-    ? css`pulse 1.5s infinite ease-in-out` 
-    : 'none'};
-  
+  animation: ${(props) =>
+    props.$isGenerating ? css`pulse 1.5s infinite ease-in-out` : 'none'};
+
   @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
     70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
@@ -265,42 +209,6 @@ const FileMeta = styled.div`
   }
 `;
 
-const GenerateButton = styled.button<{ $isGenerating: boolean }>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background-color: #3b82f6;
-  color: white;
-  font-weight: 500;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  margin-top: 20px;
-  min-width: 180px;
-  
-  &:hover {
-    background-color: #2563eb;
-  }
-  
-  &:active {
-    transform: scale(0.98);
-  }
-  
-  &:disabled {
-    background-color: #94a3b8;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 500px) {
-    padding: 8px 16px;
-    font-size: 12px;
-    min-width: 140px;
-  }
-`;
-
 const Icon = styled.div`
   width: 32px;
   height: 32px;
@@ -318,51 +226,60 @@ const Icon = styled.div`
   }
 `;
 
-const Hide = styled.div`
-  display: none;
-`;
-
 // Main component
-export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,materie:Materie,selected: FileD | null,setError:Function, file: FishierMaterie | null }) {
+export default function DisplaySintezaItem({
+  AskQustionOutput,
+  materie,
+  selected,
+  setError,
+  file,
+}: {
+  AskQustionOutput: AskQuestion;
+  materie: Materie;
+  selected: FileD | null;
+  setError: Function;
+  file: FishierMaterie | null;
+}) {
   const [isOpen, setIsOpen] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const originalPositionRef = useRef<DOMRect | null>(null);
-  const [Zoom,setZoom]=useState<number>(100)
-  const [IsAskingQuestion,setIsAskingQuestion]=useState<boolean>(false);
+  const [Zoom, setZoom] = useState<number>(100);
+  const [IsAskingQuestion, setIsAskingQuestion] = useState<boolean>(false);
   const [IsHtml, setIsHtml] = useState<boolean>(() => getIsHtmlState());
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsHtmlState(IsHtml); 
+      setIsHtmlState(IsHtml);
     }
   }, [IsHtml]);
 
   useEffect(() => {
     setIsOpen(true);
-  }, [props.selected]);
-  useEffect(()=>{
-    setIsHtmlState(getIsHtmlState())
-  },[])
-  useEffect(()=>{
-    const new_value:boolean=props.file?props.file.is_computing:false;
-    if(new_value!==isGenerating)
-      setIsGenerating(new_value)
-  },[props.file])
+  }, [selected]);
+
+  useEffect(() => {
+    setIsHtmlState(getIsHtmlState());
+  }, []);
+
+  useEffect(() => {
+    const newValue = file ? file.is_computing : false;
+    if (newValue !== isGenerating) {
+      setIsGenerating(newValue);
+    }
+  }, [file]);
 
   const toggleFullscreen = () => {
-    if (!isFullScreen) {
-      if (containerRef.current) {
-        originalPositionRef.current = containerRef.current.getBoundingClientRect();
-      }
+    if (!isFullScreen && containerRef.current) {
+      originalPositionRef.current = containerRef.current.getBoundingClientRect();
     }
-    setIsFullScreen(!isFullScreen);
+    setIsFullScreen((prev) => !prev);
   };
 
   useKeyPress('Escape', () => {
-    if (isFullScreen&&!IsAskingQuestion) {
+    if (isFullScreen && !IsAskingQuestion) {
       setIsFullScreen(false);
     }
   });
@@ -376,7 +293,7 @@ export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,
       document.body.style.overflow = 'auto';
       document.body.style.paddingRight = '0';
     }
-    
+
     return () => {
       document.body.style.overflow = 'auto';
       document.body.style.paddingRight = '0';
@@ -384,17 +301,20 @@ export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,
   }, [isFullScreen]);
 
   const startSynthesisGeneration = async () => {
-    if (!props.file) return;
+    if (!file) return;
 
     setIsGenerating(true);
     try {
-      let path=`${addr}/genereaza_sinteza`;
-      if(props.file.sinteza !== null)
-        path=`${addr}/regenereaza_sinteza`
+      let path = `${addr}/genereaza_sinteza`;
+      if (file.sinteza !== null) {
+        path = `${addr}/regenereaza_sinteza`;
+      }
+
       const response = await axios.post(path, {
-        name_materie: props.materie.name,
-        file_name: props.file.path.split('/').pop() || props.file.path
+        name_materie: materie.name,
+        file_name: file.path.split('/').pop() || file.path,
       });
+
       if (response.data === 'y') {
         console.log('Synthesis generation started successfully');
       } else {
@@ -412,105 +332,107 @@ export default function DisplaySintezaItem(props: {AskQustionOutput:AskQuestion,
     setTimeout(() => setIsRefreshing(false), 1500);
   };
 
-  if (props.file === null) return null;
+  if (file === null) return null;
 
-  const nameSegments = props.file.path.split('/');
-  const fileName = nameSegments.length > 1 
-    ? nameSegments[nameSegments.length - 1] 
-    : props.file.path;
-  
+  const nameSegments = file.path.split('/');
+  const fileName = nameSegments.length > 1 ? nameSegments[nameSegments.length - 1] : file.path;
   const cleanName = fileName.split('.').slice(0, -1).join('.') || fileName;
-  let tip:string = props.file.path.split(".").length > 0 
-    ? props.file.path.split('.')[props.file.path.split(".").length - 1] 
-    : "null";  
+  let tip: string = file.path.split(".").length > 0 
+    ? file.path.split('.')[file.path.split(".").length - 1] 
+    : "null";
 
-  if(props.selected===null)
-    return <FilePlaceholder/>
+  if (selected === null) return <FilePlaceholder />;
 
-  if(IsAskingQuestion)
-    return <AskQuestionPage AskQustionOutput={props.AskQustionOutput} setError={props.setError} onClose={()=>setIsAskingQuestion(false)} file={props.file}/>
+  if (IsAskingQuestion) {
+    return (
+      <AskQuestionPage
+        AskQustionOutput={AskQustionOutput}
+        setError={setError}
+        onClose={() => setIsAskingQuestion(false)}
+        file={file}
+      />
+    );
+  }
 
   return (
-    <Container 
-      ref={containerRef}
-      $fullscreen={isFullScreen}
-    >
+    <Container ref={containerRef} $fullscreen={isFullScreen}>
       <TopBar>
         <FileInfo>
           <Icon>
-            {tip === "null" ? <FaFile size={22}/> : null}
-            {tip.toLowerCase() === "pdf" ? <FaFilePdf size={18} color="#E52E2E"/> : null}
-            {tip.toLowerCase() === "doc" || tip.toLowerCase() === "docx" ? <FaFileWord size={18} color="#2B579A"/> : null}
-            {tip.toLowerCase() === "ppt" || tip.toLowerCase() === "pptx" ? <FaFilePowerpoint size={16} color="#D24726" /> : null}
-            {tip.toLowerCase() === "jpg" || tip.toLowerCase() === "jpeg" || tip.toLowerCase() === "png" ? <FcImageFile size={18} /> : null}
+            {tip === "null" ? <FaFile size={22} /> : null}
+            {tip.toLowerCase() === "pdf" ? <FaFilePdf size={18} color="#E52E2E" /> : null}
+            {tip.toLowerCase() === "doc" || tip.toLowerCase() === "docx" ? (
+              <FaFileWord size={18} color="#2B579A" />
+            ) : null}
+            {tip.toLowerCase() === "ppt" || tip.toLowerCase() === "pptx" ? (
+              <FaFilePowerpoint size={16} color="#D24726" />
+            ) : null}
+            {tip.toLowerCase() === "jpg" || tip.toLowerCase() === "jpeg" || tip.toLowerCase() === "png" ? (
+              <FcImageFile size={18} />
+            ) : null}
           </Icon>
           <Label title={cleanName}>{cleanName}</Label>
-          {props.file.sinteza ? (
+          {file.sinteza ? (
             <StatusIndicator $isGenerating={isGenerating} />
           ) : (
             <FileMeta>No synthesis</FileMeta>
           )}
         </FileInfo>
-        {props.file.sinteza !== null && props.file.is_computing === false && (
+
+        {file.sinteza !== null && file.is_computing === false && (
           <ZoomControls>
-            <Button 
-              onClick={() => {
-                if(Zoom > 20) setZoom(Zoom - 20)
-              }}
-            >
-              <ZoomOut size={24}/>
+            <Button onClick={() => setZoom((prev) => Math.max(20, prev - 20))}>
+              <ZoomOut size={24} />
             </Button>
-            <ZoomContainer>
-              {Zoom}
-            </ZoomContainer>
-            <Button 
-              onClick={() => {
-                if(Zoom < 200) setZoom(Zoom + 20)
-              }}
-            >
-              <ZoomIn size={24}/>
+            <ZoomContainer>{Zoom}</ZoomContainer>
+            <Button onClick={() => setZoom((prev) => Math.min(200, prev + 20))}>
+              <ZoomIn size={24} />
             </Button>
           </ZoomControls>
         )}
-        <Button 
-          onClick={()=>{
-            setIsHtml(!IsHtml);
-          }}
-          aria-label={"generare html"}
-        >
-          {!IsHtml?<FaHtml5 size={24}/>:<AiFillFileMarkdown  size={24}/>}
+
+        <Button onClick={() => setIsHtml((prev) => !prev)} aria-label="generare html">
+          {!IsHtml ? <FaHtml5 size={24} /> : <AiFillFileMarkdown size={24} />}
         </Button>
-        {props.file.sinteza !== null && (
-          <Button 
-            onClick={() => setIsAskingQuestion(true)}
-            aria-label="Ask question"
-          >
-            <MdHelpOutline size={24}/>
+
+        {file.sinteza !== null && (
+          <Button onClick={() => setIsAskingQuestion(true)} aria-label="Ask question">
+            <MdHelpOutline size={24} />
           </Button>
         )}
-        
-        <Button 
-          onClick={toggleFullscreen}
-          aria-label={isFullScreen ? "Exit fullscreen" : "Enter fullscreen"}
-        >
+
+        <Button onClick={toggleFullscreen} aria-label={isFullScreen ? "Exit fullscreen" : "Enter fullscreen"}>
           {!isFullScreen ? <Maximize2 size={20} /> : <Minimize2 size={20} />}
         </Button>
-        <Button 
+
+        <Button
           onClick={startSynthesisGeneration}
-          aria-label={props.file.sinteza ? "Refresh synthesis" : "Generate synthesis"}
+          aria-label={file.sinteza ? "Refresh synthesis" : "Generate synthesis"}
           disabled={isRefreshing || isGenerating}
         >
           <RefreshIcon size={20} $isRefreshing={isRefreshing || isGenerating} />
         </Button>
       </TopBar>
-    <DisplaySintezaItemContentMarkdown
-      file={props.file} 
-      Zoom={Zoom} 
-      isFullScreen={isFullScreen} 
-      isOpen={isOpen} 
-      isGenerating={isGenerating} 
-      startSynthesisGeneration={startSynthesisGeneration} 
-    />
+
+      {IsHtml ? (
+        <DisplaySintezaItemContentHTML
+          file={file}
+          Zoom={Zoom}
+          isFullScreen={isFullScreen}
+          isOpen={isOpen}
+          isGenerating={isGenerating}
+          startSynthesisGeneration={startSynthesisGeneration}
+        />
+      ) : (
+        <DisplaySintezaItemContentMarkdown
+          file={file}
+          Zoom={Zoom}
+          isFullScreen={isFullScreen}
+          isOpen={isOpen}
+          isGenerating={isGenerating}
+          startSynthesisGeneration={startSynthesisGeneration}
+        />
+      )}
     </Container>
-  )
+  );
 }

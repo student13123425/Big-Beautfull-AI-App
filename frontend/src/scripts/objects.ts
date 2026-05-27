@@ -29,9 +29,11 @@ class Quiz{
 class FishierMaterie{
   path:string=""
   sinteza:string|null=null
+  html_file:string|null=null
   is_computing=false;
   content:string|null=null
   materie:string=""
+  is_failed:boolean=false
   file_type:string|null|undefined=null
   constructor(path:string,materie:string,save:Function){
 
