@@ -12,7 +12,7 @@ import { convertPowerPointToPDF, get_file_name, getDirectoryContent, onFileCreat
 import { getSupportedLanguages } from './services/ocr.js';
 import { check_evaluation_parameters, compareConfigs, compareStudyGroup, isValidQuizItem } from './services/data_validation.js';
 import { checkDependencies, evaluateCodeComplexity, evaluateDataSize, getServerOS, isFolderSizeBiggerThan } from './services/environment.js';
-import { addMaterie, deleteMaterie, genereazHTML, genereazSinteza, getSintezaHtmlPosilbleStyles, getStudy, regenereazSinteza } from './routes/studyRoutes.js';
+import { addMaterie, deleteMaterie, genereazHTML, genereazSinteza, getSintezaHtmlPosilbleStyles, getStudy, handleContentGeneration, regenereazSinteza } from './routes/studyRoutes.js';
 import { askFileQuestion, ClearEvaluare, DeactivateErrorMessage, processEvaluare, stopAnsweringQuestion } from './routes/evaluationRoutes.js';
 import { deleteQuiz, generateQuiz, regenerateQuiz } from './routes/quizRoutes.js';
 import { checkExisting, deleteFile, getFile, sendFile } from './routes/fileRoutes.js';
@@ -203,11 +203,7 @@ app.post("/delete_materie", async (req, res) => {
 });
 
 app.post("/genereaza_sinteza", async (req, res) => {
-  genereazSinteza(req,res);
-});
-
-app.post("/genereaza_html", async (req, res) => {
-  genereazHTML(req,res);
+  handleContentGeneration(req,res);
 });
 
 app.post("/regenereaza_sinteza", async (req, res) => {

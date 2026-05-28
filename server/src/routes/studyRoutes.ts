@@ -90,95 +90,127 @@ export async function regenereazSinteza(req: Request, res: Response){
     res.send("n");
 }
 
-export async function genereazSinteza(req: Request, res: Response){
-   if (!req.body.name_materie || !req.body.file_name) {
-     res.send("n");
-     return;
-   }
-   const name_materie: string = req.body.name_materie;
-   const file_name: string = req.body.file_name;
-   for (let it of data_study.data) {
-     if (it.name === name_materie) {
-       for (let j of it.files) {
-         let name: string = get_file_name(j.path);
-         if (name === file_name) {
-           j.genereaza_sinteza(ai_models_available, device_ip, () => {
-             data_study.save();
-             broadcastStudyData();
-           }, config,
-           (error:AiServerError)=>{
-             j.is_computing=false;
-             j.sinteza=null;
-             data_study.AiServerError.push(error);
-             broadcastStudyData();
-           }
-           ).then(()=>{
-             data_study.save();
-             broadcastStudyData();
-           });
-           res.send("y");
-           return;
-         }
-       }
-     }
-   }
-   const error:AiServerError=new AiServerError(`parametri invalizi sinteza`,`errorare generare sinteza datele name_materie:${name_materie} file_name:${file_name} sunt invalide`)
-   data_study.AiServerError.push(error);
-   broadcastStudyData();
-   res.send("n");
+export async function genereazSinteza(name_materie: string, file_name: string): Promise<boolean> {
+    for (let it of data_study.data) {
+        if (it.name === name_materie) {
+            for (let j of it.files) {
+                let name: string = get_file_name(j.path);
+                if (name === file_name) {
+                    try {
+                        await j.genereaza_sinteza(ai_models_available, device_ip, () => {
+                            data_study.save();
+                            broadcastStudyData();
+                        }, config, (error: AiServerError) => {
+                            j.is_computing = false;
+                            j.sinteza = null;
+                            data_study.AiServerError.push(error);
+                            broadcastStudyData();
+                        });
+                        data_study.save();
+                        broadcastStudyData();
+                        return true;
+                    } catch (error: any) {
+                        const aiError: AiServerError = new AiServerError(
+                            `parametri invalizi sinteza`,
+                            `errorare generare sinteza datele name_materie:${name_materie} file_name:${file_name} sunt invalide`
+                        );
+                        data_study.AiServerError.push(aiError);
+                        broadcastStudyData();
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    const error: AiServerError = new AiServerError(
+        `parametri invalizi sinteza`,
+        `errorare generare sinteza datele name_materie:${name_materie} file_name:${file_name} sunt invalide`
+    );
+    data_study.AiServerError.push(error);
+    broadcastStudyData();
+    return false;
 }
 
-export async function genereazHTML(req: Request, res: Response){
-	if (!req.body.name_materie || !req.body.file_name) {
-		res.send("n");
-		return;
-	}
-	const name_materie: string = req.body.name_materie;
-	const file_name: string = req.body.file_name;
-	const style_index: number | undefined = req.body.style_index;
+export async function genereazHTML(name_materie: string, file_name: string): Promise<boolean> {
+    const style_index: number | undefined = config.html_style;
 
-	if (style_index === undefined || !Number.isInteger(style_index) || style_index < 0 || style_index > 9) {
-		const error:AiServerError=new AiServerError(`Invalid style index`,`style_index must be an integer between 0 and 9`);
-		data_study.AiServerError.push(error);
-		broadcastStudyData();
-		res.send("n");
-		return;
-	}
+    if (style_index === undefined || !Number.isInteger(style_index) || style_index < 0 || style_index > 9) {
+        const error: AiServerError = new AiServerError(
+            `Invalid style index`,
+            `style_index must be an integer between 0 and 9`
+        );
+        data_study.AiServerError.push(error);
+        broadcastStudyData();
+        return false;
+    }
 
-	for (let it of data_study.data) {
-		if (it.name === name_materie) {
-			for (let j of it.files) {
-				let name: string = get_file_name(j.path);
-				if (name === file_name) {
-					const onUpdate = () => {
-						data_study.save();
-						broadcastStudyData();
-					};
+    for (let it of data_study.data) {
+        if (it.name === name_materie) {
+            for (let j of it.files) {
+                let name: string = get_file_name(j.path);
+                if (name === file_name) {
+                    const onUpdate = () => {
+                        data_study.save();
+                        broadcastStudyData();
+                    };
 
-					const setError = (error:AiServerError)=>{
-						j.is_computing=false;
-						j.html_file=null;
-						data_study.AiServerError.push(error);
-						broadcastStudyData();
-					}
+                    const setError = (error: AiServerError) => {
+                        j.is_computing = false;
+                        j.html_file = null;
+                        data_study.AiServerError.push(error);
+                        broadcastStudyData();
+                    }
 
-					j.generateHTML(ai_models_available, device_ip, onUpdate, config, setError, style_index)
-						.then(()=>{
-							data_study.save();
-							broadcastStudyData();
-						});
+                    try {
+                        await j.generateHTML(ai_models_available, device_ip, onUpdate, config, setError, style_index);
+                        data_study.save();
+                        broadcastStudyData();
+                        return true;
+                    } catch (error: any) {
+                        const aiError: AiServerError = new AiServerError(
+                            `parametri invalizi html`,
+                            `errorare generare html datele name_materie:${name_materie} file_name:${file_name} sunt invalide`
+                        );
+                        data_study.AiServerError.push(aiError);
+                        broadcastStudyData();
+                        return false;
+                    }
+                }
+            }
+        }
+    }
 
-					res.send("y");
-					return;
-				}
-			}
-		}
-	}
-	const error:AiServerError=new AiServerError(`parametri invalizi html`,`errorare generare html datele name_materie:${name_materie} file_name:${file_name} sunt invalide`)
-	data_study.AiServerError.push(error);
-	broadcastStudyData();
-	res.send("n");
+    const error: AiServerError = new AiServerError(
+        `parametri invalizi html`,
+        `errorare generare html datele name_materie:${name_materie} file_name:${file_name} sunt invalide`
+    );
+    data_study.AiServerError.push(error);
+    broadcastStudyData();
+    return false;
 }
+
+export async function handleContentGeneration(req: Request, res: Response) {
+    const name_materie = req.body.name_materie;
+    const file_name = req.body.file_name;
+
+    if (!name_materie || !file_name) {
+        return res.send("n");
+    }
+
+    const sintezaSuccess = await genereazSinteza(name_materie, file_name);
+    if (!sintezaSuccess) {
+        return res.send("n");
+    }
+
+    const htmlSuccess = await genereazHTML(name_materie, file_name);
+    if (!htmlSuccess) {
+        return res.send("n");
+    }
+
+    return res.send("y");
+}
+
 
 
 
