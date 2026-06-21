@@ -36,7 +36,8 @@ export function compareStudyGroup(a: any, b: any): boolean {
 export function compareConfigs(a: any, b: any): boolean {
   if (a == null || b === null) return false;
 
-  const arraysEqual = (arr1: string[], arr2: string[]): boolean => {
+  const arraysEqual = (arr1: any[], arr2: any[]): boolean => {
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) return arr1 === arr2;
     if (arr1.length !== arr2.length) return false;
     for (let i = 0; i < arr1.length; i++) {
       if (arr1[i] !== arr2[i]) return false;
