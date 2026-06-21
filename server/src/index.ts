@@ -18,12 +18,13 @@ import { deleteQuiz, generateQuiz, regenerateQuiz } from './routes/quizRoutes.js
 import { checkExisting, deleteFile, getFile, sendFile } from './routes/fileRoutes.js';
 import { getConfig, getDependencies, getHtmlStyle, getOS, setContextSize, setHtmlStyle, setLanguage, setSystemPrompt } from './routes/configRoutes.js';
 import { getIP, getModelPaths, getModels, getSelectedModel, setSelectedModel } from './routes/aiRoutes.js';
-import { allowedExtensions, configClients, data_study, deniedExtensions, lastConfigData, lastStudyData, port, setLastConfigData, setLastStudyData, studyClients, v_interval } from './services/state.js';
+import { allowedExtensions, configClients, data_study, deniedExtensions, lastConfigData, lastStudyData, port, setLastConfigData, setLastStudyData, studyClients, supported_models, v_interval } from './services/state.js';
 import { AiModel } from './objects/AiTypes.js';
 import { Config } from './objects/Config.js';
 import { __dirname } from './services/state.js';
 import { loginEndpoint, registerEndpoint, verifyTokenEndpoint } from './routes/auth.js';
 import { initializeUserDatabase } from './services/auth.js';
+import { runTest } from './test/llm_completion_test.js';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
@@ -122,9 +123,6 @@ const upload = multer({ storage: tempStorage ,limits:{fileSize:200 * 1024 * 1024
 
     cb(null, true);
 }});
-getLmStudioDevice().then((it)=>{
-  device_ip=it
-})
 export async function getLmStudioDevice(): Promise<string|null> {
   const targetIp = "127.0.0.1"; 
   const address = `ws://${targetIp}:1234`;
@@ -408,3 +406,9 @@ app.use((req, res, next) => {
 
 evaluateCodeComplexity();
 evaluateDataSize();
+// runTest();
+setTimeout(() => {
+    console.log(supported_models);
+    console.log("time passed");
+}, 5000);
+

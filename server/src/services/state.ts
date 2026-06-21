@@ -7,21 +7,25 @@ import { StudyGroup } from "../objects/StudyGroup.js";
 import { Config } from "../objects/Config.js";
 import { StyleConfigList } from "../objects/html_styles.js";
 import { log } from "console";
+import { llm_name_preprocessor } from "../ai/llm_name_preprocesor.js";
 export const port = 3000;
 export const max_size: number = 20;
-export const supported_models: string[] = [
-  "lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q3_K_L.gguf",
-  "openai/gpt-oss-20b",
-  "lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf"
-];
+export let supported_models: string[] = [];
+export async function initializeSupportedModels() {
+  supported_models = await llm_name_preprocessor([
+    "google/gemma-4-12b-qat",
+    "unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-Q3_K_S.gguf",
+    "unsloth/Qwen3.6-27B-GGUF/Qwen3.6-27B-Q3_K_S.gguf"
+  ]);
+}
+initializeSupportedModels();
 export let isMemOverflow = false;
 export let is_dependecy: boolean[] = [];
 export let v_interval: any = null;
 export let ai_models_available: ModelInfo[] = [];
 export let device_ip: string | null = "http://10.182.252.185:1234";
-
 export const config = new Config();
-config.load(); // Ensure this is synchronous. If async, use `await config.load()` at module init.
+config.load();
 
 export const data_study = new StudyGroup();
 data_study.load(config); // ✅ CRITICAL FIX: Loads initial study state from config
