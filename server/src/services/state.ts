@@ -18,7 +18,7 @@ export let isMemOverflow = false;
 export let is_dependecy: boolean[] = [];
 export let v_interval: any = null;
 export let ai_models_available: ModelInfo[] = [];
-export let device_ip: string | null = null;
+export let device_ip: string | null = "http://10.182.252.185:1234";
 
 export const config = new Config();
 config.load(); // Ensure this is synchronous. If async, use `await config.load()` at module init.

@@ -193,7 +193,8 @@ export async function genereazHTML(name_materie: string, file_name: string): Pro
 export async function handleContentGeneration(req: Request, res: Response) {
     const name_materie = req.body.name_materie;
     const file_name = req.body.file_name;
-
+    console.log(name_materie,file_name);
+    
     if (!name_materie || !file_name) {
         return res.send("n");
     }

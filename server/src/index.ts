@@ -207,6 +207,7 @@ app.post("/genereaza_sinteza", async (req, res) => {
 });
 
 app.post("/regenereaza_sinteza", async (req, res) => {
+  //todo fix join it with html regeneration
   regenereazSinteza(req,res);
 });
 
