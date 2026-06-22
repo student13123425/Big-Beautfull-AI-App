@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { setContextSizeConfig, setLanguageConfig, setSystemPromptConfig, selectModel, getHtmlStyleConfig, setHtmlStyleConfig } from '../scripts/network';
+import { setContextSizeConfig, setLanguageConfig, setSystemPromptConfig, getHtmlStyleConfig, setHtmlStyleConfig } from '../scripts/network';
 import { StyleConfigList, type Config, type StyleBundle, type StyleConfig } from '../scripts/objects';
 import AnimatedDropdown from '../components/Settings/AnimatedDropdownProps';
 import { getSupportedLanguages } from '../scripts/aox';
@@ -173,12 +173,6 @@ export default function SettingsPage(props: {
   const [SelectedStyle, setSelectedStyle] = useState<number>(0);
 
   const supportedLanguages: string[] = getSupportedLanguages();
-  const models = [
-    "lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf",
-    "lmstudio-community/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q3_K_L.gguf",
-    "openai/gpt-oss-20b"
-  ];
-  const tags = ["Quality", "Balanced", "Speed"];
   const HtmlPosibleStyles = props.HtmlPosibleStyles;
 
   useEffect(() => {
@@ -206,11 +200,6 @@ export default function SettingsPage(props: {
   const handleLanguageSelect = (selectedLanguage: string) => {
     setLanguage(selectedLanguage);
     setLanguageConfig(selectedLanguage, props.setError);
-  };
-
-  const handleModelSelect = (selectedTag: string) => {
-    const modelPath = models[tags.indexOf(selectedTag)];
-    selectModel(modelPath, props.setError);
   };
 
   const handleStyleSelect = (selectedStyle: string) => {
@@ -258,15 +247,6 @@ export default function SettingsPage(props: {
             />
           </SettingsCard>
         </SectionGrid>
-
-        <SettingsCard>
-          <SectionTitle>AI Model Preference</SectionTitle>
-          <AnimatedDropdown
-            selectedOption={tags[models.indexOf(props.config.ai_model_quiz[0])]}
-            options={tags}
-            onSelect={handleModelSelect}
-          />
-        </SettingsCard>
 
         <SettingsCard>
           <SectionTitle>HTML Style</SectionTitle>

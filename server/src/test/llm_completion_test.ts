@@ -1,19 +1,21 @@
-import { getLmStudioDevice } from "../index.js";
+import dotenv from "dotenv";
 import { get_compleation } from "../services/llm.js";
 import { Config } from "../objects/Config.js";
 import { LMStudioClient } from "@lmstudio/sdk";
+
+dotenv.config();
 
 export async function runTest() {
   console.log("--- Starting LLM Completion Unit Test ---");
 
   try {
-    const address = await getLmStudioDevice();
-    if (!address) {
-      console.error("Failed to connect to LM Studio.");
-      return;
-    }
-    console.log(`Connected to LM Studio at: ${address}`);
+    const lmStudioUrl = process.env.LM_STUDIO_URL || "http://192.168.0.88:1234";
+    const address = `ws://${lmStudioUrl.replace("http://", "")}`;
+    
+    console.log(`Connecting to LM Studio at: ${address}...`);
 
+    console.log(`Connected to LM Studio at: ${address}`);
+    
     const client = new LMStudioClient({ baseUrl: address });
     console.log("Fetching downloaded models...");
     const models = await client.system.listDownloadedModels();
