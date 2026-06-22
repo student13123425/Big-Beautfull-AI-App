@@ -30,7 +30,18 @@ export function generateUserFolderId(email: string, userId: number): string {
 }
 
 export function get_model(path: string, models: ModelInfo[]): ModelInfo | null {
-  const out = models.find(m => m.path.toLowerCase() === path.toLowerCase());
+  const cleanPath = path.includes(":") ? path.split(":").slice(1).join(":") : path;
+
+  const out = models.find(m => {
+    const cleanModelPath = m.path.includes(":") ? m.path.split(":").slice(1).join(":") : m.path;
+    
+    return (
+      cleanModelPath.toLowerCase() === cleanPath.toLowerCase() ||
+      m.path.toLowerCase().includes(cleanPath.toLowerCase()) ||
+      cleanPath.toLowerCase().includes(cleanModelPath.toLowerCase())
+    );
+  });
+
   if (out === undefined) {
     console.log("Model path not found in list: " + path);
   }

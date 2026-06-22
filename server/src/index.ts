@@ -406,7 +406,7 @@ app.use((req, res, next) => {
 
 evaluateCodeComplexity();
 evaluateDataSize();
-// runTest();
+runTest();
 setTimeout(() => {
     console.log(supported_models);
     console.log("time passed");

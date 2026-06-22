@@ -9,12 +9,10 @@ export async function getSupportedModels(): Promise<string[]> {
   }
 
   const client = new LMStudioClient({ baseUrl: address });
-  console.log("Fetching downloaded models...");
   
   const models: any[] = await client.system.listDownloadedModels();
 
   if (models.length === 0) {
-    console.warn("No models found in LM Studio.");
     return [];
   }
 
@@ -26,6 +24,7 @@ export async function llm_name_preprocessor(supportedModels: string[]): Promise<
     const matchedPaths: string[] = [];
 
     for (const shortName of supportedModels) {
+      // Always match against the full list containing the hashes
       const match = fullModelList.find((fullPath: string) => fullPath.includes(shortName));
 
       if (match) {
@@ -34,6 +33,7 @@ export async function llm_name_preprocessor(supportedModels: string[]): Promise<
         console.error(`Error: Model "${shortName}" was not found in the available LM Studio models.`);
       }
     }
+    
     console.log(matchedPaths);
     
     return matchedPaths;

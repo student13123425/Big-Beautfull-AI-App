@@ -127,125 +127,58 @@ export function get_matery_list(sg:StudyGroup):string[]{
 
 export class Config {
   model_token_limit: number;
-  ip: string | null;
-  ai_model_sinteza: string[];
-  ai_model_question: string[];
-  ai_model_quiz: string[];
   system_prompt: string;
   limba: string;
 
   constructor(
-    model_token_limit: number = 1024 * 32, // 32k tokens
-    ip: string | null = null,
-    ai_model_sinteza: string[] = [
-      "lmstudio-community/Qwen3-14B-GGUF/Qwen3-14B-Q4_K_M.gguf", 
-      "lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf"
-    ],
-    ai_model_question: string[] = [
-      "microsoft/phi-4-mini-reasoning",
-      "deepseek/deepseek-r1-0528-qwen3-8b",
-      "lmstudio-community/Qwen3-14B-GGUF/Qwen3-14B-Q4_K_M.gguf"
-    ],
-    ai_model_quiz: string[] = [
-      "lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf",
-      "lmstudio-community/gemma-3-27b-it-GGUF/gemma-3-27b-it-Q3_K_L.gguf"
-    ],
+    model_token_limit: number = 1024 * 32,
     system_prompt: string = "You are ChatGPT, a helpful AI assistant.",
     limba: string = "romana"
   ) {
     this.model_token_limit = model_token_limit;
-    this.ip = ip;
-    this.ai_model_sinteza = ai_model_sinteza;
-    this.ai_model_question = ai_model_question;
-    this.ai_model_quiz = ai_model_quiz;
     this.system_prompt = system_prompt;
     this.limba = limba;
   }
 
   loadFrom(obj: any): boolean {
     if (!obj) return false;
-    
     let isValid = true;
-    
-    // Validate and load each property
+
     if (typeof obj.model_token_limit === "number") {
       this.model_token_limit = obj.model_token_limit;
     } else {
       isValid = false;
       console.warn("Invalid model_token_limit, using default");
     }
-    
-    if (obj.ip === null || typeof obj.ip === "string") {
-      this.ip = obj.ip;
-    } else {
-      isValid = false;
-      console.warn("Invalid IP, using default");
-    }
-    
-    // Validate and load model arrays
-    const validateModelArray = (arr: any, length: number): boolean => {
-      return Array.isArray(arr) && 
-             arr.length === length &&
-             arr.every(item => typeof item === "string");
-    };
-    
-    if (validateModelArray(obj.ai_model_sinteza, 2)) {
-      this.ai_model_sinteza = obj.ai_model_sinteza;
-    } else {
-      isValid = false;
-      console.warn("Invalid ai_model_sinteza, using default");
-    }
-    
-    if (validateModelArray(obj.ai_model_question, 3)) {
-      this.ai_model_question = obj.ai_model_question;
-    } else {
-      isValid = false;
-      console.warn("Invalid ai_model_question, using default");
-    }
-    
-    if (validateModelArray(obj.ai_model_quiz, 2)) {
-      this.ai_model_quiz = obj.ai_model_quiz;
-    } else {
-      isValid = false;
-      console.warn("Invalid ai_model_quiz, using default");
-    }
-    
-    // Handle system_prompt with backward compatibility
+
     if (typeof obj.system_prompt === "string") {
       this.system_prompt = obj.system_prompt;
-    } 
-    else if (typeof obj.system_propmt === "string") { // Handle old typo
+    } else if (typeof obj.system_propmt === "string") {
       this.system_prompt = obj.system_propmt;
-    }
-    else {
+    } else {
       isValid = false;
       console.warn("Invalid system_prompt, using default");
     }
-    
-    // Load language setting
+
     if (typeof obj.limba === "string") {
       this.limba = obj.limba;
     } else {
       isValid = false;
       console.warn("Invalid language setting, using default");
     }
-    
+
     return isValid;
   }
 
-  // Helper method for debugging
   toString(): string {
     return JSON.stringify({
       model_token_limit: this.model_token_limit,
-      ip: this.ip,
-      ai_model_sinteza: this.ai_model_sinteza,
-      ai_model_question: this.ai_model_question,
-      ai_model_quiz: this.ai_model_quiz,
       system_prompt: this.system_prompt,
       limba: this.limba
     }, null, 2);
   }
 }
+
 export class QuiZRequestItem {
   file_nume: string[] = [];
   nr_intrebari_pe_materie: number = 0;
