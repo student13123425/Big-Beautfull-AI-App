@@ -7,9 +7,9 @@ import { get_compleation } from "../services/llm.js"
 export class AiTextCorectionGroup{
   title:string
   data:AiTextCorection[]=[]
-  evaluare_all(materie_name:string,limba:string,setError:(error: AiServerError) => void,config:Config,url:string){
+  evaluare_all(materie_name:string,limba:string,setError:(error: AiServerError) => void,config:Config){
     for(let it of this.data)
-      it.evaluare(materie_name,limba,setError,config,url,0)
+      it.evaluare(materie_name,limba,setError,config,0)
   }
   constructor(title:string,group:GroupIntrebare,raspunsuri:string[],start_index:number){
     this.title=title
@@ -19,10 +19,10 @@ export class AiTextCorectionGroup{
 
 export class AiTextCorectionElement{
   data:AiTextCorectionGroup[]=[]
-    evaluare_all(materie_name:string,limba:string,setError:(error: AiServerError) => void,config:Config,url:string){
-      for(let it of this.data)
-        it.evaluare_all(materie_name,limba,setError,config,url)
-    }
+  evaluare_all(materie_name:string,limba:string,setError:(error: AiServerError) => void,config:Config){
+    for(let it of this.data)
+      it.evaluare_all(materie_name,limba,setError,config)
+  }
     get_is_computiong():boolean{
       return this.data.some((it)=>it.data.some((j)=>j.is_computing))
     }
@@ -57,7 +57,7 @@ export class AiTextCorection{
     this.raspuns_intrebare=raspuns_intrebare
     this.is_computing=false
   }
-  async evaluare(materie_name:string,limba:string,setError:(error: AiServerError) => void,config:Config,url:string,depth:number):Promise<boolean>{
+  async evaluare(materie_name:string,limba:string,setError:(error: AiServerError) => void,config:Config,depth:number):Promise<boolean>{
     if(depth>5){
       return false
     }
@@ -70,17 +70,17 @@ export class AiTextCorection{
     }
     const text:string|null=await get_compleation(prompt,config.system_prompt,()=>{
       return this.is_computing
-    },url,config.ai_model_sinteza[0],null,(it:string)=>{
+    },config.ai_model_sinteza[0],null,(it:string)=>{
     },setError,"generare evaluare",config)
     if(text==null){
-      return this.evaluare(materie_name,limba,setError,config,url,depth+1)
+      return this.evaluare(materie_name,limba,setError,config,depth+1)
     }
     try{
       const data:AiTextCorectionData=JSON.parse(text)
       this.detailed_markdown=data.detailed_markdown
       this.score=data.score
     }catch(e){
-      return this.evaluare(materie_name,limba,setError,config,url,depth+1)
+      return this.evaluare(materie_name,limba,setError,config,depth+1)
     }
     this.is_computing=false
     return true;

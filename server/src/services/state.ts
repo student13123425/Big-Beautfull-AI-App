@@ -12,11 +12,11 @@ export const port = 3000;
 export const max_size: number = 20;
 export let supported_models: string[] = [];
 export async function initializeSupportedModels() {
-  supported_models = await llm_name_preprocessor([
+  supported_models = [
     "google/gemma-4-12b-qat",
     "unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-Q3_K_S.gguf",
     "unsloth/Qwen3.6-27B-GGUF/Qwen3.6-27B-Q3_K_S.gguf"
-  ]);
+  ];
 }
 initializeSupportedModels();
 export let isMemOverflow = false;

@@ -19,14 +19,12 @@ export class Materie {
 
     async generate_sinteza_all_files(
         models: ModelInfo[],
-        url: string | null,
         config: Config,
         setError: (error: AiServerError) => void
     ) {
         const promises = this.files.map(it => new Promise<void>((resolve) => {
             it.genereaza_sinteza(
                 models,
-                url,
                 (s: string) => { it.sinteza = s; },
                 config,
                 (e: AiServerError) => {
@@ -104,7 +102,7 @@ export class FishierMaterie {
         return !!this.content && this.content.trim().length > 0;
     }
 
-    async genereaza_sinteza(models: ModelInfo[], url: string | null, onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
+    async genereaza_sinteza(models: ModelInfo[], onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
         console.log(`[FishierMaterie] >>> Starting sinteza generation for ${this.path}`);
 
         if (this.is_computing) {
@@ -124,20 +122,12 @@ export class FishierMaterie {
             return;
         }
 
-        if (!url || url === null || url.trim() === "") {
-            console.error(`[FishierMaterie] ❌ Invalid LM Studio URL: ${url}`);
-            setError(new AiServerError("Invalid URL", `LM Studio connection URL is null or empty`));
-            return;
-        }
-
-        this.html_file = null;
         this.is_computing = true;
-        console.log(`[FishierMaterie] 🌐 Using LM Studio URL: ${url}`);
         console.log(`[FishierMaterie] 🚀 Proceeding to AI call...`);
 
         try {
             let prompt = prompt_sumarizare(this.content!, this.materie, config.limba);
-            const nume_model: string = supported_models?.[0]?.toLowerCase() || "";
+            const nume_model: string = supported_models?.[1]?.toLowerCase() || "";
             const model_full = get_model(nume_model, models);
 
             if (!model_full) {
@@ -152,7 +142,6 @@ export class FishierMaterie {
                 prompt,
                 config.system_prompt,
                 () => this.is_computing,
-                url,
                 model_full.path,
                 null,
                 (s: string) => { this.sinteza = s; },
@@ -173,13 +162,13 @@ export class FishierMaterie {
         }
     }
 
-    async regenerate_sinteza(models: ModelInfo[], url: string | null, onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
+    async regenerate_sinteza(models: ModelInfo[], onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
         console.log(`[FishierMaterie] 🔄 Regenerating sinteza for ${this.path}`);
         this.sinteza = null;
-        await this.genereaza_sinteza(models, url, onUpdate, config, setError);
+        await this.genereaza_sinteza(models, onUpdate, config, setError);
     }
 
-    async generateHTML(models: ModelInfo[], url: string | null, onUpdate: Function, config: Config, setError: (error: AiServerError) => void, style: number): Promise<void> {
+    async generateHTML(models: ModelInfo[], onUpdate: Function, config: Config, setError: (error: AiServerError) => void, style: number): Promise<void> {
         console.log(`[FishierMaterie] >>> Starting HTML generation for ${this.path}`);
 
         if (this.is_computing) {
@@ -206,19 +195,12 @@ export class FishierMaterie {
             return;
         }
 
-        if (!url || url === null || url.trim() === "") {
-            console.error(`[FishierMaterie] ❌ Invalid LM Studio URL: ${url}`);
-            setError(new AiServerError("Invalid URL", `LM Studio connection URL is null or empty`));
-            return;
-        }
-
         this.is_computing = true;
-        console.log(`[FishierMaterie] 🌐 Using LM Studio URL: ${url}`);
         console.log(`[FishierMaterie] 🚀 Proceeding to HTML AI call...`);
 
         try {
             let prompt = generateConversionMarkdownToHTMLPrompt(this.sinteza, JSON.stringify(htmlStyles.getStyles()[style]), config.limba);
-            const nume_model: string = supported_models?.[0]?.toLowerCase() || "";
+            const nume_model: string = supported_models?.[1]?.toLowerCase() || "";
             const model_full = get_model(nume_model, models);
 
             if (!model_full) {
@@ -231,7 +213,7 @@ export class FishierMaterie {
             console.log(`[FishierMaterie] 🤖 Calling AI model for HTML: ${model_full.path}...`);
             this.html_file = await get_compleation(
                 prompt, config.system_prompt,
-                () => this.is_computing, url, model_full.path, null,
+                () => this.is_computing, model_full.path, null,
                 (s: string) => { this.html_file = s; }, 
                 setError,
                 `generare html pentru ${this.path}`,

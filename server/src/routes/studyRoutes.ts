@@ -64,7 +64,7 @@ export async function regenereazSinteza(req: Request, res: Response){
         for (let j of it.files) {
           let name: string = get_file_name(j.path);
           if (name === file_name) {
-            j.regenerate_sinteza(ai_models_available, device_ip, () => {
+            j.regenerate_sinteza(ai_models_available, () => {
               data_study.save();
               broadcastStudyData();
             }, config,
@@ -97,7 +97,7 @@ export async function genereazSinteza(name_materie: string, file_name: string): 
                 let name: string = get_file_name(j.path);
                 if (name === file_name) {
                     try {
-                        await j.genereaza_sinteza(ai_models_available, device_ip, () => {
+                        await j.genereaza_sinteza(ai_models_available, () => {
                             data_study.save();
                             broadcastStudyData();
                         }, config, (error: AiServerError) => {
@@ -163,7 +163,7 @@ export async function genereazHTML(name_materie: string, file_name: string): Pro
                     }
 
                     try {
-                        await j.generateHTML(ai_models_available, device_ip, onUpdate, config, setError, style_index);
+                        await j.generateHTML(ai_models_available, onUpdate, config, setError, style_index);
                         data_study.save();
                         broadcastStudyData();
                         return true;

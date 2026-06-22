@@ -28,7 +28,7 @@ export class Quiz {
   is_failed: boolean = false;
   constructor() {}
 
- async genereate(nr_intrebari_per_fishier: number, materie: string[], nume_materie: string[], is_grila: boolean, models: ModelInfo[], baseUrl: string, onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
+  async genereate(nr_intrebari_per_fishier: number, materie: string[], nume_materie: string[], is_grila: boolean, models: ModelInfo[], onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
     this.is_computing = true;
     let c = 0;
 
@@ -66,7 +66,6 @@ export class Quiz {
         prompt,
         config.system_prompt,
         () => this.is_computing,
-        baseUrl,
         config.ai_model_quiz[0],
         null,
         (s: string) => {},
@@ -106,19 +105,17 @@ export class Quiz {
     nume_materie: string[],
     is_grila: boolean,
     models: ModelInfo[],
-    baseUrl: string,
     onUpdate: Function,
     config: Config,
     setError: (error: AiServerError) => void
   ) {
-    this.is_failed = false;
+    this.failed = false;
     await this.genereate(
       nr_intrebari_per_fishier,
       materie,
       nume_materie,
       is_grila,
       models,
-      baseUrl,
       onUpdate,
       config,
       setError

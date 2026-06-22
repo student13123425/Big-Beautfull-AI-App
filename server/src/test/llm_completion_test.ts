@@ -41,7 +41,6 @@ export async function runTest() {
       testContent,
       systemPrompt,
       () => true,
-      address,
       firstModel.path,
       null,
       (text) => console.log(`[RealTime] ${text}`),

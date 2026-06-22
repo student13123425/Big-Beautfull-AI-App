@@ -8,10 +8,9 @@ export class AskQuestion{
   content:string|null=null
   is_computing=false;
   is_failed:boolean=false
-  async askQuestion(models: ModelInfo[],url:string,materieName:string,file_content:string,question:string,quality:number,config:Config,setError:(e:AiServerError)=>void){
+  async askQuestion(models: ModelInfo[],materieName:string,file_content:string,question:string,quality:number,config:Config,setError:(e:AiServerError)=>void){
     if(this.is_computing)
       return
-    console.log("url:"+url);
     this.is_computing=true;
     this.content=null;
     const prompt:string=get_question_prompt(materieName,file_content,question,config.limba);
@@ -27,7 +26,6 @@ export class AskQuestion{
         prompt,
         config.system_prompt,
         ()=>this.is_computing,
-        url,
         model_full.path,
         null,
         (s:string)=>{

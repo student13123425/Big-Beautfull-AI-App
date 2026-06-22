@@ -1,13 +1,15 @@
+import dotenv from 'dotenv';
 import { BaseLoadModelOpts, Chat, LLMLoadModelConfig, LMStudioClient, ModelInfo } from "@lmstudio/sdk";
 import { extractFinalContent, removeXmlStyleTags } from "../ai/prompts.js";
 import { AiServerError } from "../objects/AiTypes.js";
 import { Config } from "node-tesseract-ocr";
 
+dotenv.config({ path: '.env' });
+
 export async function getCompletion(
   content: string,
   system_prompt: string,
   shouldContinue: () => boolean,
-  url: string,
   model_name: string,
   image_path: string | null,
   realTimeUpdate: ((text: string) => void) | null,
@@ -16,6 +18,10 @@ export async function getCompletion(
   cfg: Config
 ): Promise<string | null> {
   try {
+    const url = process.env.LM_STUDIO_URL;
+    if (!url) {
+      throw new Error("LM_STUDIO_URL environment variable is not set");
+    }
     const client = await new LMStudioClient({ baseUrl: url });
     
     const modelConfig: BaseLoadModelOpts<LLMLoadModelConfig> = {
@@ -129,7 +135,6 @@ export function get_compleation(
   content: string,
   system_prompt: string,
   shouldContinue: () => boolean,
-  url: string,
   model_name: string,
   image_path: string | null,
   realTimeUpdate: Function | null,
@@ -141,7 +146,6 @@ export function get_compleation(
         content, 
         system_prompt, 
         shouldContinue, 
-        url, 
         model_name, 
         image_path, 
         realTimeUpdate as any, 

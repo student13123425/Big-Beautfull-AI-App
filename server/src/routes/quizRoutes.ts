@@ -31,7 +31,6 @@ export async function generateQuiz(req: Request, res: Response): Promise<void> {
       file_names,
       data.is_grile,
       ai_models_available,
-      device_ip || "",
       () => {},
       config,
       (error: AiServerError) => {
@@ -71,13 +70,12 @@ export async function regenerateQuiz(req: Request, res: Response): Promise<void>
       .map((f) => f.path);
     let quiz = materie.quizs.find((it) => it.title == data.title);
     if (quiz) {
-      quiz.regenerate(
-        data.nr_intrebari_pe_materie,
-        m,
-        file_names,
-        data.is_grile,
-        ai_models_available,
-        device_ip || "",
+    quiz.regenerate(
+      data.nr_intrebari_pe_materie,
+      m,
+      file_names,
+      data.is_grile,
+      ai_models_available,
         () => {},
         config,
         (error: AiServerError) => {

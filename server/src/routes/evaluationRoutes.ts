@@ -46,7 +46,6 @@ export async function askFileQuestion(req: Request, res: Response): Promise<void
 
   data_study.CurrentAskedQuestion.askQuestion(
     ai_models_available,
-    device_ip,
     materie,
     sinteza,
     question,
@@ -90,8 +89,7 @@ export async function processEvaluare(req: Request, res: Response): Promise<void
         data_study.AiServerError.push(error);
         broadcastStudyData();
       },
-      config,
-      device_ip
+      config
     );
 
     console.log("evaluation call successful");
