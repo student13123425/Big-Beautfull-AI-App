@@ -8,6 +8,7 @@ import { AskDocumentQuestion, stopAnsweringQuestion } from '../../scripts/networ
 import type Markdown from 'markdown-to-jsx';
 import MarkdownRenderer from '../Misc/MarkdownRenderer';
 import { extractContent } from '../../scripts/aox';
+import { getAskQuestionText, type AskQuestionLanguage } from '../../lang/askQuestionLang';
 
 // Animation keyframes
 const scaleIn = keyframes`
@@ -428,8 +429,13 @@ export default function AskQuestionPage({
   file,
   onClose,
   setError,
-  AskQustionOutput
+  AskQustionOutput,
+  language
 }: AIAssistantProps) {
+  // Get translations based on language prop
+  const langToUse = (language as AskQuestionLanguage) || 'English';
+  const texts = getAskQuestionText(langToUse);
+
   const [question, setQuestion] = useState<string>('');
   const [answer, setAnswer] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -476,7 +482,7 @@ export default function AskQuestionPage({
   return (
     <Container $fullscreen={true}>
       <TopBar>
-        <Label>Document Assistant</Label>
+        <Label>{texts.pageTitle}</Label>
         {onClose && (
           <Button 
             onClick={()=>{
@@ -497,19 +503,19 @@ export default function AskQuestionPage({
           </DocumentIcon>
           <DocumentDetails>
             <DocumentTitle>{file.path.split("/").length>1?file.path.split("/").pop():file.path}</DocumentTitle>
-            <DocumentType>{file.path.split(".").length>1?file.path.split(".").pop():file.path} Document</DocumentType>
+            <DocumentType>{texts.documentTypeLabel.replace('{file}', file.path.split(".").length>1?file.path.split(".").pop():file.path)}</DocumentType>
           </DocumentDetails>
           <StatusIndicator $isProcessing={isProcessing} />
         </DocumentInfo>
         
         <InputContainer>
-          <QuestionLabel>Ask a question about this document</QuestionLabel>
+          <QuestionLabel>{texts.questionLabel}</QuestionLabel>
           
           <Input
             ref={textareaRef}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="What information are you looking for?"
+            placeholder={texts.questionPlaceholder}
             rows={4}
             disabled={isProcessing}
           />
@@ -517,20 +523,20 @@ export default function AskQuestionPage({
           <ButtonContainer>
          
             {isProcessing?(
-              <StopButton 
+             <StopButton 
                 onClick={handleStop}
                 disabled={!isProcessing}
               >
                 <MdClose size={18} />
-                Stop
+                {texts.stopButton}
               </StopButton>
-            ):(
-                <SubmitButton 
+             ):(
+                 <SubmitButton 
                   onClick={handleClear}
                   disabled={isProcessing || (!question && !answer)}
                   $isProcessing={false}
                 >
-                  Clear
+                  {texts.clearButton}
                 </SubmitButton>
             )}
             <SubmitButton 
@@ -541,12 +547,12 @@ export default function AskQuestionPage({
               {isProcessing ? (
                 <>
                   <MdRefresh size={18} style={{ animation: 'spin 1s linear infinite' }} /> 
-                  Processing...
+                  {texts.processingState}
                 </>
               ) : (
                 <>
                   <MdSend size={18} /> 
-                  Ask Question
+                  {texts.askQuestionButton}
                 </>
               )}
             </SubmitButton>
@@ -554,13 +560,13 @@ export default function AskQuestionPage({
         </InputContainer>
         
         <AnswerContainer $hasAnswer={!!answer}>
-          <AnswerLabel>Answer</AnswerLabel>
+          <AnswerLabel>{texts.answerLabel}</AnswerLabel>
           <AnswerContent>
             {answer!==null?<MarkdownRenderer content={answer} zoom={1}/> :(
               <EmptyAnswer>
                 {isProcessing 
-                  ? "Analyzing document and preparing answer..." 
-                  : "Submit a question to get insights from the document"}
+                  ? texts.analyzingMessage 
+                  : texts.defaultEmptyState}
               </EmptyAnswer>
             )}
           </AnswerContent>

@@ -22,6 +22,8 @@ export interface UploadPageText {
   cancelButton: string;
   replaceFilesButton: string;
   unsupportedLabel: string;
+  uploadPathLabel: string;
+  removeFileTooltip: string;
 }
 
 const supportedLanguages = [
@@ -65,6 +67,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "Cancel",
     replaceFilesButton: "Replace Files",
     unsupportedLabel: "(Unsupported)",
+    uploadPathLabel: "Upload path:",
+    removeFileTooltip: "Remove file",
   },
   "Mandarin Chinese": {
     uploadTitle: "上传文件",
@@ -90,6 +94,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "取消",
     replaceFilesButton: "替换文件",
     unsupportedLabel: "(不支持)",
+    uploadPathLabel: "上传路径：",
+    removeFileTooltip: "移除文件",
   },
   Romanian: {
     uploadTitle: "Încarcă Fișiere",
@@ -115,6 +121,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "Anulează",
     replaceFilesButton: "Înlocuiește Fișiere",
     unsupportedLabel: "(Nesuportat)",
+    uploadPathLabel: "Calea de încărcare:",
+    removeFileTooltip: "Elimină fișier",
   },
   Spanish: {
     uploadTitle: "Subir Archivos",
@@ -140,6 +148,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "Cancelar",
     replaceFilesButton: "Reemplazar Archivos",
     unsupportedLabel: "(No soportado)",
+    uploadPathLabel: "Ruta de subida:",
+    removeFileTooltip: "Eliminar archivo",
   },
   "Modern Standard Arabic": {
     uploadTitle: "رفع الملفات",
@@ -165,6 +175,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "إلغاء",
     replaceFilesButton: "استبدال الملفات",
     unsupportedLabel: "(غير مدعوم)",
+    uploadPathLabel: "مسار الرفع:",
+    removeFileTooltip: "إزالة الملف",
   },
   French: {
     uploadTitle: "Télécharger des Fichiers",
@@ -186,10 +198,12 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     uploadButtonText: "Télécharger",
     replaceModalTitle: "Remplacer les fichiers existants ?",
     replaceModalText: "Les fichiers suivants existent déjà. Voulez-vous les remplacer ?",
-    replaceWarning: "Avertissement : La remplacement des fichiers ne peut pas être annulé",
+    replaceWarning: "Avertissement : Le remplacement des fichiers ne peut pas être annulé",
     cancelButton: "Annuler",
     replaceFilesButton: "Remplacer les Fichiers",
     unsupportedLabel: "(Non pris en charge)",
+    uploadPathLabel: "Chemin de téléchargement :",
+    removeFileTooltip: "Supprimer le fichier",
   },
   Russian: {
     uploadTitle: "Загрузка Файлов",
@@ -215,6 +229,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "Отмена",
     replaceFilesButton: "Заменить Файлы",
     unsupportedLabel: "(Не поддерживается)",
+    uploadPathLabel: "Путь загрузки:",
+    removeFileTooltip: "Удалить файл",
   },
   German: {
     uploadTitle: "Dateien Hochladen",
@@ -240,6 +256,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "Abbrechen",
     replaceFilesButton: "Dateien Ersetzen",
     unsupportedLabel: "(Nicht unterstützt)",
+    uploadPathLabel: "Upload-Pfad:",
+    removeFileTooltip: "Datei entfernen",
   },
   Japanese: {
     uploadTitle: "ファイルのアップロード",
@@ -265,6 +283,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "キャンセル",
     replaceFilesButton: "ファイルを置き換え",
     unsupportedLabel: "(サポートされていません)",
+    uploadPathLabel: "アップロードパス：",
+    removeFileTooltip: "ファイルを削除",
   },
   Vietnamese: {
     uploadTitle: "Tải Lên Tệp",
@@ -290,6 +310,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "Hủy",
     replaceFilesButton: "Ghi Đè Tệp",
     unsupportedLabel: "(Không được hỗ trợ)",
+    uploadPathLabel: "Đường dẫn tải lên:",
+    removeFileTooltip: "Xóa tệp",
   },
   Turkish: {
     uploadTitle: "Dosya Yükle",
@@ -315,6 +337,8 @@ const uploadTexts: Record<UploadLanguage, UploadPageText> = {
     cancelButton: "İptal",
     replaceFilesButton: "Dosyaları Değiştir",
     unsupportedLabel: "(Desteklenmiyor)",
+    uploadPathLabel: "Yükleme yolu:",
+    removeFileTooltip: "Dosyayı kaldır",
   },
 };
 

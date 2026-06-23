@@ -4,6 +4,7 @@ import { MdRefresh } from 'react-icons/md';
 import MarkdownRenderer from '../Misc/MarkdownRenderer';
 import type { FileD, FishierMaterie, Materie } from '../../scripts/objects';
 import { extractMarkdown, get_output_content } from '../../scripts/aox';
+import { getSintezaGenerationText, type SintezaGenerationLanguage } from '../../lang/sintezaGenerationLang';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -17,6 +18,7 @@ interface Props {
   isOpen: boolean;
   isGenerating: boolean;
   startSynthesisGeneration: () => void;
+  language?: string;
 }
 
 const ContentContainer = styled.div<{ $isOpen: boolean; $fullscreen?: boolean }>`
@@ -88,7 +90,11 @@ const GenerateButton = styled.button<{ $isGenerating: boolean }>`
   @media (max-width: 500px) { padding: 8px 16px; font-size: 12px; min-width: 140px; }
 `;
 
-export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScreen,isOpen,isGenerating,startSynthesisGeneration}: Props) {
+export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScreen,isOpen,isGenerating,startSynthesisGeneration,language}: Props) {
+  // Get translations based on language prop
+  const langToUse = (language as SintezaGenerationLanguage) || 'English';
+  const texts = getSintezaGenerationText(langToUse);
+
   if (file === null) return null;
 
   return (
@@ -96,7 +102,7 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
       {file.sinteza === null || get_output_content(file.sinteza).length === 0 ? (
         <EmptyContent>
           <EmptyIcon><AiFillFileMarkdown size={64} /></EmptyIcon>
-          <EmptyLabel>Synthesis for this file hasn't been generated yet</EmptyLabel>
+          <EmptyLabel>{texts.synthesisNotGenerated}</EmptyLabel>
           <GenerateButton 
             onClick={() => startSynthesisGeneration()}
             $isGenerating={isGenerating}
@@ -104,9 +110,9 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
           >
             {isGenerating ? (
               <>
-                <RefreshIcon size={18} $isRefreshing={true} /> Generating...
+                <RefreshIcon size={18} $isRefreshing={true} /> {texts.generatingState}
               </>
-            ) : 'Generate Synthesis'}
+            ) : texts.generateSynthesisButton}
           </GenerateButton>
         </EmptyContent>
       ) : (

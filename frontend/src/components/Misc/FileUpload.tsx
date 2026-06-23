@@ -944,7 +944,7 @@ export default function FileUpload(props: FileUploadProps) {
                         <SubjectIcon>{subjectInitial}</SubjectIcon>
                         {props.materie.name}
                     </SubjectTitle>
-                    <PathIndicator>Upload path: {path}</PathIndicator>
+                    <PathIndicator>{texts.uploadPathLabel} {path}</PathIndicator>
                 </HeaderContent>
             </Header>
             
@@ -1026,7 +1026,7 @@ export default function FileUpload(props: FileUploadProps) {
                                                 removeFile(index);
                                             }}
                                             disabled={uploading}
-                                            title="Remove file"
+                                            title={texts.removeFileTooltip}
                                         >
                                             ×
                                         </RemoveButton>

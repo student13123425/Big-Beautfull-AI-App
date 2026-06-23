@@ -15,6 +15,7 @@ import DisplaySintezaItemContentMarkdown from './DisplaySintezaItemContentMarkdo
 import { AiFillFileMarkdown } from "react-icons/ai";
 import { getIsHtmlState, setIsHtmlState } from '../../scripts/aox';
 import DisplaySintezaItemContentHTML from './DisplaySintezaItemContenHTML';
+import { getSintezaGenerationText, type SintezaGenerationLanguage } from '../../lang/sintezaGenerationLang';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -252,6 +253,10 @@ export default function DisplaySintezaItem({
   const [IsAskingQuestion, setIsAskingQuestion] = useState<boolean>(false);
   const [IsHtml, setIsHtml] = useState<boolean>(() => getIsHtmlState());
 
+  // Get translations based on language prop
+  const langToUse = (language as SintezaGenerationLanguage) || 'English';
+  const texts = getSintezaGenerationText(langToUse);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsHtmlState(IsHtml);
@@ -352,6 +357,7 @@ export default function DisplaySintezaItem({
         setError={setError}
         onClose={() => setIsAskingQuestion(false)}
         file={file}
+        language={language}
       />
     );
   }
@@ -373,11 +379,11 @@ export default function DisplaySintezaItem({
               <FcImageFile size={18} />
             ) : null}
           </Icon>
-          <Label title={cleanName}>{cleanName}</Label>
+           <Label title={cleanName}>{cleanName}</Label>
           {file.sinteza ? (
             <StatusIndicator $isGenerating={isGenerating} />
           ) : (
-            <FileMeta>No synthesis</FileMeta>
+            <FileMeta>{texts.noSynthesisLabel}</FileMeta>
           )}
         </FileInfo>
 
@@ -424,6 +430,7 @@ export default function DisplaySintezaItem({
           isOpen={isOpen}
           isGenerating={isGenerating}
           startSynthesisGeneration={startSynthesisGeneration}
+          language={language}
         />
       ) : (
         <DisplaySintezaItemContentMarkdown
@@ -433,6 +440,7 @@ export default function DisplaySintezaItem({
           isOpen={isOpen}
           isGenerating={isGenerating}
           startSynthesisGeneration={startSynthesisGeneration}
+          language={language}
         />
       )}
     </Container>

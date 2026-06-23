@@ -4,6 +4,7 @@ import { MdRefresh } from 'react-icons/md';
 import { ImFileEmpty } from 'react-icons/im';
 import { FaHtml5 } from "react-icons/fa";
 import type { FishierMaterie } from '../../scripts/objects';
+import { getSintezaGenerationText, type SintezaGenerationLanguage } from '../../lang/sintezaGenerationLang';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -17,6 +18,7 @@ interface Props {
   isOpen: boolean;
   isGenerating: boolean;
   startSynthesisGeneration: () => void;
+  language?: string;
 }
 
 const ContentContainer = styled.div<{ $isOpen: boolean; $fullscreen?: boolean }>`
@@ -109,8 +111,13 @@ export default function DisplaySintezaItemContentHTML({
   isFullScreen, 
   isOpen, 
   isGenerating, 
-  startSynthesisGeneration 
+  startSynthesisGeneration,
+  language
 }: Props) {
+  // Get translations based on language prop
+  const langToUse = (language as SintezaGenerationLanguage) || 'English';
+  const texts = getSintezaGenerationText(langToUse);
+
   if (file === null) return null;
 
   // Check if html_file exists and is not an empty string
@@ -126,7 +133,7 @@ export default function DisplaySintezaItemContentHTML({
           <EmptyIcon>
             <FaHtml5 size={64} />
           </EmptyIcon>
-          <EmptyLabel>HTML version for this file hasn't been generated yet</EmptyLabel>
+          <EmptyLabel>{texts.htmlNotGenerated}</EmptyLabel>
           <GenerateButton 
             onClick={() => startSynthesisGeneration()}
             $isGenerating={isGenerating}
@@ -134,9 +141,9 @@ export default function DisplaySintezaItemContentHTML({
           >
             {isGenerating ? (
               <>
-                <RefreshIcon size={18} $isRefreshing={true} /> Generating...
+                <RefreshIcon size={18} $isRefreshing={true} /> {texts.generatingState}
               </>
-            ) : 'Generate HTML'}
+            ) : texts.generateHtmlButton}
           </GenerateButton>
         </EmptyContent>
       ) : (
