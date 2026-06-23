@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FaSearch, FaFileAlt, FaQuestionCircle } from 'react-icons/fa';
+import { getTabTexts, type TabLanguage } from '../../lang/tabs';
 
 const Container = styled.div`
   width: 100%;
@@ -113,21 +114,25 @@ const Text = styled.span<{ $selected: boolean }>`
 
 export default function MaterieMenu(props: { 
   mode: number, 
-  setMode: (mode: number) => void 
+  setMode: (mode: number) => void,
+  language?: string
 }) {
+  const lang = (props.language as TabLanguage) || 'Romanian';
+  const tabTexts = getTabTexts(lang);
+
   const modes = [
     { 
-      name: "Răsfoieste", 
+      name: tabTexts.browse, 
       icon: <FaSearch />,
       ariaLabel: "Browse mode"
     },
     { 
-      name: "Sinteza", 
+      name: tabTexts.sinteza, 
       icon: <FaFileAlt />,
       ariaLabel: "Summary mode"
     },
     { 
-      name: "Quiz", 
+      name: tabTexts.quiz, 
       icon: <FaQuestionCircle />,
       ariaLabel: "Quiz mode"
     }

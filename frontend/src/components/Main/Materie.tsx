@@ -7,6 +7,7 @@ import MaterieMenu from './MaterieMenu'
 import Browser from './Browser'
 import Sinteza from './Sinteza'
 import Quizs from './Quizs'
+import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/placeholders'
 
 const Container = styled.div`
   flex: 1;
@@ -50,8 +51,10 @@ const Hide = styled.div`
 export default function Materie(props: { 
   selected: string | null, 
   data: StudyGroup, 
-  setError: Function 
+  setError: Function,
+  language?: string
 }) {
+  const lang = (props.language as import('../../lang/placeholders').PlaceholderLanguage) || 'Romanian';
   const value: Mt | null = get_selected(props.selected, props.data);
   const [Mode, setMode] = useState<number>(0);
   const files_list: FileD[] = get_file_elements(value);
@@ -68,20 +71,22 @@ export default function Materie(props: {
         setFile(null);
     },[Mode])
   if (props.selected == null || value === null) {
+    const lang = (props.language as PlaceholderLanguage) || 'Romanian';
+    const placeholderTexts = getNoSubjectSelectedText(lang);
     return (
       <None>
         <FaPen size={130} color={"#b3b3b3"}/>
-        <h1>Nici o materie nu este selectata</h1>
+        <h1>{placeholderTexts.noSubjectSelected}</h1>
       </None>
     )
   }
   return (
     <Container>
-      <MaterieMenu mode={Mode} setMode={setMode} />
+      <MaterieMenu mode={Mode} setMode={setMode} language={lang} />
       <ContentContainer>
-        {Mode === 0 ? <Browser File={File} setFile={setFile} setError={props.setError} materie={value} file_list={files_list} /> : <Hide />}
-        {Mode === 1 ? <Sinteza File={File} setFile={setFile} AskQustionOutput={props.data.CurrentAskedQuestion} setError={props.setError} materie={value} file_list={files_list} /> : <Hide />}
-        {Mode === 2 ? <Quizs correction={props.data.AiTextCorrection} setError={props.setError} materie={value} file_list={files_list} /> : <Hide />}
+        {Mode === 0 ? <Browser File={File} setFile={setFile} setError={props.setError} materie={value} file_list={files_list} language={lang} /> : <Hide />}
+        {Mode === 1 ? <Sinteza File={File} setFile={setFile} AskQustionOutput={props.data.CurrentAskedQuestion} setError={props.setError} materie={value} file_list={files_list} language={lang} /> : <Hide />}
+        {Mode === 2 ? <Quizs correction={props.data.AiTextCorrection} setError={props.setError} materie={value} file_list={files_list} language={lang} /> : <Hide />}
       </ContentContainer>
     </Container>
   )

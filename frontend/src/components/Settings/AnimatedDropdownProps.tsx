@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styled, { keyframes, css } from 'styled-components';
 import { FaChevronDown } from 'react-icons/fa';
 import { getTopLevePath } from '../../scripts/aox';
@@ -27,7 +28,6 @@ const fadeOutTop = keyframes`
 const Container = styled.div`
   position: relative;
   width: 100%;
-  z-index: 99999999;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `;
 
@@ -82,42 +82,25 @@ const IconWrapper = styled.span<{ $isOpen: boolean }>`
   margin-left: 0.75rem;
 `;
 
-const OptionsList = styled.ul<{ $isClosing: boolean; $placement: 'top' | 'bottom' }>`
-  position: absolute;
-  width: 100%;
+const PortalOptionsList = styled.ul<{ $isClosing: boolean; $placement: 'top' | 'bottom'; $top: number; $left: number; $width: number }>`
+  position: fixed;
+  left: ${({ $left }) => $left}px;
+  width: ${({ $width }) => $width}px;
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 9999;
+  z-index: 10000;
+  pointer-events: auto;
   list-style: none;
   max-height: 280px;
   overflow-y: auto;
   padding: 0.5rem 0;
 
-  ${({ $placement }) =>
-    $placement === 'top'
-      ? css`
-          bottom: 100%;
-          margin-bottom: 0.5rem;
-          transform-origin: bottom center;
-        `
-      : css`
-          top: 100%;
-          margin-top: 0.5rem;
-          transform-origin: top center;
-        `}
+  top: ${({ $top }) => $top}px;
+  transform-origin: center top;
 
-  animation: ${({ $isClosing, $placement }) => {
-    if ($placement === 'top') {
-      return $isClosing
-        ? css`${fadeOutTop} 0.25s ease-out forwards`
-        : css`${fadeInTop} 0.25s ease-out forwards`;
-    }
-    return $isClosing
-      ? css`${fadeOutBottom} 0.25s ease-out forwards`
-      : css`${fadeInBottom} 0.25s ease-out forwards`;
-  }};
+  animation: ${fadeInBottom} 0.25s ease-out forwards;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -144,7 +127,6 @@ const OptionItem = styled.li<{ $isSelected: boolean }>`
     background-color: #f1f5f9;
   }
 
-  z-index: 99999;
   ${({ $isSelected }) =>
     $isSelected &&
     css`
@@ -166,6 +148,44 @@ interface NormalizedOption {
   label: string;
 }
 
+const DropdownPortalContent: React.FC<{
+  isOpen: boolean;
+  isClosing: boolean;
+  placement: 'top' | 'bottom';
+  normalizedOptions: NormalizedOption[];
+  selectedOption: string | null;
+  buttonRect: DOMRect | null;
+  onSelect: (value: string) => void;
+}> = ({ isOpen, isClosing, placement, normalizedOptions, selectedOption, buttonRect, onSelect }) => {
+  if (!isOpen || !buttonRect) return null;
+
+  const dropdownHeight = 280 + 16; // max-height + padding
+  let topPosition: number;
+
+  if (placement === 'top') {
+    topPosition = buttonRect.top - dropdownHeight;
+  } else {
+    topPosition = buttonRect.bottom;
+  }
+
+  return createPortal(
+    <PortalOptionsList data-dropdown-portal="true" $isClosing={isClosing} $placement={placement} $top={topPosition} $left={buttonRect.left} $width={buttonRect.width}>
+      {normalizedOptions.map((option, index) => (
+        <OptionItem
+          key={`portal-${option.value}-${index}`}
+          onClick={() => onSelect(option.value)}
+          $isSelected={option.value === selectedOption}
+          role="option"
+          aria-selected={option.value === selectedOption}
+        >
+          {option.label}
+        </OptionItem>
+      ))}
+    </PortalOptionsList>,
+    document.body
+  );
+};
+
 const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   options,
   onSelect,
@@ -175,6 +195,7 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [placement, setPlacement] = useState<'top' | 'bottom'>('bottom');
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -243,31 +264,38 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handlePointerDown = (event: PointerEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        const portalElement = document.body.querySelector('[data-dropdown-portal="true"]');
+        if (portalElement && portalElement.contains(event.target as Node)) {
+          return;
+        }
         closeDropdown();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handlePointerDown);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('pointerdown', handlePointerDown);
     };
   }, [isOpen, closeDropdown]);
 
-  const toggleDropdown = () => {
+  const toggleDropdown = useCallback(() => {
     if (isOpen) {
       closeDropdown();
     } else {
+      if (buttonRef.current) {
+        setButtonRect(buttonRef.current.getBoundingClientRect());
+      }
       calculatePlacement();
       setIsOpen(true);
     }
-  };
+  }, [isOpen, closeDropdown, calculatePlacement]);
 
-  const handleSelect = (value: string) => {
+  const handleSelect = useCallback((value: string) => {
     onSelect(value);
     closeDropdown();
-  };
+  }, [onSelect, closeDropdown]);
 
   return (
     <Container ref={dropdownRef}>
@@ -284,19 +312,15 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
         </IconWrapper>
       </SelectButton>
       {isOpen && (
-        <OptionsList role="listbox" $isClosing={isClosing} $placement={placement}>
-          {normalizedOptions.map((option, index) => (
-            <OptionItem
-              key={`${option.value}-${index}`}
-              onClick={() => handleSelect(option.value)}
-              $isSelected={option.value === selectedOption}
-              role="option"
-              aria-selected={option.value === selectedOption}
-            >
-              {option.label}
-            </OptionItem>
-          ))}
-        </OptionsList>
+        <DropdownPortalContent
+          isOpen={isOpen}
+          isClosing={isClosing}
+          placement={placement}
+          normalizedOptions={normalizedOptions}
+          selectedOption={selectedOption}
+          buttonRect={buttonRect}
+          onSelect={handleSelect}
+        />
       )}
     </Container>
   );

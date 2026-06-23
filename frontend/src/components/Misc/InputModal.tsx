@@ -213,6 +213,8 @@ interface InputModalProps {
   content: string | React.ReactNode;
   placeholder?: string;
   defaultValue?: string;
+  cancelText?: string;
+  submitText?: string;
 }
 
 export default function InputModal({ 
@@ -220,7 +222,9 @@ export default function InputModal({
   title, 
   content,
   placeholder = "Type something...",
-  defaultValue = ""
+  defaultValue = "",
+  cancelText = "Cancel",
+  submitText = "Submit"
 }: InputModalProps) {
   const [isClosing, setIsClosing] = useState(false);
   const [inputValue, setInputValue] = useState(defaultValue);
@@ -310,14 +314,14 @@ export default function InputModal({
         
         <ButtonContainer>
           <ActionButton onClick={() => handleClose(null)}>
-            Cancel
+            {cancelText}
           </ActionButton>
           <ActionButton 
             $primary 
             onClick={handleSubmit}
             disabled={!inputValue.trim()}
           >
-            Submit
+            {submitText}
           </ActionButton>
         </ButtonContainer>
       </ModalContainer>

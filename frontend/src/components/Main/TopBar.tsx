@@ -9,6 +9,7 @@ import ConfirmModal from '../Misc/ConfirmModal'
 import { MdKeyboardArrowDown, MdSettings } from 'react-icons/md'
 import { useWindowResize } from '../../hooks/useWindowResize'
 import useKeyRelease from '../../hooks/useKeyRelease'
+import { getAddMaterieText, type AddMaterieLanguage } from '../../lang/modals/addMaterieText'
 
 const Container = styled.div`
   position: relative; /* Establishes a stacking context */
@@ -182,7 +183,8 @@ export default function TopBar(props: {
   onError: Function,
   Selected: string | null,
   setIsSetings: Function,
-  IsSetings: boolean
+  IsSetings: boolean,
+  language?: string
 }) {
   const [IsModal, setIsModal] = useState<boolean>(false)
   const [isOverflowing,setIsOverflowing] = useState(false);
@@ -266,17 +268,23 @@ export default function TopBar(props: {
           setIsConfirm(null);
           if (value) delete_materie(props.onError, IsConfirm);
         }} />}
-        {IsModal && (
-          <InputModal
-            title='adaugare materie'
-            placeholder='nume materie'
-            onClose={(out: string | null) => {
-              setIsModal(false);
-              if (out?.trim()) add_materie(props.onError, out.trim());
-            }}
-            content="introdu numele noi materi"
-          />
-        )}
+        {IsModal && (() => {
+          const lang = (props.language as AddMaterieLanguage) || 'Romanian';
+          const modalTexts = getAddMaterieText(lang);
+          return (
+            <InputModal
+              title={modalTexts.title}
+              placeholder={modalTexts.placeholder}
+              onClose={(out: string | null) => {
+                setIsModal(false);
+                if (out?.trim()) add_materie(props.onError, out.trim());
+              }}
+              content={modalTexts.content}
+              cancelText={modalTexts.cancelText}
+              submitText={modalTexts.submitText}
+            />
+          );
+        })()}
 
         <AddButton onClick={() => props.setIsSetings(!props.IsSetings)}>
           <MdSettings color="white" size={22} />

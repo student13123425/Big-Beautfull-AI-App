@@ -19,6 +19,8 @@ const PageContainer = styled.div`
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  pointer-events: auto;
+  isolation: isolate;
 
   &::-webkit-scrollbar {
     width: 0px;

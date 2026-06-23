@@ -1,19 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FiFile } from 'react-icons/fi';
+import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/placeholders';
 
 // Component props
 type FilePlaceholderProps = {
   onClick?: () => void;
   message?: string;
   className?: string;
+  language?: string;
 };
 
 const FilePlaceholder: React.FC<FilePlaceholderProps> = ({
   onClick,
-  message = 'No file selected',
-  className
+  message,
+  className,
+  language
 }) => {
+  const actualMessage = message || (() => {
+    const lang = (language as PlaceholderLanguage) || 'English';
+    return getNoSubjectSelectedText(lang).noFileSelected;
+  })();
   return (
     <Container
       onClick={onClick}
@@ -22,7 +29,7 @@ const FilePlaceholder: React.FC<FilePlaceholderProps> = ({
       aria-label={onClick ? 'Select file' : 'File placeholder'}
     >
       <FileIcon />
-      <Message>{message}</Message>
+      <Message>{actualMessage}</Message>
       {onClick && <ActionText>Click to select</ActionText>}
     </Container>
   );
@@ -30,50 +37,45 @@ const FilePlaceholder: React.FC<FilePlaceholderProps> = ({
 
 export default FilePlaceholder;
 
-// Styled components with static colors
+// Styled components with static colors - matching Materie.tsx visual style
 const Container = styled.div<{ $clickable: boolean }>`
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  min-height: 0;
   width: 100%;
-  padding: 40px 24px;
-  border: 2px dashed ${props => (props.$clickable ? '#6c757d' : '#dee2e6')};
-  border-radius: 12px;
-  background-color: #ffffff;
-  cursor: ${props => (props.$clickable ? 'pointer' : 'default')};
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
-  transition: all 0.3s ease;
-  text-align: center;
-  box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    border: none;
-flex: 1;
+  height: 100%;
+  border: none;
+
   &:hover {
-    border-color: ${props => (props.$clickable ? '#000000' : '#dee2e6')};
-    background-color: ${props => (props.$clickable ? '#f8f9fa' : '#ffffff')};
+    border-color: ${props => (props.$clickable ? '#000000' : 'transparent')};
+    background-color: ${props => (props.$clickable ? '#f8f9fa' : 'transparent')};
     transform: ${props => (props.$clickable ? 'translateY(-2px)' : 'none')};
     box-shadow: ${props =>
       props.$clickable
         ? '0 6px 12px rgba(0, 0, 0, 0.08)'
-        : '0 4px 6px rgba(0, 0, 0, 0.03)'};
+        : 'none'};
   }
 `;
 
 const FileIcon = styled(FiFile)`
-  font-size: 64px;
+  font-size: 130px;
   margin-bottom: 16px;
-  color: #6c757d;
+  color: #b3b3b3;
   opacity: 0.8;
 `;
 
 const Message = styled.p`
-  font-size: 32px;
-  font-weight: 500;
-  margin: 0 0 8px;
-  color: #353535;
+  font-size: 28px;
+  font-weight: 100;
+  margin: 0;
+  color: #b3b3b3;
   user-select: none;
+  text-align: center;
+  width: 350px;
 `;
 
 const ActionText = styled.span`

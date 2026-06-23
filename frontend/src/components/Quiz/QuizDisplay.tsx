@@ -14,6 +14,7 @@ import useKeyPress from '../../hooks/useKeyPress';
 import QuizDisplaySection from './QuizDisplaySection';
 import QuizDisplayEvaluare from './QuizDisplayEvaluare';
 import { clear_evaluare } from '../../scripts/network';
+import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/placeholders';
 
 const Container = styled.div`
   flex: 1;
@@ -154,21 +155,39 @@ const QuestionGroup = styled.div`
 `;
 
 const EmptyState = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  height: 100%;
-  color: #94a3b8;
-  font-size: 18px;
-  font-weight: 500;
-  text-align: center;
-  padding: 40px;
-  
+  align-items: center;
+  gap: 1rem;
+  min-height: 0;
+
   svg {
-    font-size: 48px;
+    font-size: 130px;
     margin-bottom: 16px;
-    opacity: 0.7;
+    color: #b3b3b3;
+    opacity: 0.8;
+  }
+
+  h1 {
+    text-align: center;
+    width: 350px;
+    user-select: none;
+    color: #b3b3b3;
+    font-weight: 100;
+    font-size: 28px;
+    margin: 0;
+  }
+
+  div {
+    text-align: center;
+    width: 350px;
+    user-select: none;
+    color: #b3b3b3;
+    font-weight: 100;
+    font-size: 14px;
+    margin: 0;
   }
 `;
 
@@ -255,7 +274,7 @@ const GlobalContainer = styled.div<GlobalContainerProps>`
         `}
 `;
 
-export default function QuizDisplay(props: {correction:AiTextCorectionElement, quiz: Quiz | null,setError:Function }) {
+export default function QuizDisplay(props: {correction:AiTextCorectionElement, quiz: Quiz | null,setError:Function, language?: string }) {
     const [CorrectAnswrs, setCorrectAnswers] = useState<number[][]>([]);
     const [Answrs, setAnswers] = useState<string[][]>([]);
     const [IsFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -293,14 +312,14 @@ export default function QuizDisplay(props: {correction:AiTextCorectionElement, q
         });
     };
     if (!props.quiz) {
+        const lang = (props.language as PlaceholderLanguage) || 'English';
+        const placeholderTexts = getNoSubjectSelectedText(lang);
         return (
             <Container>
                 <EmptyState>
-                    <FaRegFileAlt size={48} />
-                    No quiz selected
-                    <div style={{ fontSize: 14, marginTop: 8 }}>
-                        Select or generate a quiz to view questions
-                    </div>
+                    <FaRegFileAlt size={130} />
+                    <h1>{placeholderTexts.noQuizSelected}</h1>
+                    <div>Select or generate a quiz to view questions</div>
                 </EmptyState>
             </Container>
         );

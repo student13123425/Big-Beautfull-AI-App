@@ -233,12 +233,14 @@ export default function DisplaySintezaItem({
   selected,
   setError,
   file,
+  language,
 }: {
   AskQustionOutput: AskQuestion;
   materie: Materie;
   selected: FileD | null;
   setError: Function;
   file: FishierMaterie | null;
+  language?: string;
 }) {
   const [isOpen, setIsOpen] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -341,7 +343,7 @@ export default function DisplaySintezaItem({
     ? file.path.split('.')[file.path.split(".").length - 1] 
     : "null";
 
-  if (selected === null) return <FilePlaceholder />;
+  if (selected === null) return <FilePlaceholder language={language} />;
 
   if (IsAskingQuestion) {
     return (

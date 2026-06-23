@@ -34,13 +34,13 @@ const Hide=styled.div`
   display: none;
 `
 
-export default function Browser(props:{File:FileD|null,setFile:Function,materie:Materie,file_list:FileD[],setError:Function}) {
+export default function Browser(props:{File:FileD|null,setFile:Function,materie:Materie,file_list:FileD[],setError:Function,language?:string}) {
   if(props.File===null)
       return (
                 <Container>
                   {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'}/>}
                   <BrowserContainer>
-                    <FilePlaceholder/>
+                    <FilePlaceholder language={props.language}/>
                   </BrowserContainer>
                 </Container>
               )
@@ -48,7 +48,7 @@ export default function Browser(props:{File:FileD|null,setFile:Function,materie:
     <Container>
       {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'}/>}
       <BrowserContainer>
-        {File===null?<FilePlaceholder/>:<Hide/>}
+        {props.File===null?<FilePlaceholder language={props.language}/>:<Hide/>}
         {(props.File.tip==='pdf'||props.File.tip==='ppt'||props.File.tip==='pptx')?<PDFViewer key={1} serverUrl='http://localhost:3000' filePath={props.File.nume}/>:<Hide/>}
         {((props.File.tip==='docx'||props.File.tip==='doc'))?<DocViewer key={2} serverUrl={'http://localhost:3000'} filePath={props.File.nume}/>:<Hide/>}
         {((props.File.tip==='jpeg'||props.File.tip==='png'||props.File.tip==='jpg'))?<ImageViewer key={2} serverUrl={'http://localhost:3000'} filePath={props.File.nume}/>:<Hide/>}

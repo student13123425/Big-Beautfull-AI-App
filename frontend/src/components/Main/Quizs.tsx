@@ -34,7 +34,7 @@ const Hide=styled.div`
   display: none;
 `
 
-export default function Quizs(props:{correction:AiTextCorectionElement,materie:Materie,file_list:FileD[],setError:Function}) {
+export default function Quizs(props:{correction:AiTextCorectionElement,materie:Materie,file_list:FileD[],setError:Function,language?:string}) {
   const [SelectedQuiz,setSelectedQuiz]=useState<Quiz|null>(null);
   useEffect(()=>{
     setSelectedQuiz(null)
@@ -57,7 +57,7 @@ export default function Quizs(props:{correction:AiTextCorectionElement,materie:M
     <Container>
       {<ResourceBrowser selectedResource={SelectedQuiz} setError={props.setError} setResource={setSelectedQuiz} resourceList={props.materie.quizs} materie={props.materie} type={'quiz'}/>}
       <QuizContainer>
-        <QuizDisplay correction={props.correction} setError={props.setError} quiz={SelectedQuiz}/>
+        <QuizDisplay correction={props.correction} setError={props.setError} quiz={SelectedQuiz} language={props.language}/>
       </QuizContainer>
     </Container>
   )
