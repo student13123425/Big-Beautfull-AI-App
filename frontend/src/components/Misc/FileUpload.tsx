@@ -4,6 +4,7 @@ import { keyframes, styled } from 'styled-components'
 import axios from 'axios'
 import { getSupportedFileTypes } from "../../scripts/aox"
 import useKeyPress from '../../hooks/useKeyPress'
+import { getUploadPageText, type UploadLanguage } from '../../lang/uploadLang'
 
 // Animation keyframes
 const fadeIn = keyframes`
@@ -746,6 +747,7 @@ const ModalButton = styled.button<{ variant?: 'primary' | 'secondary' | 'danger'
 interface FileUploadProps {
     materie: Materie;
     onClose: () => void;
+    language?: string;
 }
 
 export default function FileUpload(props: FileUploadProps) {
@@ -760,6 +762,10 @@ export default function FileUpload(props: FileUploadProps) {
     const [showReplaceModal, setShowReplaceModal] = useState(false);
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     
+    // Get translations based on language prop
+    const langToUse = (props.language as UploadLanguage) || 'English';
+    const texts = getUploadPageText(langToUse);
+
     const path: string = `./data/${props.materie.name.toLowerCase()}`;
     const subjectInitial = props.materie.name.charAt(0).toUpperCase();
     
@@ -944,8 +950,8 @@ export default function FileUpload(props: FileUploadProps) {
             
             <UploadCard>
                 <CardHeader>
-                    <CardTitle>Upload Files</CardTitle>
-                    <CardSubtitle>Add files to your subject repository</CardSubtitle>
+                    <CardTitle>{texts.uploadTitle}</CardTitle>
+                    <CardSubtitle>{texts.uploadSubtitle}</CardSubtitle>
                 </CardHeader>
                 
                 <DropZone
@@ -957,20 +963,20 @@ export default function FileUpload(props: FileUploadProps) {
                 >
                     <DropZoneContent>
                         <DropZoneIcon>📁</DropZoneIcon>
-                        <DropZoneTitle>Add your files</DropZoneTitle>
+                        <DropZoneTitle>{texts.dropZoneTitle}</DropZoneTitle>
                         <DropZoneText>
                             {isDragOver 
-                                ? "Drop your files here" 
-                                : "Drag and drop files here or click to browse"}
+                                ? texts.dropZoneDragOver 
+                                : texts.dropZoneDefault}
                         </DropZoneText>
                         
-                        <OrDivider>or</OrDivider>
+                        <OrDivider>{texts.orDivider}</OrDivider>
                         
                         <Button variant="secondary">
-                            Select Files
+                            {texts.selectFilesButton}
                         </Button>
                         <DropZoneText style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
-                            Supported types: {supportedTypes.join(', ')}
+                            {texts.supportedTypesLabel} {supportedTypes.join(', ')}
                         </DropZoneText>
                     </DropZoneContent>
                 </DropZone>
@@ -987,8 +993,8 @@ export default function FileUpload(props: FileUploadProps) {
                 {files.length > 0 && (
                     <FileList>
                         <FileListHeader>
-                            <FileListTitle>Selected Files</FileListTitle>
-                            <FileListCount>{files.length} files</FileListCount>
+                            <FileListTitle>{texts.selectedFilesTitle}</FileListTitle>
+                            <FileListCount>{files.length} {texts.filesCount}</FileListCount>
                         </FileListHeader>
                         
                         <FileGrid>
@@ -1009,7 +1015,7 @@ export default function FileUpload(props: FileUploadProps) {
                                                 {(file.size / 1024 / 1024).toFixed(2)} MB
                                                 {!isValid && (
                                                     <span style={{ color: '#ef4444', marginLeft: '8px' }}>
-                                                        (Unsupported)
+                                                        {texts.unsupportedLabel}
                                                     </span>
                                                 )}
                                             </FileSize>
@@ -1034,15 +1040,14 @@ export default function FileUpload(props: FileUploadProps) {
                 {(uploading || uploadProgress > 0) && (
                     <ProgressSection>
                         <ProgressHeader>
-                            <ProgressTitle>Upload Progress</ProgressTitle>
+                            <ProgressTitle>{texts.uploadProgressTitle}</ProgressTitle>
                             <div>{uploadProgress}%</div>
                         </ProgressHeader>
                         <ProgressBar progress={uploadProgress} />
                         <ProgressText>
                             {uploadProgress === 100 
-                                ? "🎉 Upload completed successfully!" 
-                                : <span>⏳ Uploading {files.length} file{files.length !== 1 ? 's' : ''}...</span>
-                            }
+                                ? texts.uploadCompleted 
+                                : `⏳ ${texts.uploadingText.replace('{count}', String(files.length)).replace('{plural}', files.length !== 1 ? 's' : '')}`}
                         </ProgressText>
                     </ProgressSection>
                 )}
@@ -1059,14 +1064,14 @@ export default function FileUpload(props: FileUploadProps) {
                         onClick={props.onClose} 
                         disabled={uploading}
                     >
-                        Close
+                        {texts.closeButton}
                     </Button>
                     <Button 
                         variant="danger" 
                         onClick={clearFiles} 
                         disabled={files.length === 0 || uploading}
                     >
-                        Clear All
+                        {texts.clearAllButton}
                     </Button>
                     <Button 
                         variant="primary" 
@@ -1075,11 +1080,11 @@ export default function FileUpload(props: FileUploadProps) {
                     >
                         {uploading ? (
                             <>
-                                <span>Uploading...</span>
+                                <span>{texts.uploadingStateText}</span>
                             </>
                         ) : (
                             <>
-                                <span>Upload</span>
+                                <span>{texts.uploadButtonText}</span>
                                 <span>({files.length})</span>
                             </>
                         )}
@@ -1091,9 +1096,9 @@ export default function FileUpload(props: FileUploadProps) {
                 <ModalOverlay onClick={isSmallScreen ? undefined : handleReplaceCancel}>
                     <ModalContent onClick={(e) => e.stopPropagation()}>
                         <ModalHeader>
-                            <ModalTitle>Replace Existing Files?</ModalTitle>
+                            <ModalTitle>{texts.replaceModalTitle}</ModalTitle>
                             <ModalText>
-                                The following files already exist. Do you want to replace them?
+                                {texts.replaceModalText}
                             </ModalText>
                         </ModalHeader>
                         
@@ -1107,7 +1112,7 @@ export default function FileUpload(props: FileUploadProps) {
                         </ExistingFilesList>
                         
                         <ModalText style={{ color: '#ef4444', fontWeight: 500 }}>
-                            Warning: Replacing files cannot be undone
+                            {texts.replaceWarning}
                         </ModalText>
                         
                         <ModalButtonContainer>
@@ -1115,13 +1120,13 @@ export default function FileUpload(props: FileUploadProps) {
                                 variant="secondary" 
                                 onClick={handleReplaceCancel}
                             >
-                                Cancel
+                                {texts.cancelButton}
                             </ModalButton>
                             <ModalButton 
                                 variant="primary" 
                                 onClick={handleReplaceConfirm}
                             >
-                                Replace Files
+                                {texts.replaceFilesButton}
                             </ModalButton>
                         </ModalButtonContainer>
                     </ModalContent>

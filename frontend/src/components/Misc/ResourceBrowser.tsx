@@ -257,7 +257,7 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
         </AddButton>
 
         {isModalOpen && type === 'file' ? (
-          <FileUpload onClose={() => setIsModalOpen(false)} materie={materie} />
+          <FileUpload onClose={() => setIsModalOpen(false)} materie={materie} language={language} />
         ) : isModalOpen && type === 'quiz' ? (
           <QuizCreatePage
             materie={materie}
