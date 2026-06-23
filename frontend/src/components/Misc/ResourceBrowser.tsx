@@ -265,6 +265,7 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
             QuizList={materie.quizs}
             files={materie.files}
             onClose={() => setIsModalOpen(false)}
+            language={language}
           />
         ) : (
           <Hide />

@@ -7,6 +7,7 @@ import { clone, isValidQuizItem } from '../../scripts/aox'
 import { GenerateNewQuiz } from '../../scripts/network'
 import AcknowledgeModal from '../Misc/AcknowledgeModal'
 import { AlertTriangle } from 'lucide-react'
+import { getQuizPageText, type QuizLanguage } from '../../lang/quizLang'
 
 // Animations
 const fadeIn = keyframes`
@@ -366,7 +367,7 @@ const FileCount = styled.span`
   font-weight: 600;
 `;
 
-export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], files: FishierMaterie[], onClose: Function ,setError:Function}) {
+export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], files: FishierMaterie[], onClose: Function ,setError:Function, language?: string}) {
   const [isGrila, setIsGrila] = useState<boolean>(true);
   const [NrIntrebari, setNrIntrebari] = useState(5);
   const [IsControlDown, setIsControlDown] = useState<boolean>(false);
@@ -376,6 +377,10 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
   const [isClosing, setIsClosing] = useState<boolean>(false);
   const [IsInvalidDataModal,setIsInvalidDataModal]=useState<boolean>(false);
   const max_intrebari = [1, 20];
+
+  // Get translations based on language prop
+  const langToUse = (props.language as QuizLanguage) || 'English';
+  const texts = getQuizPageText(langToUse);
   useEffect(() => {
     let it = new QuiZRequestItem(SelectedFiles, NrIntrebari, isGrila, Title,props.materie.name)
     setRequestItem(it)
@@ -431,9 +436,9 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
 
   return (
     <Container $isClosing={isClosing}>
-      {IsInvalidDataModal?<AcknowledgeModal iconColor='yellow' message="invalid data for quiz creation" title='Data Error' onClose={()=>setIsInvalidDataModal(false)} icon={<AlertTriangle size={40} color="#a8b100"/>}/>:<></>}
+      {IsInvalidDataModal?<AcknowledgeModal iconColor='yellow' message={texts.invalidDataMessage} title={texts.invalidDataTitle} onClose={()=>setIsInvalidDataModal(false)} icon={<AlertTriangle size={40} color="#a8b100"/>}/>:<></>}
       <Header>
-        <HeaderTitle>Create Quiz</HeaderTitle>
+        <HeaderTitle>{texts.pageTitle}</HeaderTitle>
         <CloseButton onClick={handleClose}>
           <MdClose size={22} />
         </CloseButton>
@@ -441,13 +446,13 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
       
       <ContentContainer>
         <ContentCard>
-          <CardTitle>Quiz Options</CardTitle>
+          <CardTitle>{texts.cardTitle}</CardTitle>
           
           <OptionsContainer>
             <TitleGroup>
-              <GroupLabel>Quiz Title</GroupLabel>
+              <GroupLabel>{texts.quizTitleLabel}</GroupLabel>
               <TextInput 
-                placeholder='Enter quiz title...' 
+                placeholder={texts.quizTitlePlaceholder} 
                 onChange={(e) => setTitle(e.target.value)} 
                 value={Title}
               />
@@ -465,7 +470,7 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
                 </StyledCheckbox>
               </CheckboxContainer>
               <OptionLabel htmlFor="quiz-type">
-                <OptionText>Multiple choice quiz (Grila)</OptionText>
+                <OptionText>{texts.multipleChoiceLabel}</OptionText>
               </OptionLabel>
             </OptionGroup>
             
@@ -486,9 +491,9 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
                 </NumberButton>
               </NumberContainer>
               <OptionLabel>
-                <OptionText>Questions per File</OptionText>
+                <OptionText>{texts.questionsPerFileLabel}</OptionText>
                 <GroupLabel style={{ fontSize: '0.85rem' }}>
-                  {IsControlDown ? '(Ctrl: 5x increment)' : '(Hold Ctrl for larger steps)'}
+                  {IsControlDown ? '(Ctrl: 5x increment)' : texts.ctrlHint}
                 </GroupLabel>
               </OptionLabel>
             </OptionGroup>
@@ -496,7 +501,7 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
           
           <FilesContainer>
             <FileSelectionLabel>
-              Select files: <FileCount>{SelectedFiles.length} of {props.files.filter(it=>it.sinteza!==null&&!it.is_computing).length} selected</FileCount>
+              {texts.selectFilesLabel} <FileCount>{SelectedFiles.length} of {props.files.filter(it=>it.sinteza!==null&&!it.is_computing).length} selected</FileCount>
             </FileSelectionLabel>
             
             {props.files.filter(it=>it.sinteza!==null&&!it.is_computing).map((file: FishierMaterie, i: number) => {
@@ -526,8 +531,8 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
               }
               else
                 setIsInvalidDataModal(true);
-            }}>
-              Start Generation
+             }}>
+              {texts.startGenerationButton}
             </GenerateButton>
           </ButtonContainer>
         </ContentCard>
