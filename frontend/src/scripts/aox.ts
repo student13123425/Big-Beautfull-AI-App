@@ -158,21 +158,19 @@ export function get_output_content(out: string | null): string {
 }
 
 export function getSupportedLanguages():string[]{
-  return [
-    "English",
-    "Mandarin Chinese",
-    "Romanian",
-    "Spanish",
-    "Modern Standard Arabic",
-    "French",
-    "Portuguese",
-    "Russian",
-    "German",
-    "Japanese",
-    "Vietnamese",
-    "Turkish",
-    "Telugu",
-  ]
+    return [
+      "English",
+      "Mandarin Chinese",
+      "Romanian",
+      "Spanish",
+      "Modern Standard Arabic",
+      "French",
+      "Russian",
+      "German",
+      "Japanese",
+      "Vietnamese",
+      "Turkish",
+    ]
 }
 
 export function extractMarkdown(input:string):string{

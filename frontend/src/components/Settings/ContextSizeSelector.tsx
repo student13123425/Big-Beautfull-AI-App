@@ -83,13 +83,17 @@ interface ContextSizeSelectorProps {
   setValue: (value: number) => void;
   step: number;
   bounds: [number, number];
+  unit?: string;
+  description?: string;
 }
 
 export default function ContextSizeSelector({
   value,
   setValue,
   step,
-  bounds
+  bounds,
+  unit = 'Tokens',
+  description = 'Defines the maximum amount of information the AI can remember.'
 }: ContextSizeSelectorProps) {
   const [min, max] = bounds;
   
@@ -114,7 +118,7 @@ export default function ContextSizeSelector({
           <FaMinus size={14} />
         </Button>
         
-        <Display>{value.toLocaleString()} Tokens</Display>
+        <Display>{value.toLocaleString()} {unit}</Display>
         
         <Button 
           onClick={handleIncrease} 
@@ -125,7 +129,7 @@ export default function ContextSizeSelector({
         </Button>
       </SelectorContainer>
       <SubLabel>
-        Defines the maximum amount of information the AI can remember.
+        {description}
       </SubLabel>
     </Container>
   );

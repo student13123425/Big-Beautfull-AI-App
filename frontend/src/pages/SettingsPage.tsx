@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import { setContextSizeConfig, setLanguageConfig, setSystemPromptConfig, getHtmlStyleConfig, setHtmlStyleConfig } from '../scripts/network';
 import { StyleConfigList, type Config, type StyleBundle, type StyleConfig } from '../scripts/objects';
 import AnimatedDropdown from '../components/Settings/AnimatedDropdownProps';
-import { getSupportedLanguages } from '../scripts/aox';
 import ContextSizeSelector from '../components/Settings/ContextSizeSelector';
 import useKeyPress from '../hooks/useKeyPress';
 import { FaTimes } from 'react-icons/fa';
+import { getSupportedLanguages } from '../scripts/aox';
+import { getSettingsPageText, type SettingsLanguage } from '../lang/settingsLang';
 
 const PageContainer = styled.div`
   height: 100%;
@@ -175,6 +176,10 @@ export default function SettingsPage(props: {
   const supportedLanguages: string[] = getSupportedLanguages();
   const HtmlPosibleStyles = props.HtmlPosibleStyles;
 
+  // Get translations based on current language
+  const langToUse = (language as SettingsLanguage) || 'English';
+  const texts = getSettingsPageText(langToUse);
+
   useEffect(() => {
     getHtmlStyleConfig(
       (it: any) => setSelectedStyle(HtmlPosibleStyles.getStyles().map((style: StyleBundle) => style.name).indexOf(it)),
@@ -212,24 +217,24 @@ export default function SettingsPage(props: {
     <PageContainer>
       <SettingsWrapper>
         <SettingsHeader>
-          <HeaderTitle>Application Settings</HeaderTitle>
+          <HeaderTitle>{texts.pageTitle}</HeaderTitle>
           <CloseButton onClick={props.close} aria-label="Close settings">
             <FaTimes size={20} />
           </CloseButton>
         </SettingsHeader>
 
         <SettingsCard>
-          <SectionTitle>AI System Prompt</SectionTitle>
+          <SectionTitle>{texts.systemPromptTitle}</SectionTitle>
           <TextArea
             onChange={(e) => setTempPrompt(e.target.value)}
             value={tempPrompt}
-            placeholder="Define the AI's role and behavior here..."
+            placeholder={texts.systemPromptPlaceholder}
           />
         </SettingsCard>
 
         <SectionGrid>
           <SettingsCard>
-            <SectionTitle>Language</SectionTitle>
+            <SectionTitle>{texts.languageSectionTitle}</SectionTitle>
             <AnimatedDropdown
               selectedOption={language}
               options={supportedLanguages}
@@ -238,18 +243,20 @@ export default function SettingsPage(props: {
           </SettingsCard>
 
           <SettingsCard>
-            <SectionTitle>Max Context Size</SectionTitle>
+            <SectionTitle>{texts.contextSizeTitle}</SectionTitle>
             <ContextSizeSelector
               value={contextSize}
               step={1000}
               setValue={setContextSize}
               bounds={[20 * 1000, 64 * 1000]}
+              unit={texts.contextSizeUnit}
+              description={texts.contextSizeDescription}
             />
           </SettingsCard>
         </SectionGrid>
 
         <SettingsCard>
-          <SectionTitle>HTML Style</SectionTitle>
+          <SectionTitle>{texts.htmlStyleTitle}</SectionTitle>
           <AnimatedDropdown
             selectedOption={HtmlPosibleStyles.getStyles().map((it: any) => it.name)[SelectedStyle]}
             options={HtmlPosibleStyles.getStyles().map((it: any) => it.name)}
