@@ -7,6 +7,7 @@ import FileUpload from './FileUpload';
 import QuizCreatePage from '../Main/QuizCreatePage';
 import BrowserItem from './BrowserItem';
 import { useResizeBreakpoint } from '../../hooks/useResizeBreakpoint';
+import { getNewItemsTexts, type NewItemLanguage } from '../../lang/newItemsText';
 
 const slideInMobile = keyframes`
   from { transform: translateX(calc(-100vw + 60px)); }
@@ -165,6 +166,7 @@ interface ResourceBrowserProps {
   setResource: Function;
   setError: Function;
   selectedResource: FileD | Quiz | null;
+  language?: string;
 }
 
 const MobileGap = styled.div`
@@ -179,8 +181,11 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
   resourceList,
   setResource,
   setError,
-  selectedResource
+  selectedResource,
+  language
 }) => {
+  const lang = (language as NewItemLanguage) || 'English';
+  const newItemTexts = getNewItemsTexts(lang);
   const [isExpanded, setIsExpanded] = useState(true);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -248,7 +253,7 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
           aria-label={type === 'file' ? 'Upload file' : 'Create quiz'}
         >
           <FaPlus size={22} />
-          {isExpanded && (type === 'file' ? 'Add File' : 'Create Quiz')}
+          {isExpanded && (type === 'file' ? newItemTexts.addFile : newItemTexts.createQuiz)}
         </AddButton>
 
         {isModalOpen && type === 'file' ? (

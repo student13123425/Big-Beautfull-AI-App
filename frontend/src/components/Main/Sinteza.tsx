@@ -35,7 +35,7 @@ const BrowserContainer=styled.div`
 export default function   Sinteza(props:{File:FileD|null,setFile:Function,AskQustionOutput:AskQuestion,materie:Materie,file_list:FileD[],setError:Function,language?:string}) {
   return (
     <Container>
-      {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'}/>}
+      {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'} language={props.language}/>}
       <BrowserContainer>
         <DisplaySinteza AskQustionOutput={props.AskQustionOutput} setError={props.setError} global={props.materie} selected={props.File}  file_list={props.file_list} language={props.language} />
       </BrowserContainer>

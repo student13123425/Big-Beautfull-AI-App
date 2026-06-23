@@ -46,7 +46,7 @@ export default function Quizs(props:{correction:AiTextCorectionElement,materie:M
   if(SelectedQuiz!=null&&(SelectedQuiz.intrebari.length==0||SelectedQuiz.intrebari.every((it)=>it.intrebari.length===0))){
     return (
     <Container>
-      {<ResourceBrowser selectedResource={SelectedQuiz} setError={props.setError} setResource={setSelectedQuiz} resourceList={props.materie.quizs} materie={props.materie} type={'quiz'}/>}
+      {<ResourceBrowser selectedResource={SelectedQuiz} setError={props.setError} setResource={setSelectedQuiz} resourceList={props.materie.quizs} materie={props.materie} type={'quiz'} language={props.language}/>}
       <QuizContainer>
         <QuizDisplayError setError={props.setError} req={quiz_to_request(SelectedQuiz,props.materie.name,props.setError)} quizName={SelectedQuiz.title} errorMessage='Quiz Has No Content'/>
       </QuizContainer>
@@ -55,7 +55,7 @@ export default function Quizs(props:{correction:AiTextCorectionElement,materie:M
   }
   return (
     <Container>
-      {<ResourceBrowser selectedResource={SelectedQuiz} setError={props.setError} setResource={setSelectedQuiz} resourceList={props.materie.quizs} materie={props.materie} type={'quiz'}/>}
+      {<ResourceBrowser selectedResource={SelectedQuiz} setError={props.setError} setResource={setSelectedQuiz} resourceList={props.materie.quizs} materie={props.materie} type={'quiz'} language={props.language}/>}
       <QuizContainer>
         <QuizDisplay correction={props.correction} setError={props.setError} quiz={SelectedQuiz} language={props.language}/>
       </QuizContainer>
