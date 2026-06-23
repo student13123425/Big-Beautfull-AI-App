@@ -14,8 +14,8 @@ export let supported_models: string[] = [];
 export async function initializeSupportedModels() {
   supported_models = [
     "google/gemma-4-12b-qat",
-    "unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-Q3_K_S.gguf",
-    "unsloth/Qwen3.6-27B-GGUF/Qwen3.6-27B-Q3_K_S.gguf"
+    "unsloth/Qwen3.6-35B-A3B-GGUF",
+    "unsloth/Qwen3.6-27B-GGUF"
   ];
 }
 initializeSupportedModels();

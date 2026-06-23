@@ -201,12 +201,12 @@ app.post("/delete_materie", async (req, res) => {
 });
 
 app.post("/genereaza_sinteza", async (req, res) => {
-  handleContentGeneration(req,res);
+  await handleContentGeneration(req,res);
 });
 
 app.post("/regenereaza_sinteza", async (req, res) => {
   //todo fix join it with html regeneration
-  regenereazSinteza(req,res);
+  await regenereazSinteza(req,res);
 });
 
 app.post("/send_file", upload.single('file'), async (req, res) => {

@@ -31,7 +31,8 @@ export function generateUserFolderId(email: string, userId: number): string {
 
 export function get_model(path: string, models: ModelInfo[]): ModelInfo | null {
   const cleanPath = path.includes(":") ? path.split(":").slice(1).join(":") : path;
-
+  console.log("models:"+models);
+  console.log("path:"+path);
   const out = models.find(m => {
     const cleanModelPath = m.path.includes(":") ? m.path.split(":").slice(1).join(":") : m.path;
     
