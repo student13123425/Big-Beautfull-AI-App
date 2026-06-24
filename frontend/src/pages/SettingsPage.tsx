@@ -207,6 +207,13 @@ export default function SettingsPage(props: {
   const handleLanguageSelect = (selectedLanguage: string) => {
     setLanguage(selectedLanguage);
     setLanguageConfig(selectedLanguage, props.setError);
+    
+    // IMMEDIATELY update parent config state to propagate language app-wide
+    // without waiting for polling cycle from backend
+    if (props.config) {
+      const updatedConfig = { ...props.config, limba: selectedLanguage };
+      props.setConfig(updatedConfig);
+    }
   };
 
   const handleStyleSelect = (selectedStyle: string) => {
