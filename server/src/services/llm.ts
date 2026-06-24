@@ -18,11 +18,14 @@ export async function getCompletion(
   cfg: Config
 ): Promise<string | null> {
   try {
-    const url = process.env.LM_STUDIO_URL;
+    let url = process.env.LM_STUDIO_URL;
     if (!url) {
       throw new Error("LM_STUDIO_URL environment variable is not set");
     }
-    const client = await new LMStudioClient({ baseUrl: url });
+    // Strip any existing protocol prefix to avoid doubling (ws://, wss://, http://, https://)
+    url = url.replace(/^https?:\/\/|^wss?:\/\//, "");
+    const normalizedUrl = `ws://${url}`;
+    const client = await new LMStudioClient({ baseUrl: normalizedUrl });
     
     const modelConfig: BaseLoadModelOpts<LLMLoadModelConfig> = {
       config: { 

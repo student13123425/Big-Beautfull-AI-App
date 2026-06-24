@@ -9,8 +9,10 @@ export async function runTest() {
   console.log("--- Starting LLM Completion Unit Test ---");
 
   try {
-    const lmStudioUrl = process.env.LM_STUDIO_URL || "http://192.168.0.88:1234";
-    const address = `ws://${lmStudioUrl.replace("http://", "")}`;
+    let lmStudioUrl = process.env.LM_STUDIO_URL || "http://192.168.0.88:1234";
+    // Remove existing protocol prefix to avoid doubling (ws:// or http://)
+    lmStudioUrl = lmStudioUrl.replace(/^https?:\/\/|^ws:\/\/|^wss:\/\//, "");
+    const address = `ws://${lmStudioUrl}`;
     
     console.log(`Connecting to LM Studio at: ${address}...`);
 
@@ -30,10 +32,20 @@ export async function runTest() {
       console.log(`${index + 1}: ${model.path}`);
     });
 
-    /* 
-    // --- INFERENCE LOGIC (COMMENTED OUT) ---
-    const firstModel = models[0];
-    console.log(`Using first model: ${firstModel.path}`);
+    // Find a model that contains "qwen3.6-35b-a3b" (case-insensitive) in its path
+    const targetModelPattern = "qwen3.6-35b-a3b";
+    let selectedModel = models.find(m => 
+      m.path.toLowerCase().includes(targetModelPattern.toLowerCase())
+    );
+
+    if (!selectedModel) {
+      console.error(`No model found matching "${targetModelPattern}". Available models:`);
+      models.forEach(m => console.error(`  - ${m.path}`));
+      return;
+    }
+
+    const modelName = selectedModel.path;
+    console.log(`Using model: ${modelName}`);
 
     const config = new Config();
     const testContent = "Hello, can you provide a short greeting?";
@@ -43,7 +55,7 @@ export async function runTest() {
       testContent,
       systemPrompt,
       () => true,
-      firstModel.path,
+      modelName,
       null,
       (text) => console.log(`[RealTime] ${text}`),
       (err) => console.error(`[Error] ${err}`),
@@ -57,7 +69,6 @@ export async function runTest() {
     } else {
       console.log("\nFAILED: Received null result.");
     }
-    */
 
   } catch (error) {
     console.error("Test failed with error:", error);

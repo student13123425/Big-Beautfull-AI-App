@@ -124,8 +124,11 @@ const upload = multer({ storage: tempStorage ,limits:{fileSize:200 * 1024 * 1024
     cb(null, true);
 }});
 export async function getLmStudioDevice(): Promise<string|null> {
-  const targetIp = "127.0.0.1"; 
-  const address = `ws://${targetIp}:1234`;
+  // Read from .env, falling back to localhost:1234 default
+  let targetUrl = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234";
+  // Strip any existing protocol prefix to avoid doubling (ws://, wss://, http://, https://)
+  targetUrl = targetUrl.replace(/^https?:\/\/|^wss?:\/\//, "");
+  const address = `ws://${targetUrl}`;
 
   try {
     console.log(`Attempting to connect to LM Studio at ${address}...`);
@@ -406,7 +409,7 @@ app.use((req, res, next) => {
 
 evaluateCodeComplexity();
 evaluateDataSize();
-runTest();
+// runTest();
 setTimeout(() => {
     console.log(supported_models);
     console.log("time passed");
