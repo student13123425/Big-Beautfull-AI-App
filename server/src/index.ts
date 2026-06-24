@@ -25,6 +25,7 @@ import { __dirname } from './services/state.js';
 import { loginEndpoint, registerEndpoint, verifyTokenEndpoint } from './routes/auth.js';
 import { initializeUserDatabase } from './services/auth.js';
 import { runTest } from './test/llm_completion_test.js';
+import { ai_models_available, set_device_id } from './services/state.js';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
@@ -35,8 +36,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 export let config = new Config();
 config.load();
-export let ai_models_available: ModelInfo[] = [];
-export let device_ip: string | null = null;
+
 const TEMP_UPLOAD_DIR = path.join(__dirname, 'temp_uploads');
 const max_size:number=20;
 export let isMemOverflow = false;
@@ -137,14 +137,19 @@ export async function getLmStudioDevice(): Promise<string|null> {
     
     const models = await withTimeout(
       client.system.listDownloadedModels(),
-      2000, 
-      'Request timed out'
+      30000, 
+      'Request timed out - listDownloadedModels took too long'
     );
 
-    ai_models_available = models;
-    device_ip = address;
+    // Update the shared state variables (from state.ts) - mutate in place
+    ai_models_available.length = 0; // Clear existing array contents
+    models.forEach(m => ai_models_available.push(m));
+    
+    // Update device_ip using the setter from state.ts
+    set_device_id(address);
     
     console.log(`Successfully connected to LM Studio at ${address}`);
+    console.log(`[getLmStudioDevice] Fetched ${models.length} models from LM Studio`);
     return address;
   } catch (err) {
     console.error("LM Studio discovery failed:", err);
@@ -324,8 +329,9 @@ app.get("/studyDirect", (req, res) => {
 });
 
 app.get('/get_valid_study_lmstudio', async (req, res) => {
-  device_ip = await getLmStudioDevice();
-  if (!device_ip) res.send("no server running lmstudio was found on local network");
+  const ip = await getLmStudioDevice();
+  // device_ip is now managed by state.ts via set_device_id()
+  if (!ip) res.send("no server running lmstudio was found on local network");
   res.send("all valid");
 });
 

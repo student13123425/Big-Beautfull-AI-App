@@ -1,9 +1,23 @@
 import { Request, Response } from "express";
 import { mkdir, mkdirSync, rmSync } from "fs";
-import { broadcastStudyData, config} from "../index.js";
+import { broadcastStudyData, config, getLmStudioDevice } from "../index.js";
 import { get_file_name, getDirectoryContent } from "../services/file-processor.js";
 import { ai_models_available, data_study, device_ip, htmlStyles } from "../services/state.js";
 import { AiServerError } from "../objects/AiTypes.js";
+
+/**
+ * Ensures ai_models_available is populated by calling getLmStudioDevice if empty.
+ */
+async function ensureModelsAvailable(): Promise<void> {
+  if (ai_models_available.length === 0) {
+    console.log("[studyRoutes] ai_models_available is empty, fetching models from LM Studio...");
+    try {
+      await getLmStudioDevice();
+    } catch (err) {
+      console.error("[studyRoutes] Failed to fetch models from LM Studio:", err);
+    }
+  }
+}
 
 export async function addMaterie(req: Request, res: Response): Promise<void> {
   if (!req.body.name) {
@@ -56,6 +70,10 @@ export async function regenereazSinteza(req: Request, res: Response){
       res.send("n");
       return;
     }
+    
+    // Ensure models are available before proceeding
+    await ensureModelsAvailable();
+    
     const name_materie: string = req.body.name_materie;
     const file_name: string = req.body.file_name;
     
@@ -91,6 +109,9 @@ export async function regenereazSinteza(req: Request, res: Response){
 }
 
 export async function genereazSinteza(name_materie: string, file_name: string): Promise<boolean> {
+    // Ensure models are available before proceeding
+    await ensureModelsAvailable();
+    
     for (let it of data_study.data) {
         if (it.name === name_materie) {
             for (let j of it.files) {
@@ -133,6 +154,9 @@ export async function genereazSinteza(name_materie: string, file_name: string): 
 }
 
 export async function genereazHTML(name_materie: string, file_name: string): Promise<boolean> {
+    // Ensure models are available before proceeding
+    await ensureModelsAvailable();
+    
     const style_index: number | undefined = config.html_style;
 
     if (style_index === undefined || !Number.isInteger(style_index) || style_index < 0 || style_index > 9) {

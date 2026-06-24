@@ -127,7 +127,22 @@ export class FishierMaterie {
 
         try {
             let prompt = prompt_sumarizare(this.content!, this.materie, config.limba);
+            
+            // DEBUG: Log model matching details
+            console.log(`[FishierMaterie] [DEBUG] models.length = ${models?.length || 0}`);
+            if (models && models.length > 0) {
+                console.log(`[FishierMaterie] [DEBUG] First 5 model paths:`);
+                for (let i = 0; i < Math.min(5, models.length); i++) {
+                    console.log(`[FishierMaterie] [DEBUG]   ${i + 1}. ${models[i].path}`);
+                }
+            } else {
+                console.warn(`[FishierMaterie] [DEBUG] models array is empty or null!`);
+            }
+            
             const nume_model: string = supported_models?.[1]?.toLowerCase() || "";
+            console.log(`[FishierMaterie] [DEBUG] Searching for model: "${nume_model}"`);
+            console.log(`[FishierMaterie] [DEBUG] supported_models[1] = "${supported_models?.[1]}"`);
+            
             const model_full = get_model(nume_model, models);
 
             if (!model_full) {

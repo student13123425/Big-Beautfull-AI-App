@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { ai_models_available, broadcastStudyData, config, device_ip, getLmStudioDevice} from "../index.js";
+import { broadcastStudyData, getLmStudioDevice } from "../index.js";
 import { check_evaluation_parameters } from "../services/data_validation.js";
 import { get_file_name } from "../services/file-processor.js";
-import { data_study, set_device_id, set_v, v_interval } from "../services/state.js";
+import { ai_models_available, config, data_study, device_ip, set_device_id, set_v, v_interval } from "../services/state.js";
 import { AiTextCorectionElement } from "../objects/Evaluation.js";
 import { AiServerError } from "../objects/AiTypes.js";
 

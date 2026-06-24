@@ -13,9 +13,9 @@ export const max_size: number = 20;
 export let supported_models: string[] = [];
 export async function initializeSupportedModels() {
   supported_models = [
-    "google/gemma-4-12b-qat",
-    "unsloth/Qwen3.6-35B-A3B-GGUF",
-    "unsloth/Qwen3.6-27B-GGUF"
+    "gemma-4-12b-qat",
+    "qwen3.6-35b-a3b",
+    "qwen3.6-27b"
   ];
 }
 initializeSupportedModels();
@@ -77,16 +77,20 @@ export async function refresh(): Promise<void> {
 }
 
 export async function getLmStudioDevice(): Promise<string | null> {
-  const targetIp = "127.0.0.1";
-  const address = `ws://${targetIp}:1234`;
+  // Read from .env, falling back to localhost:1234 default
+  let targetUrl = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234";
+  // Strip any existing protocol prefix to avoid doubling (ws://, wss://, http://, https://)
+  targetUrl = targetUrl.replace(/^https?:\/\/|^wss?:\/\//, "");
+  const address = `ws://${targetUrl}`;
 
   try {
     console.log(`Attempting to connect to LM Studio at ${address}...`);
     const client = new LMStudioClient({ baseUrl: address });
-    const models = await withTimeout(client.system.listDownloadedModels(), 2000, "Request timed out");
+    const models = await withTimeout(client.system.listDownloadedModels(), 30000, "Request timed out - listDownloadedModels took too long");
     ai_models_available = models;
     device_ip = address;
     console.log(`Successfully connected to LM Studio at ${address}`);
+    console.log(`[getLmStudioDevice] Fetched ${models.length} models from LM Studio`);
     return address;
   } catch (err) {
     console.error("LM Studio discovery failed:", err);

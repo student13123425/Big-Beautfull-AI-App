@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ai_models_available, broadcastConfigData, config, device_ip, getLmStudioDevice} from "../index.js";
-import { set_device_id, supported_models } from "../services/state.js";
+import { broadcastConfigData, getLmStudioDevice } from "../index.js";
+import { ai_models_available, config, device_ip, set_device_id, supported_models } from "../services/state.js";
 
 export async function getModels(req: Request, res: Response): Promise<void> {
   try {
