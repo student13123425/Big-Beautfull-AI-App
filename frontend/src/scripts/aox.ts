@@ -181,7 +181,15 @@ export function extractMarkdown(input:string):string{
     return it
   return it.split("```")[0]
 }
-//todo config parameters check server side
+export function extractHTML(input:string):string{
+ if(!input.includes("```html"))
+    return input
+  let it:string=input.split("```html")[1];
+  if(!it.includes('```'))
+    return it
+  return it.split("```")[0]
+}
+
 export function getNumber(input: string): number | null {
     const match = input.match(/\d+/);
     return match ? parseInt(match[0], 10) : null;

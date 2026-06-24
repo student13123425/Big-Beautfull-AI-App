@@ -228,10 +228,10 @@ export async function handleContentGeneration(req: Request, res: Response) {
         return res.send("n");
     }
 
-    // const htmlSuccess = await genereazHTML(name_materie, file_name);
-    // if (!htmlSuccess) {
-    //     return res.send("n");
-    // }
+    const htmlSuccess = await genereazHTML(name_materie, file_name);
+    if (!htmlSuccess) {
+        return res.send("n");
+    }
 
     return res.send("y");
 }

@@ -338,7 +338,6 @@ export default function DisplaySintezaItem({
     setIsRefreshing(true);
     setTimeout(() => setIsRefreshing(false), 1500);
   };
-
   if (file === null) return null;
 
   const nameSegments = file.path.split('/');

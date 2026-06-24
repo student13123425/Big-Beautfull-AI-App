@@ -5,6 +5,7 @@ import { ImFileEmpty } from 'react-icons/im';
 import { FaHtml5 } from "react-icons/fa";
 import type { FishierMaterie } from '../../scripts/objects';
 import { getSintezaGenerationText, type SintezaGenerationLanguage } from '../../lang/sintezaGenerationLang';
+import { extractContent, extractHTML } from '../../scripts/aox';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -119,11 +120,10 @@ export default function DisplaySintezaItemContentHTML({
   const texts = getSintezaGenerationText(langToUse);
 
   if (file === null) return null;
-
-  // Check if html_file exists and is not an empty string
+  console.log()
   const hasHtml = !!file.html_file && file.html_file.trim() !== '';
-  
-  // Convert [20, 200] range to [0.2, 2.0] scale factor
+  const HTMLcontent=extractHTML(extractContent(file.html_file ?? '')?? '')
+  console.log(HTMLcontent);
   const zoomFactor = Math.max(0.2, Math.min(2.0, Zoom / 100));
 
   return (
@@ -149,7 +149,7 @@ export default function DisplaySintezaItemContentHTML({
       ) : (
         <ZoomWrapper $zoomFactor={zoomFactor}>
           <HtmlFrame 
-            src={file.html_file ?? ''} 
+            src={HTMLcontent} 
             title="HTML Synthesis"
             sandbox="allow-scripts allow-same-origin"
           />
