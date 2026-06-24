@@ -15,7 +15,7 @@ export async function DeactivateErrorMessage(
         headers: {
           'Content-Type': 'application/json',
         },
-        responseType: 'text', // Important for handling plain text responses
+        responseType: 'text',
       }
     );
 
@@ -70,7 +70,7 @@ export async function submiForEvaluation( quiz: Quiz,
       headers: {
         'Content-Type': 'application/json',
       },
-      responseType: 'text' 
+      responseType: 'text'
     });
 
     return response.data === "y";
@@ -87,7 +87,7 @@ export async function submiForEvaluation( quiz: Quiz,
 export async function clear_evaluare(setError: Function): Promise<boolean> {
   try {
     const response = await axios.get(`${addr}/ClearEvaluare`, {
-      responseType: 'text' // Important for handling plain text response
+      responseType: 'text'
     });
     
     return response.data === 'y';
@@ -104,12 +104,9 @@ export async function get_config(
   try {
     const { data } = await axios.get<Partial<Config>>(`${addr}/config`);
     const config = new Config();
-
-    // Use loadFrom to validate and load the data into the object
     if (config.loadFrom(data)) {
       setConfig(config);
     } else {
-      // The data from the server didn't match the expected structure
       setError(
         "Failed to load configuration — the data received from the server was invalid."
       );
@@ -144,7 +141,8 @@ export async function getSupportedModels(
   setModels: Function,
   setError: Function
 ): Promise<void> {
-  console.error(`${addr}/select_model`);
+
+
   try {
     
     const { data } = await axios.get<string[]>(`${addr}/select_model`);
@@ -330,7 +328,6 @@ export async function getCustomModels(
   }
 }
 
-// update get_data to use functional setState
 export async function get_data(
   setData: Function,
   setError: Function,
@@ -393,26 +390,31 @@ export async function getValidStudyLmstudio(
   setError: (errorMsg: string) => void,
 ) {
   try {
-    // The endpoint now returns a string, so we expect <string>.
+
+
     const { data: responseMessage } = await axios.get<string>(`${addr}/get_valid_study_lmstudio`);
     setData(responseMessage)
   } catch (err: any) {
-    // This block handles network errors or non-2xx server responses.
+
+
     if (err.response) {
       const { status, data: respData, statusText } = err.response;
-      // The server might send the error as plain text in the response body.
+
+
       const serverMsg = typeof respData === 'string' ? respData : (respData?.message || respData?.error || statusText || "Unknown server error");
 
       setError(
         `Unable to validate study — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
-      // The request was made but no response was received.
+
+
       setError(
         `Network error — no response received when attempting to reach ${addr}/get_valid_study_lmstudio.`
       );
     } else {
-      // Something happened in setting up the request.
+
+
       setError(`Unexpected error while fetching validation: ${err.message}`);
     }
   }
@@ -594,15 +596,18 @@ export async function delete_file(
       { filename },
       {
         headers: { 'Content-Type': 'application/json' },
-        // We expect no body on 204, so void
+
+
         validateStatus: (status) => status === 204,
       }
     );
 
-    // If we get here, it's a 204
+
+
     return true;
   } catch (error: any) {
-    // Axios will throw if status !== 204 or on network errors
+
+
     let message: string;
     if (error.response) {
       message = `Failed to delete file (status ${error.response.status}): ${error.response.data || error.response.statusText}`;
@@ -655,7 +660,6 @@ export async function loadDocumentContent(input:DocLoaderParams): Promise<string
   throw new Error(`Unsupported file type: .${fileExtension}`);
 };
 
-// networkUtils.ts
 export const fetchFileFromServer = async (path: string, serverUrl: string = "http://localhost:3000"): Promise<Uint8Array> => {
   try {
     const response = await fetch(`${serverUrl}/get_file`, {
