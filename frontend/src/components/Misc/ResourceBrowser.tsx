@@ -243,6 +243,7 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
               }}
               materie_name={type === 'quiz' ? materie.name : undefined}
               list={type === 'file' ? materie.files : null}
+              language={language}
             />
           ))}
         </Content>

@@ -267,7 +267,7 @@ export default function TopBar(props: {
         {IsConfirm !== null && <ConfirmModal title='stergere materie' content={`Esti sigur că vrei să ștergi această materie și toate fișierele sale?`} onClose={(value: boolean) => {
           setIsConfirm(null);
           if (value) delete_materie(props.onError, IsConfirm);
-        }} />}
+        }} language={props.language} />}
         {IsModal && (() => {
           const lang = (props.language as AddMaterieLanguage) || 'Romanian';
           const modalTexts = getAddMaterieText(lang);

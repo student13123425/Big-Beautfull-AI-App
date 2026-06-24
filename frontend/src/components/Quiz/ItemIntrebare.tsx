@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import type { Intrebare } from '../../scripts/objects';
 import { clone } from '../../scripts/aox';
+import { getQuizComponentsText, type QuizComponentsLanguage } from '../../lang/quizComponents';
 
 const Container = styled.div<{ $isUnanswered: boolean }>`
   width: 100%;
@@ -213,7 +214,10 @@ export default function ItemIntrebare(props: {
   isFailedSubmit: boolean
   setSelected:Function,
   setAnswer:Function
+  language?: string
 }) {
+  const lang = (props.language as QuizComponentsLanguage) || 'English';
+  const quizTexts = getQuizComponentsText(lang);
   const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
   const [Answer,setAnswer]=useState<string>("")
   const is_grila:boolean=props.item.raspunsuri.length!==0
@@ -261,13 +265,13 @@ export default function ItemIntrebare(props: {
             {answer}
           </AnswerItem>
         ))}
-        {props.item.raspunsuri.length===0?<TextAreaInput placeholder='raspunde la intrebare' onChange={(e)=>{
+        {props.item.raspunsuri.length===0?<TextAreaInput placeholder={quizTexts.answerQuestionPlaceholder} onChange={(e)=>{
           setAnswer(e.target.value);
         }} value={Answer}/>:<></>}
       </ContainerAnswers>
       {isUnanswered && (
         <ErrorMessage>
-          Trebuie să selectați un răspuns pentru această întrebare
+          {quizTexts.mustSelectAnswer}
         </ErrorMessage>
       )}
     </Container>

@@ -79,6 +79,7 @@ export default function QuizDisplaySection(props: {
   CorrectAnswrs: number[][];
   Answers:string[]
   setAnswers:Function
+  language?: string
 }) {
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -163,6 +164,7 @@ export default function QuizDisplaySection(props: {
               Corect={props.CorrectAnswrs[props.index] ?? []}
               key={question.id} 
               item={question} 
+              language={props.language}
             />
           ))}
         </ContentWrapper>

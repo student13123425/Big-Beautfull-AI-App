@@ -15,6 +15,7 @@ import { FcImageFile } from 'react-icons/fc';
 import type { Quiz, FileD, FishierMaterie } from '../../scripts/objects';
 import { delete_file, DeleteQuiz } from '../../scripts/network';
 import ConfirmModal from './ConfirmModal';
+import { getCommonModalText, type CommonModalLanguage } from '../../lang/modals/commonModals';
 
 const computingPulse = keyframes`
   0% { background-color: #fff6; }
@@ -153,6 +154,7 @@ interface BrowserItemProps {
   selectedItem: Quiz | FileD | null;
   materie_name?: string;
   list: FishierMaterie[] | null;
+  language?: string;
 }
 
 const BrowserItem: React.FC<BrowserItemProps> = ({ 
@@ -164,8 +166,11 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
   setError,
   selectedItem,
   materie_name,
-  list
+  list,
+  language
 }) => {
+  const modalLang = (language as CommonModalLanguage) || 'English';
+  const modalTexts = getCommonModalText(modalLang);
   const [isComputing, setIsComputing] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -258,8 +263,8 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
       </Container>
       {isModalOpen && (
         <ConfirmModal 
-          title={`Delete ${type === 'quiz' ? 'Quiz' : 'File'}`}
-          content={`Are you sure you want to delete ${name}?`}
+          title={`${modalTexts.deleteLabel} ${type === 'quiz' ? modalTexts.quizLabel : modalTexts.fileLabel}`}
+          content={`${modalTexts.areYouSure} ${name}?`}
           onClose={(confirmed) => {
             setIsModalOpen(false);
             if (confirmed) confirmDelete();

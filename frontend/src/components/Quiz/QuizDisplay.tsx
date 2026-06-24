@@ -15,6 +15,7 @@ import QuizDisplaySection from './QuizDisplaySection';
 import QuizDisplayEvaluare from './QuizDisplayEvaluare';
 import { clear_evaluare } from '../../scripts/network';
 import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/placeholders';
+import { getQuizComponentsText, type QuizComponentsLanguage } from '../../lang/quizComponents';
 
 const Container = styled.div`
   flex: 1;
@@ -281,6 +282,8 @@ export default function QuizDisplay(props: {correction:AiTextCorectionElement, q
     const [IsShowRezolut, setIsShowRezout] = useState<boolean>(false);
     const [SelectedAnswers, setSelectedAnswers] = useState<boolean[][]>([]);
     const is_grila: boolean = props.quiz?.is_grila !== undefined ? props.quiz?.is_grila : false;
+    const lang = (props.language as QuizComponentsLanguage) || 'English';
+    const quizTexts = getQuizComponentsText(lang);
     useKeyPress('Escape', () => setIsFullscreen(false));
     useEffect(() => {
         if (props.quiz) {     
@@ -339,21 +342,21 @@ export default function QuizDisplay(props: {correction:AiTextCorectionElement, q
                 <QuizMeta>
                     <MetaItem>
                         <FaListAlt />
-                        {quiz.intrebari.length} sections
+                        {quiz.intrebari.length} {quizTexts.sections}
                     </MetaItem>
                     <MetaItem>
                         <FaQuestionCircle />
-                        {quiz.intrebari.reduce((acc, section) => acc + section.intrebari.length, 0)} questions
+                        {quiz.intrebari.reduce((acc, section) => acc + section.intrebari.length, 0)} {quizTexts.questions}
                     </MetaItem>
                     <MetaItem>
                         <FaFileAlt />
-                        {quiz.intrebari.length} source files
+                        {quiz.intrebari.length} {quizTexts.sourceFiles}
                     </MetaItem>
                 </QuizMeta>
             </QuizHeader>
             {IsShowRezolut ? (
                 is_grila ? (
-                    <QuizDIsplayRezultate quiz={quiz} correct={CorrectAnswrs} />
+                    <QuizDIsplayRezultate quiz={quiz} correct={CorrectAnswrs} language={props.language} />
                 ) : (
                     <QuizDisplayEvaluare 
                         correction={props.correction} 
@@ -377,6 +380,7 @@ export default function QuizDisplay(props: {correction:AiTextCorectionElement, q
                                     setCorrectAnswers={setCorrectAnswers} 
                                     setSelectedAnswers={setSelectedAnswers} 
                                     key={index}
+                                    language={props.language}
                                 />
                             </div>
                         ))}
@@ -397,7 +401,7 @@ export default function QuizDisplay(props: {correction:AiTextCorectionElement, q
                         setIsShowRezout(true);
                     }
                 }}>
-                    {IsShowRezolut ? "Retake Quiz" : !is_grila?"Evaluate Answers":"Show Results"}
+                    {IsShowRezolut ? quizTexts.retakeQuiz : !is_grila ? quizTexts.evaluateAnswers : quizTexts.showResults}
                 </FooterButton>
             </Footer>
         </GlobalContainer>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { MdClose } from 'react-icons/md';
 import useKeyRelease from '../../hooks/useKeyRelease';
+import { getCommonModalText, type CommonModalLanguage } from '../../lang/modals/commonModals';
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -179,9 +180,12 @@ interface ConfirmModalProps {
   onClose: (confirmed: boolean) => void;
   title: string;
   content: string | React.ReactNode;
+  language?: string;
 }
 
-export default function ConfirmModal({ onClose, title, content }: ConfirmModalProps) {
+export default function ConfirmModal({ onClose, title, content, language }: ConfirmModalProps) {
+  const lang = (language as CommonModalLanguage) || 'English';
+  const modalTexts = getCommonModalText(lang);
   const [isClosing, setIsClosing] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -237,14 +241,14 @@ export default function ConfirmModal({ onClose, title, content }: ConfirmModalPr
         
         <ButtonContainer>
           <ActionButton onClick={() => handleClose(false)}>
-            Cancel
+            {modalTexts.cancel}
           </ActionButton>
           <ActionButton 
             $primary 
             onClick={() => handleClose(true)}
             autoFocus
           >
-            Confirm
+            {modalTexts.confirm}
           </ActionButton>
         </ButtonContainer>
       </ModalContainer>

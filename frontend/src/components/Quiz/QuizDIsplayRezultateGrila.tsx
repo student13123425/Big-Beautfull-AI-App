@@ -2,6 +2,7 @@ import React from 'react';
 import type { Quiz } from '../../scripts/objects';
 import { styled } from 'styled-components';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { getQuizComponentsText, type QuizComponentsLanguage } from '../../lang/quizComponents';
 
 // Add type for ContentText props
 interface ContentTextProps {
@@ -152,7 +153,9 @@ const EmptyMessage = styled.div`
   font-style: italic;
 `;
 
-export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number[][] }) {
+export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number[][], language?: string }) {
+  const lang = (props.language as QuizComponentsLanguage) || 'English';
+  const quizTexts = getQuizComponentsText(lang);
   let total_intrebari:number=0
   let total_correcte:number=0
   for(let c of props.correct)
@@ -163,7 +166,7 @@ export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number
   return (
     <Container>
       <SectionHeader>
-        <SectionTitle>Răspunsuri Greșite</SectionTitle>
+        <SectionTitle>{quizTexts.wrongAnswers}</SectionTitle>
       </SectionHeader>
       <Sections>
         {props.quiz.intrebari.map((section, i) => (
@@ -181,14 +184,14 @@ export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number
                   <TextWrapper>
                     <Bold>{intrebare.text_intrebare}</Bold>
                     <div style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>
-                      Răspuns greșit (Corect: <Bold>{["a", "b", "c", "d"][intrebare.raspuns_correct_index]}</Bold>)
+                      {quizTexts.wrongAnswerCorrect} <Bold>{["a", "b", "c", "d"][intrebare.raspuns_correct_index]}</Bold>)
                     </div>
                   </TextWrapper>
                 </ContentText>
               ))}
               
               {section.intrebari.filter(v => !props.correct[i].includes(v.id)).length === 0 && (
-                <EmptyMessage>Niciun răspuns greșit</EmptyMessage>
+                <EmptyMessage>{quizTexts.noWrongAnswers}</EmptyMessage>
               )}
             </SectionContent>
           </GroupRaspunsuri>
@@ -196,7 +199,7 @@ export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number
       </Sections>
       
       <SectionHeader>
-        <SectionTitle>Răspunsuri Corecte</SectionTitle>
+        <SectionTitle>{quizTexts.correctAnswers}</SectionTitle>
       </SectionHeader>
       <Sections>
         {props.quiz.intrebari.map((section, i) => (
@@ -214,14 +217,14 @@ export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number
                   <TextWrapper>
                     <Bold>{intrebare.text_intrebare}</Bold>
                     <div style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>
-                      Răspuns corect
+                      {quizTexts.correctAnswer}
                     </div>
                   </TextWrapper>
                 </ContentText>
               ))}
               
               {section.intrebari.filter(v => props.correct[i].includes(v.id)).length === 0 && (
-                <EmptyMessage>Niciun răspuns corect</EmptyMessage>
+                <EmptyMessage>{quizTexts.noCorrectAnswers}</EmptyMessage>
               )}
             </SectionContent>
           </GroupRaspunsuri>
@@ -229,14 +232,14 @@ export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number
       </Sections>
       
       <SectionHeader>
-        <SectionTitle>Concluzie</SectionTitle>
+        <SectionTitle>{quizTexts.conclusion}</SectionTitle>
       </SectionHeader>
       <Sections>
         {props.quiz.intrebari.map((section, i) => {
           const percentage = Math.floor((props.correct[i].length / section.intrebari.length) * 100);
           return (
             <ConclusionItem key={i}>
-              <Bold>File:</Bold> {section.title}
+              <Bold>{quizTexts.fileLabel}</Bold> {section.title}
               <ScoreBadge>
                 {props.correct[i].length}/{section.intrebari.length} ({percentage}%)
               </ScoreBadge>
@@ -244,7 +247,7 @@ export default function QuizDIsplayRezultate(props: {quiz: Quiz, correct: number
           );
         })}
           <ConclusionItem key={99999999}>
-              <Bold>Total</Bold>
+              <Bold>{quizTexts.total}</Bold>
               <ScoreBadge>
                 {total_correcte}/{total_intrebari} ({total_procentage}%)
               </ScoreBadge>
