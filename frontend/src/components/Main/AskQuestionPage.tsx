@@ -10,7 +10,6 @@ import MarkdownRenderer from '../Misc/MarkdownRenderer';
 import { extractContent } from '../../scripts/aox';
 import { getAskQuestionText, type AskQuestionLanguage } from '../../lang/askQuestionLang';
 
-// Animation keyframes
 const scaleIn = keyframes`
   from { 
     transform: scale(0.98);
@@ -417,7 +416,6 @@ const EmptyAnswer = styled.div`
   font-style: italic;
 `;
 
-// Main component
 interface AIAssistantProps {
     file:FishierMaterie,
   onClose: () => void;
@@ -432,7 +430,6 @@ export default function AskQuestionPage({
   AskQustionOutput,
   language
 }: AIAssistantProps) {
-  // Get translations based on language prop
   const langToUse = (language as AskQuestionLanguage) || 'English';
   const texts = getAskQuestionText(langToUse);
 

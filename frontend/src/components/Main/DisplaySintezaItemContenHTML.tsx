@@ -98,7 +98,6 @@ const HtmlFrame = styled.iframe`
   background-color: white;
 `;
 
-// Wrapper to handle the CSS transform scaling for the iframe
 const ZoomWrapper = styled.div<{ $zoomFactor: number }>`
   transform: scale(${props => props.$zoomFactor});
   transform-origin: top left;
@@ -115,7 +114,6 @@ export default function DisplaySintezaItemContentHTML({
   startSynthesisGeneration,
   language
 }: Props) {
-  // Get translations based on language prop
   const langToUse = (language as SintezaGenerationLanguage) || 'English';
   const texts = getSintezaGenerationText(langToUse);
 

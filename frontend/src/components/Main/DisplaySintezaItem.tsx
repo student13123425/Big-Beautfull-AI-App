@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
-// Hash comparison to detect actual data changes from polling
 let lastFileHash: string = '';
 function getFileHash(file: FishierMaterie | null): string {
   if (!file) return 'null';
@@ -234,7 +233,6 @@ const Icon = styled.div`
   }
 `;
 
-// Main component
 export default function DisplaySintezaItem({
   AskQustionOutput,
   materie,
@@ -260,7 +258,6 @@ export default function DisplaySintezaItem({
   const [IsAskingQuestion, setIsAskingQuestion] = useState<boolean>(false);
   const [IsHtml, setIsHtml] = useState<boolean>(() => getIsHtmlState());
 
-  // Get translations based on language prop
   const langToUse = (language as SintezaGenerationLanguage) || 'English';
   const texts = getSintezaGenerationText(langToUse);
 
@@ -319,8 +316,6 @@ export default function DisplaySintezaItem({
 
      setIsGenerating(true);
      try {
-       // Use /genereaza_sinteza endpoint which maps to handleContentGeneration
-       // This generates BOTH sinteza AND html sequentially in order
        const response = await axios.post(`${addr}/genereaza_sinteza`, {
          name_materie: materie.name,
          file_name: file.path.split('/').pop() || file.path,

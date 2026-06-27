@@ -246,7 +246,6 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
 
   const complexity = evaluatePasswordComplexity(formData.password);
 
-  // Handle Enter key press to submit form
   useKeyPress('Enter', () => {
     const form = document.querySelector('form');
     if (form) form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));

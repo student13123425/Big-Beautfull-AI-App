@@ -4,7 +4,6 @@ import type { FileD, Materie, FishierMaterie, AskQuestion } from '../../scripts/
 import DisplaySintezaItem from './DisplaySintezaItem'
 import { getMaterieFile } from '../../scripts/aox'
 
-// Hash comparison to detect actual data changes from polling
 let lastDisplaySintezaHash: string = '';
 function getDisplaySintezaHash(global: Materie, selected: FileD | null): string {
   let hash = `${global.name}:${selected?.nume ?? 'none'}:`;
@@ -32,8 +31,8 @@ const Container = styled.div`
   scrollbar-width: none;
   -ms-overflow-style: none;
   max-height: 100%;
-  min-height: 0;       /* ← allows vertical shrinking */
-  min-width: 0;   
+  min-height: 0;
+  min-width: 0;
 `
 
 const EmptyState = styled.div`

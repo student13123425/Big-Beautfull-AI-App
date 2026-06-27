@@ -12,7 +12,7 @@ import useKeyRelease from '../../hooks/useKeyRelease'
 import { getAddMaterieText, type AddMaterieLanguage } from '../../lang/modals/addMaterieText'
 
 const Container = styled.div`
-  position: relative; /* Establishes a stacking context */
+  position: relative;
   width: 100%;
   height: 4rem;
   display: flex;
@@ -23,7 +23,7 @@ const Container = styled.div`
   overflow-x: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   border-bottom: 1px solid rgba(255,255,255,0.15);
-  z-index: 100002; /* Ensures top bar is above menu and overlay */
+  z-index: 100002;
 
   &::-webkit-scrollbar {
     display: none;
@@ -165,7 +165,6 @@ const Overlay = styled.div<{ isOpen: boolean }>`
   backdrop-filter: blur(4px);
   z-index: 10000;
   
-  /* Animation styles */
   transition: opacity 0.3s ease-in-out;
   opacity: ${({ isOpen }) => isOpen ? 1 : 0};
   pointer-events: ${({ isOpen }) => isOpen ? 'auto' : 'none'};
@@ -200,16 +199,10 @@ export default function TopBar(props: {
     .map((it) => capitalizeFirstLetter(it.toLowerCase()))
     .sort((i, j) => i.localeCompare(j)), [props.data]);
 
-  // Pre-calculate the active item to ensure React properly tracks it
   const activeMaterie: string = useMemo(() => {
     if (!props.Selected) return '';
     return props.Selected;
   }, [props.Selected]);
-
-  // Debug logs for state tracking (disabled)
-  // console.log('[TopBar] props.Selected:', props.Selected, 'type:', typeof props.Selected);
-  // console.log('[TopBar] activeMaterie:', activeMaterie);
-  // console.log('[TopBar] list:', list);
 
   const checkOverflow = useCallback(() => {
     const containerNode = containerRef.current;
@@ -219,7 +212,6 @@ export default function TopBar(props: {
       const availableWidth = containerNode.clientWidth;
       const isNowOverflowing = totalContentWidth > availableWidth + 1;
       setIsOverflowing(isNowOverflowing);
-      // Automatically close the menu if it's no longer overflowing
       if (!isNowOverflowing) {
         setOpen(false);
       }
@@ -249,7 +241,6 @@ export default function TopBar(props: {
           <OverflowContainer isOpen={Open}>
             {list.map((it, i) => {
               const isActive = Boolean(props.Selected) && it === props.Selected;
-              // console.log(`[TopBar Overflow] Item ${i}: name="${it}", isActive=${isActive}, activeMaterie="${activeMaterie}"`);
               return (
                 <Item
                   key={`${i}-${activeMaterie}`}
@@ -257,7 +248,7 @@ export default function TopBar(props: {
                   onClick={() => {
                     props.setIsSetings(false);
                     props.setSelected(it);
-                    setOpen(false); // Close menu on selection
+                    setOpen(false);
                   }}
                 >
                   {it}
@@ -316,13 +307,10 @@ export default function TopBar(props: {
         ) : (
           list.map((it, i) => {
             const isActive = Boolean(props.Selected) && it === props.Selected;
-            // console.log(`[TopBar] Item ${i}: name="${it}", isActive=${isActive}, activeMaterie="${activeMaterie}"`);
             return (
               <Item key={`${i}-${activeMaterie}`} active={isActive ? true : undefined} onClick={() => {
-                // console.log('[TopBar] Clicked item:', it, 'Setting selected to:', it);
                 props.setIsSetings(false);
                 props.setSelected(it);
-                // setTimeout(() => console.log('[TopBar] After setSelected, props.Selected would be:', it), 0);
               }}>
                 {it}
                 <DeleteButton $active={isActive} onClick={(e) => {

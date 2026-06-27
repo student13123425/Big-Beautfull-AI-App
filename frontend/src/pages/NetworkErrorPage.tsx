@@ -2,7 +2,6 @@ import React from 'react';
 import { styled, keyframes } from 'styled-components';
 import { FaPlug } from 'react-icons/fa';
 
-// Animation keyframes
 const pulse = keyframes`
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }

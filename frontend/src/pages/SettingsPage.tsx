@@ -178,7 +178,6 @@ export default function SettingsPage(props: {
   const supportedLanguages: string[] = getSupportedLanguages();
   const HtmlPosibleStyles = props.HtmlPosibleStyles;
 
-  // Get translations based on current language
   const langToUse = (language as SettingsLanguage) || 'English';
   const texts = getSettingsPageText(langToUse);
 
@@ -208,8 +207,6 @@ export default function SettingsPage(props: {
     setLanguage(selectedLanguage);
     setLanguageConfig(selectedLanguage, props.setError);
     
-    // IMMEDIATELY update parent config state to propagate language app-wide
-    // without waiting for polling cycle from backend
     if (props.config) {
       const updatedConfig = { ...props.config, limba: selectedLanguage };
       props.setConfig(updatedConfig);

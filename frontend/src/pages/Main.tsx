@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import type { AiServerError, Config, StudyGroup, StyleConfigList } from '../scripts/objects'
 
-// Hash comparison to detect actual data changes from polling
 let lastGlobalDataHash: string = '';
 function getStudyGroupHash(data: StudyGroup): string {
   let hash = '';

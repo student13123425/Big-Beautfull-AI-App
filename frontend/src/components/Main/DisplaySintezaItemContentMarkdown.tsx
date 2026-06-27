@@ -92,13 +92,11 @@ const GenerateButton = styled.button<{ $isGenerating: boolean }>`
 `;
 
 export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScreen,isOpen,isGenerating,startSynthesisGeneration,language}: Props) {
-  // Get translations based on language prop
   const langToUse = (language as SintezaGenerationLanguage) || 'English';
   const texts = getSintezaGenerationText(langToUse);
 
   if (file === null) return null;
 
-  // Extract the raw sinteza content for rendering
   const rawContent = file.sinteza ?? '';
   const processedContent = get_output_content(rawContent);
   const markdownContent = extractMarkdown(processedContent);

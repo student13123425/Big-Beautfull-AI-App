@@ -2,7 +2,6 @@ import React from 'react';
 import { styled, keyframes } from 'styled-components';
 import { FaWifi, FaRedo, FaDownload } from 'react-icons/fa';
 
-// Animation keyframes
 const subtlePulse = keyframes`
   0% { transform: scale(1); opacity: 0.9; }
   50% { transform: scale(1.03); opacity: 1; }
