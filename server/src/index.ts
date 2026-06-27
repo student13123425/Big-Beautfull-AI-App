@@ -37,7 +37,7 @@ process.on('unhandledRejection', (reason, promise) => {
 export let config = new Config();
 config.load();
 
-const TEMP_UPLOAD_DIR = path.join(__dirname, 'temp_uploads');
+const TEMP_UPLOAD_DIR = path.join(__dirname, '..', 'data', 'temp_uploads');
 const max_size:number=20;
 export let isMemOverflow = false;
 export let is_dependecy:boolean[]=[]

@@ -35,10 +35,10 @@ export class StudyGroup{
       }
     }
     try {
-      let json: string = readFileSync("./StudyGroups.json", "utf-8");
+      let json: string = readFileSync(this.file_path, "utf-8");
       let data: StudyGroup | any = JSON.parse(json);
       if (typeof data !== "object" || data === null) {
-        throw Error("invalid data in ./StudyGroups.json");
+        throw Error("invalid data in " + this.file_path);
       }
       for (let it of data.data) {
         let local: Materie = it;
