@@ -213,7 +213,6 @@ export default function AcknowledgeModal({
     setTimeout(() => onClose(), 300);
   };
 
-  // Handle escape key press
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {

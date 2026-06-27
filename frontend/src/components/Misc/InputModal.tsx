@@ -259,7 +259,6 @@ export default function InputModal({
     }
   };
 
-  // Handle escape key press
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -271,11 +270,9 @@ export default function InputModal({
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
   useKeyRelease("Escape",()=>handleClose(null))
-  // Auto-focus input on mount
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
-      // Move cursor to end of text
       inputRef.current.selectionStart = inputRef.current.value.length;
       inputRef.current.selectionEnd = inputRef.current.value.length;
     }

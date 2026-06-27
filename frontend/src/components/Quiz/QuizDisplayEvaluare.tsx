@@ -108,12 +108,10 @@ export default function QuizDisplayEvaluare({
     return () => {
       isMounted.current = false;
       
-      // Clear any pending timeout
       if (cleanupTimeoutRef.current) {
         clearTimeout(cleanupTimeoutRef.current);
       }
 
-      // Schedule cleanup with delay to handle React Strict Mode
       cleanupTimeoutRef.current = setTimeout(async () => {
         if (!isMounted.current && !evaluationInProgress.current) {
           try {
@@ -123,11 +121,10 @@ export default function QuizDisplayEvaluare({
             console.error("Failed to clear evaluation:", error);
           }
         }
-      }, 300); // Short delay to distinguish between Strict Mode remounts
+      }, 300);
     };
   }, [quiz, Answers, setError]);
 
-  // Final cleanup on actual unmount
   useEffect(() => {
     return () => {
       isMounted.current = false;

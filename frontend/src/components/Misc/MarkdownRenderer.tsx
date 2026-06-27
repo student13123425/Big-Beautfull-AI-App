@@ -31,13 +31,11 @@ const Container = styled.div<{ zoom: number; $nested?: boolean }>`
     height: 0;
   }
 
-  /* Responsive styles for tablets */
   @media (max-width: 768px) {
     padding: ${props => props.$nested ? '0' : 'calc(1rem * var(--zoom-factor))'};
     max-width: 100%;
   }
 
-  /* Compact styles for phones */
   @media (max-width: 500px) {
     padding: ${props => props.$nested 
       ? '0' 
@@ -223,7 +221,6 @@ const Container = styled.div<{ zoom: number; $nested?: boolean }>`
   }
 `;
 
-
 const MathBlock: React.FC<{ children: string }> = ({ children }) => {
   return (
     <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
@@ -232,21 +229,17 @@ const MathBlock: React.FC<{ children: string }> = ({ children }) => {
   );
 };
 
-// Custom component for inline math
 const MathInline: React.FC<{ children: string }> = ({ children }) => {
   return <MathJax dynamic inline>{`$${children}$`}</MathJax>;
 };
 
-// Function to process math expressions in markdown
 const processMathInMarkdown = (content: string): string => {
-  // Split the content to preserve code blocks
   const segments: { type: 'text' | 'code'; value: string }[] = [];
   const codeBlockRegex = /(```[\s\S]*?```)/g;
   let lastIndex = 0;
   let match;
   
   while ((match = codeBlockRegex.exec(content)) !== null) {
-    // Text before the code block
     if (match.index > lastIndex) {
       segments.push({ type: 'text', value: content.substring(lastIndex, match.index) });
     }
@@ -254,23 +247,19 @@ const processMathInMarkdown = (content: string): string => {
     lastIndex = match.index + match[0].length;
   }
   
-  // Remaining text after last code block
   if (lastIndex < content.length) {
     segments.push({ type: 'text', value: content.substring(lastIndex) });
   }
 
-  // Process only text segments for math expressions
   return segments.map(segment => {
     if (segment.type === 'code') {
       return segment.value;
     } else {
       let text = segment.value;
-      // Replace display math blocks ($$...$$ on separate lines)
       text = text.replace(/^\$\$([\s\S]*?)\$\$$/gm, (_, mathContent) => {
         return `<MathBlock>${mathContent.trim()}</MathBlock>`;
       });
       
-      // Replace inline math expressions ($...$)
       text = text.replace(/\$([^$\n]+)\$/g, (_, mathContent) => {
         return `<MathInline>${mathContent}</MathInline>`;
       });
@@ -294,10 +283,8 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({
       setProcessedContent(processMathInMarkdown(content));
     };
     
-    // Use a 10ms debounce to prevent excessive processing and stack overflow
     timeoutId = setTimeout(updateContent, 10);
     
-    // Cleanup function to clear the timeout if content changes again
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
@@ -312,10 +299,8 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({
     }
   };
 
-  // Define CodeBlock inside to access component props
   const CodeBlock: React.FC<{ className?: string; children: string }> = 
     ({ className, children }) => {
-      // Check if the code contains mathematical formulas
       const isMathFormula = /\$\{[\s\S]*?\}|\$(.*?)\$|\$\$(.*?)\$\$|\\\(|\\\[|\\begin\{/.test(children);
       if (isMathFormula) {
         return (
@@ -327,7 +312,6 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({
       
       const language = className?.replace('lang-', '') || 'javascript';
       
-      // Handle markdown code blocks
       if (language === 'markdown') {
         return (
           <div style={{ 

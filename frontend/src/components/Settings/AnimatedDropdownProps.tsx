@@ -159,7 +159,7 @@ const DropdownPortalContent: React.FC<{
 }> = ({ isOpen, isClosing, placement, normalizedOptions, selectedOption, buttonRect, onSelect }) => {
   if (!isOpen || !buttonRect) return null;
 
-  const dropdownHeight = 280 + 16; // max-height + padding
+  const dropdownHeight = 280 + 16;
   let topPosition: number;
 
   if (placement === 'top') {

@@ -6,7 +6,6 @@ import { getSupportedFileTypes } from "../../scripts/aox"
 import useKeyPress from '../../hooks/useKeyPress'
 import { getUploadPageText, type UploadLanguage } from '../../lang/uploadLang'
 
-// Animation keyframes
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -762,7 +761,6 @@ export default function FileUpload(props: FileUploadProps) {
     const [showReplaceModal, setShowReplaceModal] = useState(false);
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     
-    // Get translations based on language prop
     const langToUse = (props.language as UploadLanguage) || 'English';
     const texts = getUploadPageText(langToUse);
 

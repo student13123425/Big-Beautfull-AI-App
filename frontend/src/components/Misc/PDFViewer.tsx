@@ -36,7 +36,6 @@ interface RenderTask {
   cancel(): void;
 }
 
-// Animation keyframes
 const slideInFromRight = keyframes`
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -474,7 +473,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     }, 0);
   }, []);
 
-  // Debounce function to limit resize event frequency
   function debounce(func: (...args: any[]) => void, wait: number) {
     let timeout: NodeJS.Timeout;
     const debounced = function (...args: any[]) {
@@ -487,7 +485,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     return debounced;
   }
 
-  // Handle resize with memoized callback
   const handleResize = useCallback(() => {
     if (!fileType || loading) return;
     if (fileType === 'pdf' && pdf) {
@@ -495,9 +492,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     } else if (fileType === 'pptx' && pptx) {
       renderPptxSlide(currentPage - 1, canvasRef.current!);
     }
-  }, [pdf, pptx, currentPage, scale, rotation, fitToWidth, fileType, loading,fullscreen]);
+    }, [pdf, pptx, currentPage, scale, rotation, fitToWidth, fileType, loading,fullscreen]);
 
-  // Create debounced version of handleResize
   const debouncedHandleResize = useMemo(() => debounce(handleResize, 200), [handleResize]);
 
   const renderPptxSlide = async (slideIndex: number, canvas: HTMLCanvasElement): Promise<void> => {
@@ -593,7 +589,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
     loadFile();
   }, [filePath, serverUrl,IsFirstUse]);
-  
+
   useEffect(() => {
     if (!fileType || loading||IsFirstUse) return;
     if (fileType === 'pdf' && pdf) {
@@ -667,7 +663,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         console.log('Render cancelled');
       } else {
         console.error('Error rendering PDF page:', err);
-        // setError('Failed to render PDF page');
       }
     }
   };

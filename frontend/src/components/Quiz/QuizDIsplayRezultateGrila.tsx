@@ -4,7 +4,6 @@ import { styled } from 'styled-components';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { getQuizComponentsText, type QuizComponentsLanguage } from '../../lang/quizComponents';
 
-// Add type for ContentText props
 interface ContentTextProps {
   $correct?: boolean;
 }
@@ -73,7 +72,6 @@ const GroupRaspunsuri = styled.div`
   margin-bottom: 12px;
 `;
 
-// Add type to ContentText component
 const ContentText = styled.div<ContentTextProps>`
   display: flex;
   align-items: flex-start;

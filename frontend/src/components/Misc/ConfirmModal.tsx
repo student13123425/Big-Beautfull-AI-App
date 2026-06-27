@@ -201,10 +201,9 @@ export default function ConfirmModal({ onClose, title, content, language }: Conf
 
   const handleClose = (confirmed: boolean) => {
     setIsClosing(true);
-    setTimeout(() => onClose(confirmed), 250); // Match animation duration
+    setTimeout(() => onClose(confirmed), 250);
   };
   useKeyRelease("Escape",()=>handleClose(false))
-  // Handle escape key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {

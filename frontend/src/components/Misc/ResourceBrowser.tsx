@@ -37,9 +37,9 @@ const Container = styled.div<{ $isExpanded: boolean; $animate: boolean }>`
 
   @media (max-width: 500px) {
     position: fixed;
-    top:7rem; /* Avoid overlap with navbar */
+    top:7rem;
     left: 0;
-    height: calc(100vh - 7rem); /* Full viewport minus navbar height */
+    height: calc(100vh - 7rem);
     width: 100vw;
     border-right: none;
 

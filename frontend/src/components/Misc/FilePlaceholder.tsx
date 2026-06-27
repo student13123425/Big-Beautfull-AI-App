@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { FiFile } from 'react-icons/fi';
 import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/placeholders';
 
-// Component props
 type FilePlaceholderProps = {
   onClick?: () => void;
   message?: string;
@@ -41,7 +40,6 @@ const FilePlaceholder: React.FC<FilePlaceholderProps> = ({
 
 export default FilePlaceholder;
 
-// Styled components with static colors - matching Materie.tsx visual style
 const Container = styled.div<{ $clickable: boolean }>`
   flex: 1;
   display: flex;
