@@ -172,4 +172,7 @@ dist
 
 
 # Server database files
-server/users/users.db
+server/**/*.db
+
+# Server JSON config/data files
+server/*.json
