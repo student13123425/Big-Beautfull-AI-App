@@ -60,34 +60,36 @@ const Item = styled.div<{ active?: boolean }>`
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: fit-content;
   gap: 0.75rem;
+  border-left: ${({ active }) => active ? '3px solid #3b82f6' : '3px solid transparent'};
   border: ${({ active }) => active ? '1px solid rgba(59, 130, 246, 0.5)' : 'none'};
+  box-shadow: ${({ active }) => active ? '0 2px 8px rgba(59, 130, 246, 0.15)' : 'none'};
 
   &:hover {
-    background: ${({ active }) => active ? 'white' : 'rgba(255, 255, 255, 0.25)'};
-    transform: translateY(-1px);
-    box-shadow: ${({ active }) => active ? '0 2px 6px rgba(0,0,0,0.1)' : 'none'};
+    background: ${({ active }) => active ? 'white' : 'rgba(255, 255, 255, 0.2)'};
   }
 
   &:active {
-    transform: translateY(0);
+    transform: scale(0.98);
   }
 `
 
-const DeleteButton = styled.button`
+const DeleteButton = styled.button<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
-  color: ${({ theme }) => theme.active ? '#9b2c2c' : 'rgba(255, 255, 255, 0.7)'};
+  background: ${props => props.$active ? '#fee2e2' : 'transparent'};
+  border: ${props => props.$active ? '1px solid #fecaca' : 'none'};
+  color: ${props => props.$active ? '#dc2626' : 'rgba(255, 255, 255, 0.7)'};
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 24px;
+  min-height: 24px;
 
   &:hover {
-    color: #c53030;
-    background: rgba(254, 215, 215, 0.3);
+    background: ${props => props.$active ? '#fecaca' : 'rgba(254, 215, 215, 0.3)'};
+    color: ${props => props.$active ? '#b91c1c' : '#c53030'};
     transform: scale(1.1);
   }
 `
@@ -198,6 +200,17 @@ export default function TopBar(props: {
     .map((it) => capitalizeFirstLetter(it.toLowerCase()))
     .sort((i, j) => i.localeCompare(j)), [props.data]);
 
+  // Pre-calculate the active item to ensure React properly tracks it
+  const activeMaterie: string = useMemo(() => {
+    if (!props.Selected) return '';
+    return props.Selected;
+  }, [props.Selected]);
+
+  // Debug logs for state tracking (disabled)
+  // console.log('[TopBar] props.Selected:', props.Selected, 'type:', typeof props.Selected);
+  // console.log('[TopBar] activeMaterie:', activeMaterie);
+  // console.log('[TopBar] list:', list);
+
   const checkOverflow = useCallback(() => {
     const containerNode = containerRef.current;
     const measurementNode = measurementRef.current;
@@ -224,7 +237,7 @@ export default function TopBar(props: {
       <MeasurementContainer ref={measurementRef}>
         <AddButton><MdSettings size={22} /></AddButton>
         {list.map((it, i) => (
-          <Item key={i}>{it}<DeleteButton><FaTrash size={12} /></DeleteButton></Item>
+          <Item key={i}>{it}<DeleteButton $active={false}><FaTrash size={12} /></DeleteButton></Item>
         ))}
         <Gap />
         <AddButton><FaPlus size={16} /></AddButton>
@@ -235,11 +248,12 @@ export default function TopBar(props: {
           <Overlay isOpen={Open} onClick={() => setOpen(false)} />
           <OverflowContainer isOpen={Open}>
             {list.map((it, i) => {
-              const isActive = it.toLowerCase() === props.Selected?.toLowerCase();
+              const isActive = Boolean(props.Selected) && it === props.Selected;
+              // console.log(`[TopBar Overflow] Item ${i}: name="${it}", isActive=${isActive}, activeMaterie="${activeMaterie}"`);
               return (
                 <Item
-                  key={i}
-                  active={isActive}
+                  key={`${i}-${activeMaterie}`}
+                  active={isActive ? true : undefined}
                   onClick={() => {
                     props.setIsSetings(false);
                     props.setSelected(it);
@@ -247,7 +261,7 @@ export default function TopBar(props: {
                   }}
                 >
                   {it}
-                  <DeleteButton
+                  <DeleteButton $active={isActive}
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsConfirm(it);
@@ -301,14 +315,17 @@ export default function TopBar(props: {
           </>
         ) : (
           list.map((it, i) => {
-            const isActive = it.toLowerCase() === props.Selected?.toLowerCase();
+            const isActive = Boolean(props.Selected) && it === props.Selected;
+            // console.log(`[TopBar] Item ${i}: name="${it}", isActive=${isActive}, activeMaterie="${activeMaterie}"`);
             return (
-              <Item key={i} active={isActive} onClick={() => {
+              <Item key={`${i}-${activeMaterie}`} active={isActive ? true : undefined} onClick={() => {
+                // console.log('[TopBar] Clicked item:', it, 'Setting selected to:', it);
                 props.setIsSetings(false);
                 props.setSelected(it);
+                // setTimeout(() => console.log('[TopBar] After setSelected, props.Selected would be:', it), 0);
               }}>
                 {it}
-                <DeleteButton onClick={(e) => {
+                <DeleteButton $active={isActive} onClick={(e) => {
                   e.stopPropagation();
                   setIsConfirm(it);
                 }} aria-label={`Șterge ${it}`}>

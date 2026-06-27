@@ -7,6 +7,7 @@ import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/p
 type FilePlaceholderProps = {
   onClick?: () => void;
   message?: string;
+  subtitle?: string;
   className?: string;
   language?: string;
 };
@@ -14,23 +15,26 @@ type FilePlaceholderProps = {
 const FilePlaceholder: React.FC<FilePlaceholderProps> = ({
   onClick,
   message,
+  subtitle,
   className,
   language
 }) => {
-  const actualMessage = message || (() => {
-    const lang = (language as PlaceholderLanguage) || 'English';
-    return getNoSubjectSelectedText(lang).noFileSelected;
-  })();
+  const lang = (language as PlaceholderLanguage) || 'English';
+  const placeholderTexts = getNoSubjectSelectedText(lang);
+  
+  const actualMessage = message || placeholderTexts.noFileSelected;
+  const displaySubtitle = subtitle || placeholderTexts.noFileSelectedSubtitle;
+  
   return (
     <Container
       onClick={onClick}
-      $clickable={false}
+      $clickable={!!onClick}
       className={className}
       aria-label={onClick ? 'Select file' : 'File placeholder'}
     >
       <FileIcon />
       <Message>{actualMessage}</Message>
-      {onClick && <ActionText>Click to select</ActionText>}
+      <Subtitle>{displaySubtitle}</Subtitle>
     </Container>
   );
 };
@@ -78,9 +82,12 @@ const Message = styled.p`
   width: 350px;
 `;
 
-const ActionText = styled.span`
-  font-size: 22px;
-  font-weight: 600;
-  color: #000000;
+const Subtitle = styled.p`
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  color: #b3b3b3;
   user-select: none;
+  text-align: center;
+  width: 350px;
 `;

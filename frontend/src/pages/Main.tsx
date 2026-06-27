@@ -58,8 +58,10 @@ export default function Main(props: {
           IsSetings={IsSetings}
           onError={props.onError} 
           setSelected={setSelected} 
+          Selected={Selected ?? null}
+          key={Selected ?? 'none'}
           data={props.GlobalData}
-          language={props.config.limba}
+          language={props.config?.limba || 'romana'}
         />
         <ContentArea>
           {IsSetings===true?<SettingsPage HtmlPosibleStyles={props.HtmlPosibleStyles} SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError}/>:(<>
@@ -67,7 +69,7 @@ export default function Main(props: {
                 setError={props.onError} 
                 selected={Selected} 
                 data={props.GlobalData}
-                language={props.config.limba}
+                language={props.config?.limba || 'romana'}
               />
           </>)}
         </ContentArea>
