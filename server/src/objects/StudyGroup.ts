@@ -21,10 +21,10 @@ export class StudyGroup{
   }
   load(config:Config) {
     this.data = [];
-    let dirs: string[] = getDirectoryContent("./data");
+    let dirs: string[] = getDirectoryContent("./data", ["temp_uploads", "UserMetadata"]);
     for (let it of dirs) {
       this.data.push(new Materie(it));
-      let files: string[] = getDirectoryContent(`./data/${it}`);
+      let files: string[] = getDirectoryContent(`./data/${it}`, []);
       let index: number = this.data.length - 1;
       for (let f of files) {
         let path:string=`./data/${it}/${f}`;

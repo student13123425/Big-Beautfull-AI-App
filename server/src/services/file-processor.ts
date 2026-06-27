@@ -129,11 +129,12 @@ export function is_file_image(path: string): boolean {
   return extension === 'png' || extension === 'jpeg'||extension==="jpg";
 }
 
-export function getDirectoryContent(dirPath: string): string[] {
+export function getDirectoryContent(dirPath: string, filterFolders: string[] = []): string[] {
   try {
     const entries = readdirSync(dirPath, { withFileTypes: true });
     const structure: string[] = [];
     for (const entry of entries) {
+      if (filterFolders.includes(entry.name)) continue;
       const fullPath = path.join(dirPath, entry.name);
       if (entry.isDirectory()) structure.push(entry.name);
       else structure.push(entry.name);
