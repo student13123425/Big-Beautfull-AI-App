@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import type { AiServerError, Config, StudyGroup, StyleConfigList } from '../scripts/objects'
+
+// Hash comparison to detect actual data changes from polling
+let lastGlobalDataHash: string = '';
+function getStudyGroupHash(data: StudyGroup): string {
+  let hash = '';
+  for (const materie of data.data) {
+    hash += `${materie.name}:`;
+    for (const file of materie.files) {
+      hash += `${file.path}=${file.sinteza?.length ?? -1},${file.html_file?.length ?? -1}|`;
+    }
+  }
+  return hash;
+}
 import TopBar from '../components/Main/TopBar'
 import Materie from '../components/Main/Materie'
 import SettingsPage from './SettingsPage'
@@ -31,7 +44,7 @@ const Hide=styled.div`
 
 export default function Main(props: { 
   GlobalData: null | StudyGroup, 
-  onError: Function
+  onError: Function,
   config:Config,
   setConfig:Function,
   SupportedModels:string[],
@@ -40,11 +53,15 @@ export default function Main(props: {
   const [Selected, setSelected] = useState<null | string>(null);
   const [IsSetings,setIsSetings]=useState<boolean>(false)
   const [ErrorMessage,setErrorMessages]=useState<AiServerError[]>([])
-  useEffect(()=>{
-    if(props.GlobalData){
+  useEffect(() => {
+    if (props.GlobalData) {
+      const currentHash = getStudyGroupHash(props.GlobalData);
+      if (currentHash !== lastGlobalDataHash) {
+        lastGlobalDataHash = currentHash;
+      }
       setErrorMessages(props.GlobalData.AiServerError)
     }
-  },[props.GlobalData?.AiServerError])
+  }, [props.GlobalData?.AiServerError, props.GlobalData]);
   if (props.GlobalData !== null) {
     return (
       <>

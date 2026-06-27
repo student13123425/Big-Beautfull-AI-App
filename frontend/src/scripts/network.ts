@@ -334,7 +334,13 @@ export async function get_data(
 ) {
   try {
     const { data } = await axios.get<StudyGroup>(`${addr}/study`);
-    setData(data);
+
+    // Force a new object reference so React always recognizes the update.
+    // Without this, Axios returns plain objects that may share references with
+    // the previous state, causing deeply nested components (DisplaySintezaItem)
+    // to skip re-renders because React's shallow comparison sees "no change".
+    const freshCopy = JSON.parse(JSON.stringify(data));
+    setData(freshCopy);
   } catch (err: any) {
     if (err.response) {
       const { status, data: respData, statusText } = err.response;

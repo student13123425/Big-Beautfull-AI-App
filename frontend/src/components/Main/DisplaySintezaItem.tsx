@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
+
+// Hash comparison to detect actual data changes from polling
+let lastFileHash: string = '';
+function getFileHash(file: FishierMaterie | null): string {
+  if (!file) return 'null';
+  return `${file.path}=${file.sinteza?.length ?? -1},${file.html_file?.length ?? -1},compS:${file.is_computing_sinteza ? 1 : 0},compH:${file.is_computing_html ? 1 : 0}`;
+}
 import { MdRefresh, MdHelpOutline } from 'react-icons/md';
 import { Maximize2, Minimize2, ZoomIn, ZoomOut } from 'lucide-react';
 import useKeyPress from '../../hooks/useKeyPress';
@@ -272,9 +279,9 @@ export default function DisplaySintezaItem({
   }, []);
 
   useEffect(() => {
-    const newValue = file ? (file.is_computing_sinteza || file.is_computing_html) : false;
-    if (newValue !== isGenerating) {
-      setIsGenerating(newValue);
+    const currentHash = getFileHash(file);
+    if (currentHash !== lastFileHash) {
+      lastFileHash = currentHash;
     }
   }, [file]);
 

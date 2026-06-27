@@ -4,6 +4,16 @@ import { styled } from 'styled-components'
 import DisplaySinteza from './DisplaySinteza'
 import ResourceBrowser from '../Misc/ResourceBrowser'
 
+// Hash comparison to detect actual data changes from polling
+let lastSintezaMaterieHash: string = '';
+function getSintezaMaterieHash(materie: Materie): string {
+  let hash = `${materie.name}:`;
+  for (const f of materie.files) {
+    hash += `${f.path}=${f.sinteza?.length ?? -1},${f.html_file?.length ?? -1}|`;
+  }
+  return hash;
+}
+
 
 const Container=styled.div`
   flex: 1;
@@ -33,6 +43,13 @@ const BrowserContainer=styled.div`
 `
 
 export default function   Sinteza(props:{File:FileD|null,setFile:Function,AskQustionOutput:AskQuestion,materie:Materie,file_list:FileD[],setError:Function,language?:string}) {
+  useEffect(() => {
+    const currentHash = getSintezaMaterieHash(props.materie);
+    if (currentHash !== lastSintezaMaterieHash) {
+      lastSintezaMaterieHash = currentHash;
+    }
+  }, [props.materie, props.File?.nume]);
+
   return (
     <Container>
       {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'} language={props.language}/>}

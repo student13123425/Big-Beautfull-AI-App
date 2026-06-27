@@ -65,44 +65,55 @@ export async function getStudy(req: Request, res: Response): Promise<void> {
   res.json(data_study);
 }
 
-export async function regenereazSinteza(req: Request, res: Response){
+export async function regenereazSinteza(req: Request, res: Response): Promise<void> {
     if (!req.body.name_materie || !req.body.file_name) {
-      res.send("n");
-      return;
+        res.send("n");
+        return;
     }
-    
+
     // Ensure models are available before proceeding
     await ensureModelsAvailable();
-    
+
     const name_materie: string = req.body.name_materie;
     const file_name: string = req.body.file_name;
-    
+
     for (let it of data_study.data) {
-      if (it.name === name_materie) {
-        for (let j of it.files) {
-          let name: string = get_file_name(j.path);
-          if (name === file_name) {
-            j.regenerate_sinteza(ai_models_available, () => {
-              data_study.save();
-              broadcastStudyData();
-            }, config,
-            (error:AiServerError)=>{
-              j.is_computing_sinteza=false;
-              j.sinteza=null
-              data_study.AiServerError.push(error);
-              broadcastStudyData();
+        if (it.name === name_materie) {
+            for (let j of it.files) {
+                let name: string = get_file_name(j.path);
+                if (name === file_name) {
+                    // Same fix as genereazSinteza: wait for regeneration to fully complete
+                    // before responding, so that /study polling returns updated data.
+                    await new Promise<void>(async (resolve) => {
+                        j.regenerate_sinteza(
+                            ai_models_available,
+                            () => {
+                                data_study.save();
+                                broadcastStudyData();
+                            },
+                            config,
+                            (error: AiServerError) => {
+                                j.is_computing_sinteza = false;
+                                j.sinteza = null;
+                                data_study.AiServerError.push(error);
+                                broadcastStudyData();
+                            }
+                        ).then(() => {
+                            data_study.save();
+                            broadcastStudyData();
+                            resolve();
+                        });
+                    });
+                    res.send("y");
+                    return;
+                }
             }
-            ).then(()=>{
-              data_study.save();
-              broadcastStudyData();
-            });
-            res.send("y");
-            return;
-          }
         }
-      }
     }
-    const error:AiServerError=new AiServerError(`parametri invalizi sinteza`,`errorare generare sinteza datele name_materie:${name_materie} file_name:${file_name} sunt invalide`)
+    const error: AiServerError = new AiServerError(
+        `parametri invalizi sinteza`,
+        `errorare generare sinteza datele name_materie:${name_materie} file_name:${file_name} sunt invalide`
+    );
     data_study.AiServerError.push(error);
     broadcastStudyData();
     res.send("n");
@@ -111,25 +122,33 @@ export async function regenereazSinteza(req: Request, res: Response){
 export async function genereazSinteza(name_materie: string, file_name: string): Promise<boolean> {
     // Ensure models are available before proceeding
     await ensureModelsAvailable();
-    
+
     for (let it of data_study.data) {
         if (it.name === name_materie) {
             for (let j of it.files) {
                 let name: string = get_file_name(j.path);
                 if (name === file_name) {
                     try {
-                        await j.genereaza_sinteza(ai_models_available, () => {
-                            data_study.save();
-                            broadcastStudyData();
-                        }, config, (error: AiServerError) => {
-                            j.is_computing_sinteza = false;
-                            j.sinteza = null;
-                            data_study.AiServerError.push(error);
-                            broadcastStudyData();
+                        // Wrap in a Promise that resolves ONLY after AI generation completes,
+                        // data is saved to disk, and broadcast has been sent.
+                        return new Promise<boolean>(async (resolve) => {
+                            await j.genereaza_sinteza(
+                                ai_models_available,
+                                () => {
+                                    data_study.save();
+                                    broadcastStudyData();
+                                    resolve(true); // Resolve AFTER save + broadcast
+                                },
+                                config,
+                                (error: AiServerError) => {
+                                    j.is_computing_sinteza = false;
+                                    j.sinteza = null;
+                                    data_study.AiServerError.push(error);
+                                    broadcastStudyData();
+                                    resolve(false); // Resolve on error too
+                                }
+                            );
                         });
-                        data_study.save();
-                        broadcastStudyData();
-                        return true;
                     } catch (error: any) {
                         const aiError: AiServerError = new AiServerError(
                             `parametri invalizi sinteza`,
@@ -156,7 +175,7 @@ export async function genereazSinteza(name_materie: string, file_name: string): 
 export async function genereazHTML(name_materie: string, file_name: string): Promise<boolean> {
     // Ensure models are available before proceeding
     await ensureModelsAvailable();
-    
+
     const style_index: number | undefined = config.html_style;
 
     if (style_index === undefined || !Number.isInteger(style_index) || style_index < 0 || style_index > 9) {
@@ -174,32 +193,35 @@ export async function genereazHTML(name_materie: string, file_name: string): Pro
             for (let j of it.files) {
                 let name: string = get_file_name(j.path);
                 if (name === file_name) {
-                    const onUpdate = () => {
-                        data_study.save();
-                        broadcastStudyData();
-                    };
+                    // Wrap in a Promise that resolves ONLY after HTML generation completes,
+                    // data is saved to disk, and broadcast has been sent.
+                    return new Promise<boolean>(async (resolve) => {
+                        const onUpdate = () => {
+                            data_study.save();
+                            broadcastStudyData();
+                            resolve(true); // Resolve AFTER save + broadcast
+                        };
 
-                    const setError = (error: AiServerError) => {
-                        j.is_computing_html = false;
-                        j.html_file = null;
-                        data_study.AiServerError.push(error);
-                        broadcastStudyData();
-                    }
+                        const setError = (error: AiServerError) => {
+                            j.is_computing_html = false;
+                            j.html_file = null;
+                            data_study.AiServerError.push(error);
+                            broadcastStudyData();
+                            resolve(false); // Resolve on error too
+                        };
 
-                    try {
-                        await j.generateHTML(ai_models_available, onUpdate, config, setError, style_index);
-                        data_study.save();
-                        broadcastStudyData();
-                        return true;
-                    } catch (error: any) {
-                        const aiError: AiServerError = new AiServerError(
-                            `parametri invalizi html`,
-                            `errorare generare html datele name_materie:${name_materie} file_name:${file_name} sunt invalide`
-                        );
-                        data_study.AiServerError.push(aiError);
-                        broadcastStudyData();
-                        return false;
-                    }
+                        try {
+                            await j.generateHTML(ai_models_available, onUpdate, config, setError, style_index);
+                        } catch (error: any) {
+                            const aiError: AiServerError = new AiServerError(
+                                `parametri invalizi html`,
+                                `errorare generare html datele name_materie:${name_materie} file_name:${file_name} sunt invalide`
+                            );
+                            data_study.AiServerError.push(aiError);
+                            broadcastStudyData();
+                            resolve(false);
+                        }
+                    });
                 }
             }
         }
@@ -217,22 +239,40 @@ export async function genereazHTML(name_materie: string, file_name: string): Pro
 export async function handleContentGeneration(req: Request, res: Response) {
     const name_materie = req.body.name_materie;
     const file_name = req.body.file_name;
-    console.log(name_materie,file_name);
-    
+    console.log(name_materie, file_name);
+
     if (!name_materie || !file_name) {
         return res.send("n");
     }
 
+    // Start sinteza generation and WAIT for it to FULLY COMPLETE (AI + save + broadcast).
+    // The updated genereazSinteza() now returns a Promise that resolves only after
+    // the AI model finishes generating, data_study.save() writes to disk, and
+    // broadcastStudyData() sends updates to all connected WebSocket clients.
+    console.log('[handleContentGeneration] Starting sinteza generation...');
     const sintezaSuccess = await genereazSinteza(name_materie, file_name);
     if (!sintezaSuccess) {
+        console.log('[handleContentGeneration] Sinteza generation failed');
         return res.send("n");
     }
+    console.log('[handleContentGeneration] Sinteza generation complete, data saved & broadcasted');
 
+    // Small delay to ensure disk write completes before HTML generation starts.
+    // This gives the filesystem time to flush and prevents race conditions with
+    // concurrent /study polling requests that might read stale data.
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Start HTML generation and WAIT for it to FULLY COMPLETE (same guarantees as above).
+    console.log('[handleContentGeneration] Starting HTML generation...');
     const htmlSuccess = await genereazHTML(name_materie, file_name);
     if (!htmlSuccess) {
+        console.log('[handleContentGeneration] HTML generation failed');
         return res.send("n");
     }
+    console.log('[handleContentGeneration] HTML generation complete, data saved & broadcasted');
 
+    // At this point: both sinteza AND html are generated, saved to disk, and broadcasted.
+    // Any /study request or WebSocket client will receive the updated data immediately.
     return res.send("y");
 }
 

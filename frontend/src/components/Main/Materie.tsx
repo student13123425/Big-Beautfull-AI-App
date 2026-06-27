@@ -3,6 +3,19 @@ import { FaPen } from 'react-icons/fa'
 import styled from 'styled-components'
 import type { FileD, Materie as Mt, StudyGroup } from '../../scripts/objects'
 import { get_file_elements, get_selected } from '../../scripts/aox'
+
+// Hash comparison to detect actual data changes from polling
+let lastMaterieDataHash: string = '';
+function getMaterieDataHash(data: StudyGroup): string {
+  let hash = '';
+  for (const m of data.data) {
+    hash += `${m.name}:`;
+    for (const f of m.files) {
+      hash += `${f.path}=${f.sinteza?.length ?? -1},${f.html_file?.length ?? -1}|`;
+    }
+  }
+  return hash;
+}
 import MaterieMenu from './MaterieMenu'
 import Browser from './Browser'
 import Sinteza from './Sinteza'
@@ -56,6 +69,15 @@ export default function Materie(props: {
 }) {
   const lang = (props.language as import('../../lang/placeholders').PlaceholderLanguage) || 'Romanian';
   const value: Mt | null = get_selected(props.selected, props.data);
+
+  useEffect(() => {
+    if (!value) return;
+    
+    const currentHash = getMaterieDataHash(props.data);
+    if (currentHash !== lastMaterieDataHash) {
+      lastMaterieDataHash = currentHash;
+    }
+  }, [value?.name, props.data, props.selected]);
   const [Mode, setMode] = useState<number>(0);
   const files_list: FileD[] = get_file_elements(value);
   const [File,setFile]=useState<null|FileD>(null);

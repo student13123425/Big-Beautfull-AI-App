@@ -1,8 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import type { FileD, Materie, FishierMaterie, AskQuestion } from '../../scripts/objects'
 import DisplaySintezaItem from './DisplaySintezaItem'
 import { getMaterieFile } from '../../scripts/aox'
+
+// Hash comparison to detect actual data changes from polling
+let lastDisplaySintezaHash: string = '';
+function getDisplaySintezaHash(global: Materie, selected: FileD | null): string {
+  let hash = `${global.name}:${selected?.nume ?? 'none'}:`;
+  for (const f of global.files) {
+    hash += `${f.path}=${f.sinteza?.length ?? -1},${f.html_file?.length ?? -1}|`;
+  }
+  return hash;
+}
 import FilePlaceholder from '../Misc/FilePlaceholder'
 import { FaFilePdf } from 'react-icons/fa'
 import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/placeholders'
@@ -71,6 +81,15 @@ export default function DisplaySinteza(props: {
   AskQustionOutput:AskQuestion,
   language?: string
 }) {
+  useEffect(() => {
+    if (!props.selected) return;
+    
+    const currentHash = getDisplaySintezaHash(props.global, props.selected);
+    if (currentHash !== lastDisplaySintezaHash) {
+      lastDisplaySintezaHash = currentHash;
+    }
+  }, [props.global, props.selected]);
+
   if (props.selected === null) {
     const lang = (props.language as PlaceholderLanguage) || 'English';
     const placeholderTexts = getNoSubjectSelectedText(lang);
@@ -89,7 +108,7 @@ export default function DisplaySinteza(props: {
     <Container>
         <DisplaySintezaItem
               selected={props.selected} 
-              key={0} 
+              key={props.selected?.nume ?? 'none'} 
               file={getMaterieFile(props.selected===null?"":props.selected.nume, props.global)} 
               materie={props.global}
               AskQustionOutput={props.AskQustionOutput}

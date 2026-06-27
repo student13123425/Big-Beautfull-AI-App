@@ -444,8 +444,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   serverUrl = "http://localhost:3000",
   className = ""
 }) => {
-  console.log(pdfjsWorker);
-  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prevCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -468,6 +466,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   const [fileType, setFileType] = useState<'pdf' | 'pptx' | null>(null);
   const [IsFirstUse, setIsFirstUse] = useState<boolean>(true);
   useKeyRelease("Escape",()=>setFullscreen(false))
+
   useEffect(() => {
     setIsFirstUse(true);
     setTimeout(() => {
@@ -497,8 +496,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
       renderPptxSlide(currentPage - 1, canvasRef.current!);
     }
   }, [pdf, pptx, currentPage, scale, rotation, fitToWidth, fileType, loading,fullscreen]);
-  console.log(fullscreen);
-  
+
   // Create debounced version of handleResize
   const debouncedHandleResize = useMemo(() => debounce(handleResize, 200), [handleResize]);
 

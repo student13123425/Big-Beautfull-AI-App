@@ -1,6 +1,7 @@
 import { AiFillFileMarkdown } from "react-icons/ai";
 import styled, { keyframes, css } from 'styled-components';
 import { MdRefresh } from 'react-icons/md';
+import React, { useEffect, useState } from 'react';
 import MarkdownRenderer from '../Misc/MarkdownRenderer';
 import type { FileD, FishierMaterie, Materie } from '../../scripts/objects';
 import { extractMarkdown, get_output_content } from '../../scripts/aox';
@@ -97,6 +98,11 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
 
   if (file === null) return null;
 
+  // Extract the raw sinteza content for rendering
+  const rawContent = file.sinteza ?? '';
+  const processedContent = get_output_content(rawContent);
+  const markdownContent = extractMarkdown(processedContent);
+
   return (
     <ContentContainer $isOpen={isOpen} $fullscreen={isFullScreen}>
       {file.sinteza === null || get_output_content(file.sinteza).length === 0 ? (
@@ -116,7 +122,7 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
           </GenerateButton>
         </EmptyContent>
       ) : (
-        <MarkdownRenderer zoom={Zoom/100} content={extractMarkdown(get_output_content(file.sinteza))} />
+        <MarkdownRenderer zoom={Zoom/100} content={markdownContent} />
       )}
     </ContentContainer>
   );

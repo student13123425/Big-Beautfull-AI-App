@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { MdRefresh } from 'react-icons/md';
 import { ImFileEmpty } from 'react-icons/im';
@@ -120,9 +120,12 @@ export default function DisplaySintezaItemContentHTML({
   const texts = getSintezaGenerationText(langToUse);
 
   if (file === null) return null;
-  const hasHtml = !!file.html_file && file.html_file.trim() !== '';
-  const HTMLcontent=extractHTML(extractContent(file.html_file ?? '')?? '')
-  console.log("html"+HTMLcontent);
+
+  const rawHtmlContent = file.html_file ?? '';
+  const hasHtml = !!rawHtmlContent && rawHtmlContent.trim() !== '';
+  const extractedContent = extractContent(rawHtmlContent ?? '');
+  const htmlContent = extractHTML(extractedContent ?? '');
+
   const zoomFactor = Math.max(0.2, Math.min(2.0, Zoom / 100));
 
   return (
@@ -148,7 +151,7 @@ export default function DisplaySintezaItemContentHTML({
       ) : (
         <ZoomWrapper $zoomFactor={zoomFactor}>
           <HtmlFrame 
-            src={HTMLcontent} 
+            srcDoc={htmlContent} 
             title="HTML Synthesis"
             sandbox="allow-scripts allow-same-origin"
           />
