@@ -24,7 +24,6 @@ export async function llm_name_preprocessor(supportedModels: string[]): Promise<
     const matchedPaths: string[] = [];
 
     for (const shortName of supportedModels) {
-      // Always match against the full list containing the hashes
       const match = fullModelList.find((fullPath: string) => fullPath.includes(shortName));
 
       if (match) {

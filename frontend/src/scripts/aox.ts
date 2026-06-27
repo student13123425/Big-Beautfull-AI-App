@@ -52,7 +52,6 @@ function parseColor(hex: string): { r: number; g: number; b: number } {
   const clean = hex.replace(/^#/, '');
   let short = clean;
   if (clean.length === 3) {
-    // Convert #RGB to #RRGGBB format
     short = clean.split('').map(c => c + c).join('');
   }
   const r = parseInt(short.substring(0, 2), 16);
@@ -92,15 +91,14 @@ export function getSupportedFileTypes(): string[] {
 
 
 export function containsVisible(text: string): boolean {
-  // Common zero‑width & invisible Unicode code points
   const INVISIBLE = new Set([
-    '\u200B', // ZERO WIDTH SPACE
-    '\u200C', // ZERO WIDTH NON-JOINER
-    '\u200D', // ZERO WIDTH JOINER
-    '\u200E', // LEFT-TO-RIGHT MARK
-    '\u200F', // RIGHT-TO-LEFT MARK
-    '\u00AD', // SOFT HYPHEN
-    '\uFEFF', // ZERO WIDTH NO-BREAK SPACE (BOM)
+    '\u200B',
+    '\u200C',
+    '\u200D',
+    '\u200E',
+    '\u200F',
+    '\u00AD',
+    '\uFEFF',
   ]);
 
   for (const ch of text) {

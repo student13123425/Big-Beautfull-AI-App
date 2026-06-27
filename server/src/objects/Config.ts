@@ -113,7 +113,6 @@ export class Config {
             console.warn("Invalid language setting, using default");
         }
 
-        // Validate and load html_style
         if (typeof obj.html_style === "number" && obj.html_style >= 0 && obj.html_style <= 9) {
             this.html_style = obj.html_style;
         } else {

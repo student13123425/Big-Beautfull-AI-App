@@ -28,7 +28,7 @@ export const config = new Config();
 config.load();
 
 export const data_study = new StudyGroup();
-data_study.load(config); // ✅ CRITICAL FIX: Loads initial study state from config
+data_study.load(config);
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 export let lastStudyData = null;
@@ -43,7 +43,7 @@ export const configClients = new Set();
 export const server_os: string = getServerOS();
 
 export function setConfig(value: Config | null): void {
-  config.value = value; // Adjust if your Config class uses a setter or direct assignment
+  config.value = value;
 }
 
 export function broadcastStudyData(): void {
@@ -77,9 +77,7 @@ export async function refresh(): Promise<void> {
 }
 
 export async function getLmStudioDevice(): Promise<string | null> {
-  // Read from .env, falling back to localhost:1234 default
   let targetUrl = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234";
-  // Strip any existing protocol prefix to avoid doubling (ws://, wss://, http://, https://)
   targetUrl = targetUrl.replace(/^https?:\/\/|^wss?:\/\//, "");
   const address = `ws://${targetUrl}`;
 

@@ -10,7 +10,6 @@ export async function runTest() {
 
   try {
     let lmStudioUrl = process.env.LM_STUDIO_URL || "http://192.168.0.88:1234";
-    // Remove existing protocol prefix to avoid doubling (ws:// or http://)
     lmStudioUrl = lmStudioUrl.replace(/^https?:\/\/|^ws:\/\/|^wss:\/\//, "");
     const address = `ws://${lmStudioUrl}`;
     
@@ -32,7 +31,6 @@ export async function runTest() {
       console.log(`${index + 1}: ${model.path}`);
     });
 
-    // Find a model that contains "qwen3.6-35b-a3b" (case-insensitive) in its path
     const targetModelPattern = "qwen3.6-35b-a3b";
     let selectedModel = models.find(m => 
       m.path.toLowerCase().includes(targetModelPattern.toLowerCase())

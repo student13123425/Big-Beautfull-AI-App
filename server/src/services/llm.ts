@@ -22,7 +22,6 @@ export async function getCompletion(
     if (!url) {
       throw new Error("LM_STUDIO_URL environment variable is not set");
     }
-    // Strip any existing protocol prefix to avoid doubling (ws://, wss://, http://, https://)
     url = url.replace(/^https?:\/\/|^wss?:\/\//, "");
     const normalizedUrl = `ws://${url}`;
     const client = await new LMStudioClient({ baseUrl: normalizedUrl });

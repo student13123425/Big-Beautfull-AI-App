@@ -181,10 +181,6 @@ Respond ONLY with valid JSON. No additional text, explanations, or markdown.
 `.trim();
 }
 
-/**
- * AI Response Parsers
- */
-
 export function extractFinalContent(text: string): string {
   const startMarker = "<|start|>assistant<|channel|>final<|message|>";
   const endMarkers = ["<|end|>", "<|return|>"];

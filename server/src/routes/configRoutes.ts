@@ -38,7 +38,7 @@ export async function setContextSize(req: Request, res: Response): Promise<void>
   }
 
   const size: number = req.body.size;
-  config.set_contentx_size(size); // Kept original method name exactly as in source
+  config.set_contentx_size(size);
   broadcastConfigData();
   res.send("y");
 }
@@ -61,7 +61,7 @@ export async function setSystemPrompt(req: Request, res: Response): Promise<void
 }
 
 export async function getDependencies(req: Request, res: Response): Promise<void> {
-  res.json(is_dependecy); // Kept original variable name exactly as in source
+  res.json(is_dependecy);
 }
 
 export async function getOS(req: Request, res: Response): Promise<void> {

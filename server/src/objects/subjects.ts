@@ -51,8 +51,8 @@ export class FishierMaterie {
     path: string;
     sinteza: string | null = null;
     html_file: string | null = null;
-    is_computing_sinteza: boolean = false;  // tracks markdown/sinteza generation
-    is_computing_html: boolean = false;     // tracks HTML generation
+    is_computing_sinteza: boolean = false;
+    is_computing_html: boolean = false;
     content: string | null = null;
     materie: string;
     is_failed: boolean = false;
@@ -130,7 +130,6 @@ export class FishierMaterie {
         try {
             let prompt = prompt_sumarizare(this.content!, this.materie, config.limba);
             
-            // DEBUG: Log model matching details
             console.log(`[FishierMaterie] [DEBUG] models.length = ${models?.length || 0}`);
             if (models && models.length > 0) {
                 console.log(`[FishierMaterie] [DEBUG] First 5 model paths:`);

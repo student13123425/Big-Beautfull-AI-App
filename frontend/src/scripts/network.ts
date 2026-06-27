@@ -27,7 +27,6 @@ export async function DeactivateErrorMessage(
     return false;
   } catch (error: any) {
     if (error.response) {
-      // Server responded with a non-2xx status
       const status = error.response.status;
       let errorMsg = `Server error (${status}): `;
       
@@ -41,10 +40,8 @@ export async function DeactivateErrorMessage(
       
       setError(`DeactivateErrorMessage: ${errorMsg}`);
     } else if (error.request) {
-      // Request was made but no response received
       setError('DeactivateErrorMessage: No response from server');
     } else {
-      // Something happened in setting up the request
       setError(`DeactivateErrorMessage: Request setup error: ${error.message}`);
     }
     
@@ -112,7 +109,6 @@ export async function get_config(
       );
     }
   } catch (err: any) {
-    // Server responded with an error status (4xx, 5xx)
     if (err.response) {
       const { status, data: respData, statusText } = err.response;
       const serverMsg =
@@ -124,13 +120,11 @@ export async function get_config(
         `Unable to load configuration — server responded with ${status}: ${serverMsg}.`
       );
     }
-    // Network or other error (e.g., server is down)
     else if (err.request) {
       setError(
         `Network error — no response received when attempting to reach ${addr}/config.`
       );
     }
-    // Something else went wrong setting up the request
     else {
       setError(`Unexpected error while fetching configuration: ${err.message}`);
     }
@@ -307,7 +301,6 @@ export async function getCustomModels(
     setData(data);
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
-      // Handle Axios-specific errors
       if (err.response) {
         const { status, data: responseData } = err.response;
         const serverMessage = 
@@ -322,7 +315,6 @@ export async function getCustomModels(
         setError(`Request setup error: ${err.message}`);
       }
     } else {
-      // Handle non-Axios errors
       setError(`Unexpected error: ${err?.message || 'Unknown error occurred'}`);
     }
   }
@@ -335,10 +327,6 @@ export async function get_data(
   try {
     const { data } = await axios.get<StudyGroup>(`${addr}/study`);
 
-    // Force a new object reference so React always recognizes the update.
-    // Without this, Axios returns plain objects that may share references with
-    // the previous state, causing deeply nested components (DisplaySintezaItem)
-    // to skip re-renders because React's shallow comparison sees "no change".
     const freshCopy = JSON.parse(JSON.stringify(data));
     setData(freshCopy);
   } catch (err: any) {
@@ -555,7 +543,7 @@ export async function ReGenerateNewQuiz(
 
     const result = await response.text();
     if (result === "y") {
-      return true; // Success
+      return true;
     } else if (result === "n") {
       setError("Failed to regenerate quiz. Please try again.");
       return false;

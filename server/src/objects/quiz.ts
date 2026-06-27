@@ -150,7 +150,6 @@ export class QuiZRequestItem {
     this.materie_name=materie_name
   }
   getAllMaterieContent(materii: FishierMaterie[]): string[] {
-    //todo check
     return this.file_nume
       .map(path => materii.find(mat => mat.path === path)?.sinteza ?? (() => {
         console.warn(`materie ne gasita ${path}`);

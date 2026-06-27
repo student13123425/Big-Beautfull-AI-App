@@ -116,7 +116,7 @@ export async function checkExisting(req: Request, res: Response): Promise<void> 
       try {
         accessSync(filePath);
         existingFiles.push(path.basename(filePath));
-      } catch { /* ignore non-existent */ }
+      } catch {}
     }
 
     res.status(200).json({ existingFiles });
