@@ -30,7 +30,7 @@ export class Materie {
                 (e: AiServerError) => {
                     setError(e);
                     it.sinteza = null;
-                    it.is_computing = false;
+                    it.is_computing_sinteza = false;
                     resolve();
                 }
             );
@@ -40,7 +40,8 @@ export class Materie {
 
     get_is_computing(): boolean {
         return this.files.some(file =>
-            file.is_computing ||
+            file.is_computing_sinteza ||
+            file.is_computing_html ||
             this.quizs.some(quiz => quiz.is_computing)
         );
     }
@@ -50,7 +51,8 @@ export class FishierMaterie {
     path: string;
     sinteza: string | null = null;
     html_file: string | null = null;
-    is_computing: boolean = false;
+    is_computing_sinteza: boolean = false;  // tracks markdown/sinteza generation
+    is_computing_html: boolean = false;     // tracks HTML generation
     content: string | null = null;
     materie: string;
     is_failed: boolean = false;
@@ -105,8 +107,8 @@ export class FishierMaterie {
     async genereaza_sinteza(models: ModelInfo[], onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
         console.log(`[FishierMaterie] >>> Starting sinteza generation for ${this.path}`);
 
-        if (this.is_computing) {
-            console.warn(`[FishierMaterie] ⚠️ Already computing. Ignoring duplicate request.`);
+        if (this.is_computing_sinteza) {
+            console.warn(`[FishierMaterie] ⚠️ Already computing sinteza. Ignoring duplicate request.`);
             return;
         }
         if (this.sinteza != null && this.sinteza.trim().length > 0) {
@@ -122,8 +124,8 @@ export class FishierMaterie {
             return;
         }
 
-        this.is_computing = true;
-        console.log(`[FishierMaterie] 🚀 Proceeding to AI call...`);
+        this.is_computing_sinteza = true;
+        console.log(`[FishierMaterie] 🚀 Proceeding to sinteza AI call...`);
 
         try {
             let prompt = prompt_sumarizare(this.content!, this.materie, config.limba);
@@ -148,7 +150,7 @@ export class FishierMaterie {
             if (!model_full) {
                 console.error(`[FishierMaterie] ❌ Model not found on LM Studio server: ${nume_model}`);
                 setError(new AiServerError("Invalid Model", `Model not found: ${nume_model}`));
-                this.is_computing = false;
+                this.is_computing_sinteza = false;
                 return;
             }
 
@@ -156,7 +158,7 @@ export class FishierMaterie {
             this.sinteza = await get_compleation(
                 prompt,
                 config.system_prompt,
-                () => this.is_computing,
+                () => this.is_computing_sinteza,
                 model_full.path,
                 null,
                 (s: string) => { this.sinteza = s; },
@@ -172,8 +174,8 @@ export class FishierMaterie {
             console.error(`[FishierMaterie] ❌ AI Generation failed for ${this.path}:`, errorMsg, e);
             setError(new AiServerError("Eroare generare sinteza", `Erroare generare sinteza pentru ${this.path} using model ${nume_model}. Details: ${errorMsg}`));
         } finally {
-            this.is_computing = false;
-            console.log(`[FishierMaterie] 🔚 Generation process finished for ${this.path}.`);
+            this.is_computing_sinteza = false;
+            console.log(`[FishierMaterie] 🔚 Sinteza generation process finished for ${this.path}.`);
         }
     }
 
@@ -186,8 +188,8 @@ export class FishierMaterie {
     async generateHTML(models: ModelInfo[], onUpdate: Function, config: Config, setError: (error: AiServerError) => void, style: number): Promise<void> {
         console.log(`[FishierMaterie] >>> Starting HTML generation for ${this.path}`);
 
-        if (this.is_computing) {
-            console.warn(`[FishierMaterie] ⚠️ Already computing. Ignoring duplicate request.`);
+        if (this.is_computing_html) {
+            console.warn(`[FishierMaterie] ⚠️ Already computing HTML. Ignoring duplicate request.`);
             return;
         }
 
@@ -210,7 +212,7 @@ export class FishierMaterie {
             return;
         }
 
-        this.is_computing = true;
+        this.is_computing_html = true;
         console.log(`[FishierMaterie] 🚀 Proceeding to HTML AI call...`);
 
         try {
@@ -221,14 +223,14 @@ export class FishierMaterie {
             if (!model_full) {
                 console.error(`[FishierMaterie] ❌ Model not found for HTML: ${nume_model}`);
                 setError(new AiServerError("Invalid Model", `Model not found on LM Studio server: ${nume_model}`));
-                this.is_computing = false;
+                this.is_computing_html = false;
                 return;
             }
 
             console.log(`[FishierMaterie] 🤖 Calling AI model for HTML: ${model_full.path}...`);
             this.html_file = await get_compleation(
                 prompt, config.system_prompt,
-                () => this.is_computing, model_full.path, null,
+                () => this.is_computing_html, model_full.path, null,
                 (s: string) => { this.html_file = s; }, 
                 setError,
                 `generare html pentru ${this.path}`,
@@ -242,15 +244,22 @@ export class FishierMaterie {
             console.error(`[FishierMaterie] ❌ AI HTML Generation failed for ${this.path}:`, errorMsg, e);
             setError(new AiServerError("Eroare generare html", `Erroare generare html pentru ${this.path} using model ${nume_model}. Details: ${errorMsg}`));
         } finally {
-            this.is_computing = false;
+            this.is_computing_html = false;
             console.log(`[FishierMaterie] 🔚 HTML generation process finished for ${this.path}.`);
         }
     }
 
     stopGeneratingSinteza(): void {
-        if (this.is_computing) {
-            console.log(`[FishierMaterie] 🛑 Stopping generation for ${this.path}...`);
-            this.is_computing = false;
+        if (this.is_computing_sinteza) {
+            console.log(`[FishierMaterie] 🛑 Stopping sinteza generation for ${this.path}...`);
+            this.is_computing_sinteza = false;
+        }
+    }
+
+    stopGeneratingHtml(): void {
+        if (this.is_computing_html) {
+            console.log(`[FishierMaterie] 🛑 Stopping HTML generation for ${this.path}...`);
+            this.is_computing_html = false;
         }
     }
 }

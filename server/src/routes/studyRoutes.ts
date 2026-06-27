@@ -87,7 +87,7 @@ export async function regenereazSinteza(req: Request, res: Response){
               broadcastStudyData();
             }, config,
             (error:AiServerError)=>{
-              j.is_computing=false;
+              j.is_computing_sinteza=false;
               j.sinteza=null
               data_study.AiServerError.push(error);
               broadcastStudyData();
@@ -122,7 +122,7 @@ export async function genereazSinteza(name_materie: string, file_name: string): 
                             data_study.save();
                             broadcastStudyData();
                         }, config, (error: AiServerError) => {
-                            j.is_computing = false;
+                            j.is_computing_sinteza = false;
                             j.sinteza = null;
                             data_study.AiServerError.push(error);
                             broadcastStudyData();
@@ -180,7 +180,7 @@ export async function genereazHTML(name_materie: string, file_name: string): Pro
                     };
 
                     const setError = (error: AiServerError) => {
-                        j.is_computing = false;
+                        j.is_computing_html = false;
                         j.html_file = null;
                         data_study.AiServerError.push(error);
                         broadcastStudyData();

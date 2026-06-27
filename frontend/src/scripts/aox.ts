@@ -198,7 +198,7 @@ export function getNumber(input: string): number | null {
 export function get_is_computing(global: StudyGroup): boolean {
   if (global.CurrentAskedQuestion.is_computing) return true;
   return global.data.some((item) =>
-    item.files.some((file) => file.is_computing) ||
+    item.files.some((file) => file.is_computing_sinteza || file.is_computing_html) ||
     item.quizs.some((quiz) => quiz.is_computing)
   );
 }

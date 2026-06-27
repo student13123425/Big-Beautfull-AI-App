@@ -272,7 +272,7 @@ export default function DisplaySintezaItem({
   }, []);
 
   useEffect(() => {
-    const newValue = file ? file.is_computing : false;
+    const newValue = file ? (file.is_computing_sinteza || file.is_computing_html) : false;
     if (newValue !== isGenerating) {
       setIsGenerating(newValue);
     }
@@ -307,32 +307,29 @@ export default function DisplaySintezaItem({
     };
   }, [isFullScreen]);
 
-  const startSynthesisGeneration = async () => {
-    if (!file) return;
+   const startSynthesisGeneration = async () => {
+     if (!file) return;
 
-    setIsGenerating(true);
-    try {
-      let path = `${addr}/genereaza_sinteza`;
-      if (file.sinteza !== null) {
-        path = `${addr}/regenereaza_sinteza`;
-      }
+     setIsGenerating(true);
+     try {
+       // Use /genereaza_sinteza endpoint which maps to handleContentGeneration
+       // This generates BOTH sinteza AND html sequentially in order
+       const response = await axios.post(`${addr}/genereaza_sinteza`, {
+         name_materie: materie.name,
+         file_name: file.path.split('/').pop() || file.path,
+       });
 
-      const response = await axios.post(path, {
-        name_materie: materie.name,
-        file_name: file.path.split('/').pop() || file.path,
-      });
-
-      if (response.data === 'y') {
-        console.log('Synthesis generation started successfully');
-      } else {
-        console.error('Failed to start synthesis generation');
-        setIsGenerating(false);
-      }
-    } catch (error) {
-      console.error('Error starting synthesis generation:', error);
-      setIsGenerating(false);
-    }
-  };
+       if (response.data === 'y') {
+         console.log('Content generation (sinteza + HTML) started successfully');
+       } else {
+         console.error('Failed to start content generation');
+         setIsGenerating(false);
+       }
+     } catch (error) {
+       console.error('Error starting content generation:', error);
+       setIsGenerating(false);
+     }
+   };
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -386,7 +383,7 @@ export default function DisplaySintezaItem({
           )}
         </FileInfo>
 
-        {file.sinteza !== null && file.is_computing === false && (
+        {file.sinteza !== null && !file.is_computing_sinteza && !file.is_computing_html && (
           <ZoomControls>
             <Button onClick={() => setZoom((prev) => Math.max(20, prev - 20))}>
               <ZoomOut size={24} />

@@ -120,10 +120,9 @@ export default function DisplaySintezaItemContentHTML({
   const texts = getSintezaGenerationText(langToUse);
 
   if (file === null) return null;
-  console.log()
   const hasHtml = !!file.html_file && file.html_file.trim() !== '';
   const HTMLcontent=extractHTML(extractContent(file.html_file ?? '')?? '')
-  console.log(HTMLcontent);
+  console.log("html"+HTMLcontent);
   const zoomFactor = Math.max(0.2, Math.min(2.0, Zoom / 100));
 
   return (
