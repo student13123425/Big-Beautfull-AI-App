@@ -187,7 +187,7 @@ export function get_file_name(path: string){
 export function get_content_filled_file_list(): string[] {
   let out: string[] = [];
   try {
-    const json: string = readFileSync("./StudyGroups.json", "utf-8");
+    const json: string = readFileSync("./data/UserMetadata/StudyGroups.json", "utf-8");
     const data: StudyGroup = JSON.parse(json);
     for (const m of data.data) {
       for (const f of m.files) {

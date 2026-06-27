@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync } from "fs";
 
 export class StudyGroup{
   data:Materie[]=[]
-  file_path:string="./StudyGroups.json"
+  file_path:string="./data/UserMetadata/StudyGroups.json"
   AiTextCorrection:AiTextCorectionElement=new AiTextCorectionElement(new Quiz(),[])
   AiServerError:AiServerError[]=[];
   CurrentAskedQuestion:AskQuestion=new AskQuestion();
