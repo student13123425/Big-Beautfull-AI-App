@@ -14,11 +14,9 @@ export const useKeyboardNavigation = (
       }
     };
 
-    // Add event listener for keydown
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      // Clean up the event listener on unmount
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [currentPage, totalPages, goToPage]);

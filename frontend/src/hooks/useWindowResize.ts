@@ -1,16 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 type UseWindowResizeOptions = {
-  debounceMs?: number;   // 0 = no debounce (default)
-  immediate?: boolean;   // run callback once on mount (default false)
+  debounceMs?: number;
+  immediate?: boolean;
 };
 
-/**
- * Calls `callback` on window resize until component unmounts.
- * - debounceMs: delay in ms to debounce calls (0 = none)
- * - immediate: call callback once on mount
- * - deps: additional dependencies that should rebind the listener (e.g. values used inside callback)
- */
 export function useWindowResize(
   callback: () => void,
   options: UseWindowResizeOptions = {},
@@ -19,13 +13,12 @@ export function useWindowResize(
   const { debounceMs = 0, immediate = false } = options;
   const cbRef = useRef(callback);
 
-  // keep latest callback reference without reattaching listener
   useEffect(() => {
     cbRef.current = callback;
   }, [callback]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return; // SSR guard
+    if (typeof window === 'undefined') return;
 
     let timeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -49,6 +42,5 @@ export function useWindowResize(
       window.removeEventListener('resize', handler);
       if (timeout) clearTimeout(timeout);
     };
-    // include options that affect behavior + user deps
   }, [debounceMs, immediate, ...deps]);
 }

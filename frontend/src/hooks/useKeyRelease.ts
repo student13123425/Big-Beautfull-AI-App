@@ -7,7 +7,6 @@ type ModifierKeys = {
   meta?: boolean;
 };
 
-// Updated useKeyRelease hook
 const useKeyRelease = (
   targetKey: string,
   callback: () => void,
@@ -15,8 +14,7 @@ const useKeyRelease = (
 ) => {
   useEffect(() => {
     const handleKeyUp = (event: KeyboardEvent) => {
-      // Handle both 'Control' and specific control keys
-      const isControl = targetKey.startsWith('Control') && 
+      const isControl = targetKey.startsWith('Control') &&
                         (event.key === 'Control' || 
                          event.key === 'ControlLeft' || 
                          event.key === 'ControlRight');
