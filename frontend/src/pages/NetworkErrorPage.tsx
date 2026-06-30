@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled, keyframes } from 'styled-components';
 import { FaPlug } from 'react-icons/fa';
 
@@ -102,6 +102,15 @@ interface NetworkErrorProps {
 }
 
 const NetworkErrorPage: React.FC<NetworkErrorProps> = ({ errorMessage }) => {
+  const [capturedMessage, setCapturedMessage] = React.useState<string | null>(null);
+
+  // Capture the error message only once — never update after first render
+  useEffect(() => {
+    if (errorMessage && !capturedMessage) {
+      setCapturedMessage(errorMessage);
+    }
+  }, [errorMessage]);
+
   const handleRetry = () => {
     window.location.reload();
   };
@@ -114,7 +123,7 @@ const NetworkErrorPage: React.FC<NetworkErrorProps> = ({ errorMessage }) => {
         </IconWrapper>
         <Title>Connection Error</Title>
         <Message>
-          {errorMessage || 'Unable to establish a connection to the server. Please check your network connection.'}
+          {capturedMessage || 'Unable to establish a connection to the server. Please check your network connection.'}
         </Message>
         <RetryButton onClick={handleRetry}>
           Try Again

@@ -233,7 +233,35 @@ export async function handleContentGeneration(req: Request, res: Response) {
         return res.send("n");
     }
 
-    console.log('[handleContentGeneration] Starting sinteza generation...');
+    // Find the matching file and clear existing content before generation
+    let targetFile: any = null;
+    for (let it of data_study.data) {
+        if (it.name === name_materie) {
+            for (let j of it.files) {
+                let name: string = get_file_name(j.path);
+                if (name === file_name) {
+                    targetFile = j;
+                    break;
+                }
+            }
+            if (targetFile) break;
+        }
+    }
+
+    if (!targetFile) {
+        console.log('[handleContentGeneration] File not found:', name_materie, '/', file_name);
+        return res.send("n");
+    }
+
+    // Clear existing content and set computing flags
+    targetFile.sinteza = null;
+    targetFile.html_file = null;
+    targetFile.is_computing_sinteza = true;
+    targetFile.is_computing_html = false;
+    data_study.save();
+    broadcastStudyData();
+
+    console.log('[handleContentGeneration] Cleared existing content, starting sinteza generation...');
     const sintezaSuccess = await genereazSinteza(name_materie, file_name);
     if (!sintezaSuccess) {
         console.log('[handleContentGeneration] Sinteza generation failed');

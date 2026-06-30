@@ -5,6 +5,8 @@ import { get_compleation } from "../services/llm.js";
 import { generate_quiz_json_prompt } from "../ai/prompts.js";
 import { AiServerError } from "./AiTypes.js";
 import { FishierMaterie } from "./subjects.js";
+import { get_model } from "../helpers.js";
+import { supported_models } from "../services/state.js";
 
 export class Intrebare {
   id: number = -1;
@@ -30,7 +32,6 @@ export class Quiz {
 
   async genereate(nr_intrebari_per_fishier: number, materie: string[], nume_materie: string[], is_grila: boolean, models: ModelInfo[], onUpdate: Function, config: Config, setError: (error: AiServerError) => void): Promise<void> {
     this.is_computing = true;
-    let c = 0;
 
     for (let i in nume_materie) {
       const group = new GroupIntrebare();
@@ -43,8 +44,8 @@ export class Quiz {
         emptyQuestion.text_intrebare = ""; // Placeholder text
         group.intrebari.push(emptyQuestion);
       }
-      console.log("is_grila",is_grila);
-      
+      console.log("is_grila", is_grila);
+
       let prompt: string = generate_quiz_json_prompt(
         nume_materie[i],
         materie[i],
@@ -62,11 +63,20 @@ export class Quiz {
         config.limba
       );
 
+      const nume_model: string = supported_models?.[1]?.toLowerCase() || "";
+      const model_full = get_model(nume_model, models);
+
+      if (!model_full) {
+        console.error(`[Quiz] ❌ Model not found for quiz: ${nume_model}`);
+        setError(new AiServerError("Invalid Model", `Model not found on LM Studio server: ${nume_model}`));
+        continue;
+      }
+
       let output: string | null = await get_compleation(
         prompt,
         config.system_prompt,
         () => this.is_computing,
-        config.ai_model_quiz[0],
+        model_full.path,
         null,
         (s: string) => {},
         setError,
@@ -99,6 +109,7 @@ export class Quiz {
     }
     this.is_computing = false;
   }
+
   async regenerate(
     nr_intrebari_per_fishier: number,
     materie: string[],
@@ -109,7 +120,7 @@ export class Quiz {
     config: Config,
     setError: (error: AiServerError) => void
   ) {
-    this.failed = false;
+    this.is_failed = false;
     await this.genereate(
       nr_intrebari_per_fishier,
       materie,
@@ -134,21 +145,22 @@ export class QuiZRequestItem {
   file_nume: string[] = [];
   nr_intrebari_pe_materie: number = 0;
   is_grile: boolean = false;
-  title:string
-  materie_name:string
+  title: string;
+  materie_name: string;
   constructor(
     file_nume: string[] = [],
     nr_intrebari_pe_materie: number = 0,
     is_grile: boolean = false,
-    title:string="",
-    materie_name:string=""
+    title: string = "",
+    materie_name: string = ""
   ) {
     this.file_nume = file_nume;
     this.nr_intrebari_pe_materie = nr_intrebari_pe_materie;
     this.is_grile = is_grile;
-    this.title=title
-    this.materie_name=materie_name
+    this.title = title;
+    this.materie_name = materie_name;
   }
+
   getAllMaterieContent(materii: FishierMaterie[]): string[] {
     return this.file_nume
       .map(path => materii.find(mat => mat.path === path)?.sinteza ?? (() => {
@@ -158,4 +170,3 @@ export class QuiZRequestItem {
       .filter((s): s is string => Boolean(s));
   }
 }
-
