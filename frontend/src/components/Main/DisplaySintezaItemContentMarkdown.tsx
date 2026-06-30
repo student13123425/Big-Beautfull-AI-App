@@ -101,6 +101,12 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
   const processedContent = get_output_content(rawContent);
   const markdownContent = extractMarkdown(processedContent);
 
+  useEffect(() => {
+    if (markdownContent && markdownContent.length > 0) {
+      console.log(`[DisplaySintezaItemContentMarkdown] ✅ Displaying Markdown for: ${file.path} (${markdownContent.length} chars)`);
+    }
+  }, [markdownContent, file.path]);
+
   return (
     <ContentContainer $isOpen={isOpen} $fullscreen={isFullScreen}>
       {file.sinteza === null || get_output_content(file.sinteza).length === 0 ? (

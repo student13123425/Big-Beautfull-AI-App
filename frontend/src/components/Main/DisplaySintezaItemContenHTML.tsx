@@ -124,6 +124,11 @@ export default function DisplaySintezaItemContentHTML({
   const extractedContent = extractContent(rawHtmlContent ?? '');
   const htmlContent = extractHTML(extractedContent ?? '');
 
+  useEffect(() => {
+    if (htmlContent && htmlContent.length > 0) {
+      console.log(`[DisplaySintezaItemContentHTML] ✅ Displaying HTML for: ${file.path} (${htmlContent.length} chars)`);
+    }
+  }, [htmlContent, file.path]);
   const zoomFactor = Math.max(0.2, Math.min(2.0, Zoom / 100));
 
   return (

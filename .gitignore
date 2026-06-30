@@ -176,3 +176,6 @@ server/**/*.db
 
 # Server JSON config/data files
 server/*.json
+
+# Server data directory (user files, metadata, uploads)
+server/data/
