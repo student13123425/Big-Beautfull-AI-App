@@ -100,3 +100,12 @@ export function getUserMetaDataSpot(token?: string): string {
   return join("data","UserMetadata", `${effectiveToken}.json`);
 }
 
+export function getGuestToken(req: Request, res: Response): void {
+  const guestToken = process.env.GUEST_TOKEN;
+  if (!guestToken) {
+    res.status(500).json({ error: "GUEST_TOKEN not configured" });
+    return;
+  }
+  res.json({ token: guestToken });
+}
+

@@ -22,7 +22,7 @@ import { allowedExtensions, configClients, data_study, deniedExtensions, lastCon
 import { AiModel } from './objects/AiTypes.js';
 import { Config } from './objects/Config.js';
 import { __dirname } from './services/state.js';
-import { loginEndpoint, registerEndpoint, verifyTokenEndpoint, initGuestFolder } from './routes/auth.js';
+import { getGuestToken, loginEndpoint, registerEndpoint, verifyTokenEndpoint, initGuestFolder } from './routes/auth.js';
 import { initializeUserDatabase } from './services/auth.js';
 import { runTest } from './test/llm_completion_test.js';
 import { ai_models_available, set_device_id } from './services/state.js';
@@ -251,6 +251,10 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   loginEndpoint(req, res);
+});
+
+app.get("/guestToken", async (req, res) => {
+  getGuestToken(req, res);
 });
 
 app.post("/get_file", async (req, res) => {
