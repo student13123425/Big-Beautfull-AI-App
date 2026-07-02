@@ -932,3 +932,28 @@ export async function setHtmlStyleConfig(
     }
   }
 }
+
+export async function getGuestToken(
+  setToken: Function,
+  setError: Function
+): Promise<boolean> {
+  try {
+    const response = await axios.get(`${addr}/guestToken`, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (response.data && response.data.token) {
+      setToken(response.data.token);
+      return true;
+    } else {
+      setError("Failed to get guest token: No token received");
+      return false;
+    }
+  } catch (error: any) {
+    const message = error.response
+      ? `Server error (${error.response.status}): ${error.response.data?.message || error.response.statusText}`
+      : `Network error getting guest token: ${error.message}`;
+    setError(message);
+    return false;
+  }
+}

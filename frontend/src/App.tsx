@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import type { Config, StudyGroup, StyleConfigList } from './scripts/objects';
-import { get_config, get_data, getAvailableStyles, getSupportedModels, getValidStudyLmstudio} from './scripts/network';
+import { get_config, get_data, getAvailableStyles, getGuestToken, getSupportedModels, getValidStudyLmstudio} from './scripts/network';
 import Main from './pages/Main';
 import LoadingScreen from './components/Main/LoadingScreen';
 import "./scss/main.scss";
@@ -51,6 +51,7 @@ function App() {
 
     getSupportedModels(setSupportedModel, setError);
     getAvailableStyles(setHtmlPosibleStyles, setError);
+    getGuestToken(setLogInToken, setError);
 
     return () => {
       isPollingActive = false;
