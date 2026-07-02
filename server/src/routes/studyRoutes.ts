@@ -253,11 +253,9 @@ export async function handleContentGeneration(req: Request, res: Response) {
         return res.send("n");
     }
 
-    // Clear existing content and set computing flags
+    // Clear existing content
     targetFile.sinteza = null;
     targetFile.html_file = null;
-    targetFile.is_computing_sinteza = true;
-    targetFile.is_computing_html = false;
     data_study.save();
     broadcastStudyData();
 
