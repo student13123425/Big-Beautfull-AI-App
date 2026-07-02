@@ -77,3 +77,13 @@ export function initGuestFolder(): void {
     createTokenFolder(guestToken);
   }
 }
+
+export function getUserFolderPath(token?: string): string {
+  const guestToken = process.env.GUEST_TOKEN;
+  const effectiveToken = token || guestToken;
+  if (!effectiveToken) {
+    throw new Error("No token provided and no GUEST_TOKEN configured");
+  }
+  return join("data", effectiveToken);
+}
+

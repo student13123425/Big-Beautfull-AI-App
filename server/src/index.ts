@@ -253,10 +253,6 @@ app.post("/login", async (req, res) => {
   loginEndpoint(req, res);
 });
 
-app.post("/verify_token", async (req, res) => {
-  verifyTokenEndpoint(req, res);
-});
-
 app.post("/get_file", async (req, res) => {
   getFile(req,res);
 });
