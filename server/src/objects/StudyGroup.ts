@@ -6,11 +6,11 @@ import { AiServerError } from "./AiTypes.js";
 import { AskQuestion } from "./Question.js";
 import { GroupIntrebare, Intrebare, Quiz } from "./quiz.js";
 import { readFileSync, writeFileSync } from "fs";
-import { getUserFolderPath } from "../routes/auth.js";
+import { getUserFolderPath, getUserMetaDataSpot } from "../routes/auth.js";
 
 export class StudyGroup{
   data:Materie[]=[]
-  file_path:string="./data/UserMetadata/StudyGroups.json"
+  file_path:string=getUserMetaDataSpot()
   AiTextCorrection:AiTextCorectionElement=new AiTextCorectionElement(new Quiz(),[])
   AiServerError:AiServerError[]=[];
   CurrentAskedQuestion:AskQuestion=new AskQuestion();

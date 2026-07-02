@@ -93,6 +93,6 @@ export function getUserMetaDataSpot(token?: string): string {
   if (!effectiveToken) {
     throw new Error("No token provided and no GUEST_TOKEN configured");
   }
-  return join("data","UserMetadata", `effectiveToken${'.json'}`);
+  return join("data","UserMetadata", `${effectiveToken}.json`);
 }
 

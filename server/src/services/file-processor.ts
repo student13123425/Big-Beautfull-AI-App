@@ -7,6 +7,7 @@ import { getTextExtractor } from 'office-text-extractor';
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { extractTextFromImage } from "./ocr.js";
 import { StudyGroup } from "../objects/StudyGroup.js";
+import { getUserMetaDataSpot } from "../routes/auth.js";
 
 const execPromise = promisify(exec);
 
@@ -188,7 +189,7 @@ export function get_file_name(path: string){
 export function get_content_filled_file_list(): string[] {
   let out: string[] = [];
   try {
-    const json: string = readFileSync("./data/UserMetadata/StudyGroups.json", "utf-8");
+    const json: string = readFileSync(getUserMetaDataSpot(), "utf-8");
     const data: StudyGroup = JSON.parse(json);
     for (const m of data.data) {
       for (const f of m.files) {
