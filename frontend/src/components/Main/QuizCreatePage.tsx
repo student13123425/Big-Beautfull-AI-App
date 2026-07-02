@@ -4,7 +4,7 @@ import { Materie, Quiz, QuiZRequestItem, type FishierMaterie } from '../../scrip
 import useKeyPress from '../../hooks/useKeyPress'
 import { MdClose, MdCheckBox, MdCheckBoxOutlineBlank, MdRemove, MdAdd } from 'react-icons/md'
 import { clone, isValidQuizItem } from '../../scripts/aox'
-import { GenerateNewQuiz } from '../../scripts/network'
+import { GenerateNewQuiz } from '../../network/quiz'
 import AcknowledgeModal from '../Misc/AcknowledgeModal'
 import { AlertTriangle } from 'lucide-react'
 import { getQuizPageText, type QuizLanguage } from '../../lang/quizLang'

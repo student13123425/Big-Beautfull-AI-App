@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Config } from "../objects";
+import { Config } from "../scripts/objects";
 import { addr } from "./utils";
 
 export async function DeactivateErrorMessage(

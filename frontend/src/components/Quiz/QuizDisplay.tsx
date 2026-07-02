@@ -13,7 +13,7 @@ import QuizDIsplayRezultate from './QuizDIsplayRezultateGrila';
 import useKeyPress from '../../hooks/useKeyPress';
 import QuizDisplaySection from './QuizDisplaySection';
 import QuizDisplayEvaluare from './QuizDisplayEvaluare';
-import { clear_evaluare } from '../../scripts/network';
+import { clear_evaluare } from '../../network/quiz';
 import { getNoSubjectSelectedText, type PlaceholderLanguage } from '../../lang/placeholders';
 import { getQuizComponentsText, type QuizComponentsLanguage } from '../../lang/quizComponents';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getFileType } from '../../scripts/network';
+import { getFileType } from '../../network/utils';
 import { FileText } from 'lucide-react';
 import styled from 'styled-components';
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { StyleConfigList } from "../objects";
+import { StyleConfigList } from "../scripts/objects";
 import { addr } from "./utils";
 
 export async function generateHTML(

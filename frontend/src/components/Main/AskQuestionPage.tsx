@@ -4,7 +4,7 @@ import { MdSend, MdHelpOutline, MdClose, MdRefresh, MdInfoOutline } from 'react-
 import { FaFileAlt } from 'react-icons/fa';
 import { AskQuestion, type FileD, type FishierMaterie } from '../../scripts/objects';
 import useKeyPress from '../../hooks/useKeyPress';
-import { AskDocumentQuestion, stopAnsweringQuestion } from '../../scripts/network';
+import { AskDocumentQuestion, stopAnsweringQuestion } from '../../network/documents';
 import type Markdown from 'markdown-to-jsx';
 import MarkdownRenderer from '../Misc/MarkdownRenderer';
 import { extractContent } from '../../scripts/aox';

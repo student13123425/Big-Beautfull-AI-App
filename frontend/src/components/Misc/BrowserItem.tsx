@@ -13,7 +13,8 @@ import {
 } from 'react-icons/md';
 import { FcImageFile } from 'react-icons/fc';
 import type { Quiz, FileD, FishierMaterie } from '../../scripts/objects';
-import { delete_file, DeleteQuiz } from '../../scripts/network';
+import { delete_file } from '../../network/documents';
+import { DeleteQuiz } from '../../network/quiz';
 import ConfirmModal from './ConfirmModal';
 import { getCommonModalText, type CommonModalLanguage } from '../../lang/modals/commonModals';
 

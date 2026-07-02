@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AiModel } from "../objects";
+import { AiModel } from "../scripts/objects";
 import { addr } from "./utils";
 
 export async function getSupportedModels(
@@ -204,6 +204,34 @@ export async function getValidStudyLmstudio(
       );
     } else {
       setError(`Unexpected error while fetching validation: ${err.message}`);
+    }
+  }
+}
+
+export async function getGuestToken(
+  setToken: Function,
+  setError: Function
+): Promise<void> {
+  try {
+    const { data } = await axios.get<{ token: string }>(`${addr}/guestToken`);
+    setToken(data.token);
+  } catch (err: any) {
+    setToken(null);
+    if (err.response) {
+      const { status, data: respData, statusText } = err.response;
+      const serverMsg =
+        respData?.message ||
+        statusText ||
+        'Unknown server error';
+      setError(
+        `Unable to get guest token — server responded with ${status}: ${serverMsg}.`
+      );
+    } else if (err.request) {
+      setError(
+        `Network error — no response received when attempting to reach ${addr}/guestToken.`
+      );
+    } else {
+      setError(`Unexpected error while fetching guest token: ${err.message}`);
     }
   }
 }

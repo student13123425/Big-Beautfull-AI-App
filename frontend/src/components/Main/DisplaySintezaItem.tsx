@@ -12,7 +12,7 @@ import useKeyPress from '../../hooks/useKeyPress';
 import type { AskQuestion, FileD, FishierMaterie, Materie } from '../../scripts/objects';
 import { FaFile, FaFilePdf, FaFilePowerpoint, FaFileWord } from 'react-icons/fa';
 import axios from 'axios';
-import { addr } from '../../scripts/network';
+import { addr } from '../../network/utils';
 import AskQuestionPage from './AskQuestionPage';
 import FilePlaceholder from '../Misc/FilePlaceholder';
 import { FcImageFile } from 'react-icons/fc';

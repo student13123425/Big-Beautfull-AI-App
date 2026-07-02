@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Quiz, QuiZRequestItem } from "../objects";
+import { Quiz, QuiZRequestItem } from "../scripts/objects";
 import { addr } from "./utils";
 
 export async function submiForEvaluation(

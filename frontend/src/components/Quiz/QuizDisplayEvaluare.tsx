@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import type { AiTextCorectionElement, Quiz } from '../../scripts/objects';
 import { styled } from 'styled-components';
 import { flattenArray } from '../../scripts/aox';
-import { submiForEvaluation, clear_evaluare } from '../../scripts/network';
+import { submiForEvaluation, clear_evaluare } from '../../network/quiz';
 import EvaluareIntrebare from './EvaluareIntrebare';
 
 const Container = styled.div`

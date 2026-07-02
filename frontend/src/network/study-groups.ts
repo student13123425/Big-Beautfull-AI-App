@@ -1,5 +1,5 @@
 import axios from "axios";
-import { StudyGroup } from "../objects";
+import { StudyGroup } from "../scripts/objects";
 import { addr } from "./utils";
 
 export async function get_data(

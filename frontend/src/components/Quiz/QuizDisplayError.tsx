@@ -1,7 +1,7 @@
 import React from 'react';
 import { css, styled } from 'styled-components';
 import { FaExclamationTriangle, FaRedoAlt } from 'react-icons/fa';
-import { ReGenerateNewQuiz } from '../../scripts/network';
+import { ReGenerateNewQuiz } from '../../network/quiz';
 import { QuiZRequestItem } from '../../scripts/objects';
 import { getQuizComponentsText, type QuizComponentsLanguage } from '../../lang/quizComponents';
 

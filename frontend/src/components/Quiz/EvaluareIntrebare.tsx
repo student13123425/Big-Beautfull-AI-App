@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import type { AiTextCorection, AiTextCorectionElement, Quiz } from '../../scripts/objects'
 import { styled, keyframes } from 'styled-components';
 import { flattenArray, interpolateColors } from '../../scripts/aox';
-import { clear_evaluare, submiForEvaluation } from '../../scripts/network';
+import { clear_evaluare, submiForEvaluation } from '../../network/quiz';
 import MarkdownRenderer from '../Misc/MarkdownRenderer';
 
 const Container = styled.div`

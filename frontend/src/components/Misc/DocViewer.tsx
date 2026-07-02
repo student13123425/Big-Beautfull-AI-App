@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, memo } from 'react';
 import { styled, keyframes } from 'styled-components';
 import { Maximize2, Minimize2, ZoomIn, ZoomOut } from 'lucide-react';
 import useKeyPress from '../../hooks/useKeyPress';
-import { loadDocumentContent } from '../../scripts/network';
+import { loadDocumentContent } from '../../network/documents';
 import Loading from './Loading';
 
 interface DocViewerProps {
