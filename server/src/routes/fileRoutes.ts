@@ -146,7 +146,9 @@ export async function getFile(req: Request, res: Response): Promise<void> {
     }
 
     const fileName = path.basename(filePath);
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    const safeFileName = fileName.replace(/[^\\x20-\\x7E]/g, '');
+    const encodedName = encodeURIComponent(fileName).replace(/'/g, "%27");
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedName}; filename="${safeFileName}"`);
     res.setHeader('Content-Length', stats.size.toString());  
     const fileStream = createReadStream(filePath);
     fileStream.on('error', (err) => {
