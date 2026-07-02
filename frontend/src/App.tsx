@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import type { Config, StudyGroup, StyleConfigList } from './scripts/objects';
-import { get_config, get_data, getAvailableStyles, getGuestToken, getSupportedModels, getValidStudyLmstudio} from './scripts/network';
+import { get_config } from './network/app-config';
+import { get_data } from './network/study-groups';
+import { getAvailableStyles } from './network/html-generator';
+import { getGuestToken, getSupportedModels, getValidStudyLmstudio } from './network/ai-models';
 import Main from './pages/Main';
 import LoadingScreen from './components/Main/LoadingScreen';
 import "./scss/main.scss";

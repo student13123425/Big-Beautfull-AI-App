@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaLock, FaUser, FaArrowRight, FaUserPlus, FaShieldAlt, FaExclamationTriangle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { evaluatePasswordComplexity } from '../scripts/aox';
-import { registerUser, loginUser } from '../scripts/network';
+import { registerUser, loginUser } from '../network/auth';
 import AcknowledgeModal from '../components/Misc/AcknowledgeModal';
 import useKeyPress from '../hooks/useKeyPress';
 

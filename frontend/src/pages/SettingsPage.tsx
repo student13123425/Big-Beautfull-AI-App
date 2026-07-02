@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { setContextSizeConfig, setLanguageConfig, setSystemPromptConfig, getHtmlStyleConfig, setHtmlStyleConfig } from '../scripts/network';
+import { setContextSizeConfig, setSystemPromptConfig } from '../network/ai-models';
+import { setLanguageConfig } from '../network/app-config';
+import { getHtmlStyleConfig, setHtmlStyleConfig } from '../network/html-generator';
 import { StyleConfigList, type Config, type StyleBundle, type StyleConfig } from '../scripts/objects';
 import AnimatedDropdown from '../components/Settings/AnimatedDropdownProps';
 import ContextSizeSelector from '../components/Settings/ContextSizeSelector';

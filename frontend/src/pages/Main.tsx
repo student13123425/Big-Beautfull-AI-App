@@ -17,7 +17,7 @@ import TopBar from '../components/Main/TopBar'
 import Materie from '../components/Main/Materie'
 import SettingsPage from './SettingsPage'
 import ErrorModal from '../components/Misc/ErrorModal'
-import { DeactivateErrorMessage } from '../scripts/network'
+import { DeactivateErrorMessage } from '../network/app-config'
 import LoadingScreen from '../components/Main/LoadingScreen'
 
 const Container = styled.div`
