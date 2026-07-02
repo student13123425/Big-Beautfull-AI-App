@@ -107,6 +107,49 @@ Generated from `server/src/index.ts`
 
 ---
 
+## Token-Based User Data
+
+The following endpoints use `getUserFolderPath(token?)` and `getUserMetaDataSpot(token?)` from `./routes/auth.ts` to access user-specific data directories. Both functions fall back to `process.env.GUEST_TOKEN` when no token is provided.
+
+### Helper Functions
+
+| Function | Returns | Description |
+|----------|---------|-------------|
+| `getUserFolderPath(token?: string)` | `data/<token>` | Root directory for a user's data (subjects, files) |
+| `getUserMetaDataSpot(token?: string)` | `data/UserMetadata/<token>.json` | Path to serialized `StudyGroup` metadata JSON file |
+
+### Endpoints Using User Data Functions
+
+#### Study Routes (`getUserFolderPath`)
+
+| Endpoint | Method | Usage |
+|----------|--------|-------|
+| `POST /add_materie` | Creates subject folder at `data/<token>/<name>` |
+| `POST /delete_materie` | Removes subject folder recursively |
+| `GET /study`, `/studyDirect` | Lists user's subjects and files from `data/<token>/` |
+
+#### File Routes (`getUserFolderPath`, `getUserMetaDataSpot`)
+
+| Endpoint | Method | Usage |
+|----------|--------|-------|
+| `POST /send_file` | Saves uploaded files to user directory via `getUserMetaDataSpot()` |
+| `POST /get_file` | Retrieves files from user directory using both functions |
+| `POST /delete_file` | Deletes files from user directory via `getUserFolderPath()` |
+
+#### Quiz & Evaluation Routes (via `StudyGroup.load()`)
+
+These endpoints access `getUserMetaDataSpot()` indirectly through `StudyGroup.load()` in `file-processor.ts`:
+
+| Endpoint | Method | Usage |
+|----------|--------|-------|
+| `POST /GenerateNewQuiz` | Loads user study data via `StudyGroup.load()` |
+| `POST /ReGenerateNewQuiz` | Loads user study data via `StudyGroup.load()` |
+| `POST /DeleteQuiz` | Loads user study data via `StudyGroup.load()` |
+| `POST /askFileQuestion` | Loads user study data via `StudyGroup.load()` |
+| `POST /Evaluare` | Loads user study data via `StudyGroup.load()` |
+
+---
+
 ## Notes
 
 - All routes are prefixed with the server `port` (configured in `.env`)

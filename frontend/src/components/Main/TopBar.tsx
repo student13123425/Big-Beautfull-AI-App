@@ -6,7 +6,7 @@ import { capitalizeFirstLetter } from '../../scripts/aox'
 import { add_materie, delete_materie } from '../../network/study-groups'
 import InputModal from '../Misc/InputModal'
 import ConfirmModal from '../Misc/ConfirmModal'
-import { MdKeyboardArrowDown, MdSettings } from 'react-icons/md'
+import { MdKeyboardArrowDown, MdSettings, MdClose } from 'react-icons/md'
 import { useWindowResize } from '../../hooks/useWindowResize'
 import useKeyRelease from '../../hooks/useKeyRelease'
 import { getAddMaterieText, type AddMaterieLanguage } from '../../lang/modals/addMaterieText'
@@ -292,7 +292,7 @@ export default function TopBar(props: {
         })()}
 
         <AddButton onClick={() => props.setIsSetings(!props.IsSetings)}>
-          <MdSettings color="white" size={22} />
+          {props.IsSetings ? <MdClose color="white" size={22} /> : <MdSettings color="white" size={22} />}
         </AddButton>
 
         {isOverflowing ? (
