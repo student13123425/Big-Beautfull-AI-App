@@ -179,3 +179,4 @@ server/*.json
 
 # Server data directory (user files, metadata, uploads)
 server/data/
+server/src/data/

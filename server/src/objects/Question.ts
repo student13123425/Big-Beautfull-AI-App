@@ -3,6 +3,7 @@ import { get_question_prompt } from "../ai/prompts.js";
 import { get_compleation } from "../services/llm.js";
 import { AiServerError } from "./AiTypes.js";
 import { Config } from "node-tesseract-ocr";
+import { supported_models } from "../services/state.js";
 
 export class AskQuestion{
   content:string|null=null
@@ -14,7 +15,7 @@ export class AskQuestion{
     this.is_computing=true;
     this.content=null;
     const prompt:string=get_question_prompt(materieName,file_content,question,config.limba);
-    const model_name:string=config.ai_model_question[quality]
+    const model_name:string=supported_models[1]
     let model_full=models.find((it)=>it.path===model_name);
     if(!model_full){
       this.is_computing=false;
