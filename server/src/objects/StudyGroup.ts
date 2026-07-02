@@ -6,6 +6,7 @@ import { AiServerError } from "./AiTypes.js";
 import { AskQuestion } from "./Question.js";
 import { GroupIntrebare, Intrebare, Quiz } from "./quiz.js";
 import { readFileSync, writeFileSync } from "fs";
+import { getUserFolderPath } from "../routes/auth.js";
 
 export class StudyGroup{
   data:Materie[]=[]
@@ -21,13 +22,13 @@ export class StudyGroup{
   }
   load(config:Config) {
     this.data = [];
-    let dirs: string[] = getDirectoryContent("./data", ["temp_uploads", "UserMetadata"]);
+    let dirs: string[] = getDirectoryContent(getUserFolderPath(), ["temp_uploads", "UserMetadata"]);
     for (let it of dirs) {
       this.data.push(new Materie(it));
-      let files: string[] = getDirectoryContent(`./data/${it}`, []);
+      let files: string[] = getDirectoryContent(`${getUserFolderPath()}/${it}`, []);
       let index: number = this.data.length - 1;
       for (let f of files) {
-        let path:string=`./data/${it}/${f}`;
+        let path:string=`${getUserFolderPath()}/${it}/${f}`;
         let filled=get_content_filled_file_list()
         this.data[index].files.push(
           new FishierMaterie(path, it, this.save,!filled.includes(path),config)

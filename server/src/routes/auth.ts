@@ -87,3 +87,12 @@ export function getUserFolderPath(token?: string): string {
   return join("data", effectiveToken);
 }
 
+export function getUserMetaDataSpot(token?: string): string {
+  const guestToken = process.env.GUEST_TOKEN;
+  const effectiveToken = token || guestToken;
+  if (!effectiveToken) {
+    throw new Error("No token provided and no GUEST_TOKEN configured");
+  }
+  return join("data","UserMetadata", `effectiveToken${'.json'}`);
+}
+
