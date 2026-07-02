@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AiModel } from "../objects";
 
 export async function getSupportedModels(
   setModels: Function,
@@ -206,4 +207,3 @@ export async function getValidStudyLmstudio(
   }
 }
 
-interface AiModel {}

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Quiz, QuiZRequestItem } from "../objects";
 
 export async function submiForEvaluation(
   quiz: Quiz,
@@ -142,14 +143,3 @@ export async function DeleteQuiz(
   }
 }
 
-interface Quiz {
-  intrebari: any[];
-  is_grila: boolean;
-  is_computing: boolean;
-  title: string;
-  is_failed?: boolean;
-}
-
-interface QuiZRequestItem {
-  [key: string]: any;
-}
