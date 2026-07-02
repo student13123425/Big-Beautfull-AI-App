@@ -4,6 +4,7 @@ import { broadcastStudyData, config, getLmStudioDevice } from "../index.js";
 import { get_file_name, getDirectoryContent } from "../services/file-processor.js";
 import { ai_models_available, data_study, device_ip, htmlStyles } from "../services/state.js";
 import { AiServerError } from "../objects/AiTypes.js";
+import { getUserFolderPath } from "./auth.js";
 
 async function ensureModelsAvailable(): Promise<void> {
   if (ai_models_available.length === 0) {
@@ -23,14 +24,14 @@ export async function addMaterie(req: Request, res: Response): Promise<void> {
   }
   
   const name: string = req.body.name;
-  const list: string[] = getDirectoryContent("./data/");
+  const list: string[] = getDirectoryContent(getUserFolderPath());
   
   if (list.map((it) => it.toLowerCase()).includes(name.toLowerCase())) {
     let front_end_error_message = new AiServerError(`materia deja exista`, `materia ${name.toLowerCase()} deja exista in system`, true);
     data_study.AiServerError.push(front_end_error_message);
     res.send("n");
   } else {
-    await mkdirSync(`./data/${name}`, { recursive: true });
+    await mkdirSync(`${getUserFolderPath()}/${name}`, { recursive: true });
     data_study.load(config);
     broadcastStudyData();
     res.send("y");
@@ -44,10 +45,10 @@ export async function deleteMaterie(req: Request, res: Response): Promise<void> 
   }
   
   const name: string = req.body.name;
-  const list: string[] = getDirectoryContent("./data/");
+  const list: string[] = getDirectoryContent(getUserFolderPath());
   
   if (list.map((it) => it.toLowerCase()).includes(name.toLowerCase())) {
-    await rmSync(`./data/${name}`, { recursive: true, force: true });
+    await rmSync(`${getUserFolderPath()}/${name}`, { recursive: true, force: true });
     data_study.load(config);
     broadcastStudyData();
     res.send("y");
