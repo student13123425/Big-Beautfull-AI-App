@@ -22,7 +22,7 @@ import { allowedExtensions, configClients, data_study, deniedExtensions, lastCon
 import { AiModel } from './objects/AiTypes.js';
 import { Config } from './objects/Config.js';
 import { __dirname } from './services/state.js';
-import { loginEndpoint, registerEndpoint, verifyTokenEndpoint } from './routes/auth.js';
+import { loginEndpoint, registerEndpoint, verifyTokenEndpoint, initGuestFolder } from './routes/auth.js';
 import { initializeUserDatabase } from './services/auth.js';
 import { runTest } from './test/llm_completion_test.js';
 import { ai_models_available, set_device_id } from './services/state.js';
@@ -358,7 +358,8 @@ app.use((req, res, next) => {
 (async () => {
   try {
     await initializeUserDatabase();
-    console.log('✅ User database initialized successfully.');
+    console.log('User database initialized successfully.');
+    initGuestFolder();
 
     // Create HTTP server
     const server = app.listen(port, '0.0.0.0', () => {

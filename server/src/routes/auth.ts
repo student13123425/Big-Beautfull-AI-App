@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { login, registerUser, verifyToken } from "../services/auth.js";
+import { mkdir, existsSync } from 'fs';
+import { join } from 'path';
 
 interface RegisterBody {
   username?: string;
@@ -59,5 +61,19 @@ export async function registerEndpoint(req: Request<{}, {}, RegisterBody>, res: 
     res.json({ token });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Registration failed" });
+  }
+}
+
+export function createTokenFolder(token: string): void {
+  const tokenDir = join(__dirname, '..', '..', 'data', 'Tokens', token);
+  if (!existsSync(tokenDir)) {
+    mkdir(tokenDir, { recursive: true }, () => {});
+  }
+}
+
+export function initGuestFolder(): void {
+  const guestToken = process.env.GUEST_TOKEN;
+  if (guestToken) {
+    createTokenFolder(guestToken);
   }
 }
