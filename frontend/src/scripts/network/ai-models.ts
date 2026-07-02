@@ -1,12 +1,13 @@
 import axios from "axios";
 import { AiModel } from "../objects";
+import { addr } from "./utils";
 
 export async function getSupportedModels(
   setModels: Function,
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.get<string[]>(`http://localhost:3000/select_model`);
+    const { data } = await axios.get<string[]>(`${addr}/select_model`);
     setModels(data);
   } catch (err: any) {
     if (err.response) {
@@ -20,7 +21,7 @@ export async function getSupportedModels(
         `Unable to fetch supported models — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
-      setError(`Network error — no response received when attempting to reach http://localhost:3000/select_model.`);
+      setError(`Network error — no response received when attempting to reach ${addr}/select_model.`);
     } else {
       setError(`Unexpected error while fetching supported models: ${err.message}`);
     }
@@ -33,7 +34,7 @@ export async function selectModel(
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`http://localhost:3000/select_model`, { name });
+    const { data } = await axios.post<string>(`${addr}/select_model`, { name });
     if (data === 'y') {
       return;
     } else {
@@ -51,7 +52,7 @@ export async function selectModel(
         `Unable to select model — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
-      setError(`Network error — no response received when attempting to reach http://localhost:3000/select_model.`);
+      setError(`Network error — no response received when attempting to reach ${addr}/select_model.`);
     } else {
       setError(`Unexpected error while selecting model: ${err.message}`);
     }
@@ -63,7 +64,7 @@ export async function setSystemPromptConfig(
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`http://localhost:3000/set_system_prompt`, { prompt });
+    const { data } = await axios.post<string>(`${addr}/set_system_prompt`, { prompt });
 
     if (data === 'y') {
       return;
@@ -82,7 +83,7 @@ export async function setSystemPromptConfig(
         `Unable to set system prompt — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
-      setError(`Network error — no response received when attempting to reach http://localhost:3000/set_system_prompt.`);
+      setError(`Network error — no response received when attempting to reach ${addr}/set_system_prompt.`);
     } else {
       setError(`Unexpected error while setting system prompt: ${err.message}`);
     }
@@ -94,7 +95,7 @@ export async function setContextSizeConfig(
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`http://localhost:3000/set_context_size`, { size });
+    const { data } = await axios.post<string>(`${addr}/set_context_size`, { size });
 
     if (data === 'y') {
       return;
@@ -119,7 +120,7 @@ export async function setContextSizeConfig(
         `Unable to set context size — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
-      setError(`Network error — no response received when attempting to reach http://localhost:3000/set_context_size.`);
+      setError(`Network error — no response received when attempting to reach ${addr}/set_context_size.`);
     } else {
       setError(`Unexpected error while setting context size: ${err.message}`);
     }
@@ -131,7 +132,7 @@ export async function getCustomModels(
   setError: Function
 ) {
   try {
-    const { data } = await axios.get<AiModel[]>(`http://localhost:3000/models_costum_format`);
+    const { data } = await axios.get<AiModel[]>(`${addr}/models_costum_format`);
     setData(data);
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
@@ -159,7 +160,7 @@ export async function getModelsPaths(
   setError: Function
 ) {
   try {
-    const { data } = await axios.get<string[]>(`http://localhost:3000/models_paths`);
+    const { data } = await axios.get<string[]>(`${addr}/models_paths`);
     setData(data);
   } catch (err: any) {
     if (err.response) {
@@ -174,7 +175,7 @@ export async function getModelsPaths(
       );
     } else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach http://localhost:3000/models_paths.`
+        `Network error — no response received when attempting to reach ${addr}/models_paths.`
       );
     } else {
       setError(`Unexpected error while fetching models: ${err.message}`);
@@ -187,7 +188,7 @@ export async function getValidStudyLmstudio(
   setError: (errorMsg: string) => void,
 ) {
   try {
-    const { data: responseMessage } = await axios.get<string>(`http://localhost:3000/get_valid_study_lmstudio`);
+    const { data: responseMessage } = await axios.get<string>(`${addr}/get_valid_study_lmstudio`);
     setData(responseMessage);
   } catch (err: any) {
     if (err.response) {
@@ -199,7 +200,7 @@ export async function getValidStudyLmstudio(
       );
     } else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach http://localhost:3000/get_valid_study_lmstudio.`
+        `Network error — no response received when attempting to reach ${addr}/get_valid_study_lmstudio.`
       );
     } else {
       setError(`Unexpected error while fetching validation: ${err.message}`);

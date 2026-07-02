@@ -1,4 +1,5 @@
 import axios from "axios";
+import { addr } from "./utils";
 
 export async function registerUser(
   username: string,
@@ -7,7 +8,7 @@ export async function registerUser(
   setError: Function
 ): Promise<boolean> {
   try {
-    const response = await axios.post(`http://localhost:3000/register`, {
+    const response = await axios.post(`${addr}/register`, {
       username,
       email,
       password,
@@ -37,7 +38,7 @@ export async function loginUser(
   setError: Function
 ): Promise<boolean> {
   try {
-    const response = await axios.post(`http://localhost:3000/login`, {
+    const response = await axios.post(`${addr}/login`, {
       identifier,
       password,
     }, {
@@ -65,7 +66,7 @@ export async function verifyToken(
   setError: Function
 ): Promise<boolean> {
   try {
-    const response = await axios.post(`http://localhost:3000/verify_token`, {
+    const response = await axios.post(`${addr}/verify_token`, {
       token,
     }, {
       headers: { 'Content-Type': 'application/json' },
@@ -96,7 +97,7 @@ export async function getGuestToken(
   setError: Function
 ): Promise<boolean> {
   try {
-    const response = await axios.get(`http://localhost:3000/guestToken`, {
+    const response = await axios.get(`${addr}/guestToken`, {
       headers: { 'Content-Type': 'application/json' }
     });
 

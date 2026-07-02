@@ -1,5 +1,6 @@
 import axios from "axios";
 import { StyleConfigList } from "../objects";
+import { addr } from "./utils";
 
 export async function generateHTML(
   name_materie: string,
@@ -9,7 +10,7 @@ export async function generateHTML(
 ): Promise<boolean> {
   try {
     const response = await axios.post<string>(
-      `http://localhost:3000/genereaza_html`,
+      `${addr}/genereaza_html`,
       { name_materie, file_name, style_index },
       { headers: { 'Content-Type': 'application/json' } }
     );
@@ -44,7 +45,7 @@ export async function getAvailableStyles(
   setError: Function
 ): Promise<void> {
   try {
-    const response = await axios.get<string>(`http://localhost:3000/sintezaStyles`);
+    const response = await axios.get<string>(`${addr}/sintezaStyles`);
     setStyles(new StyleConfigList(response.data));
   } catch (error: any) {
     if (error.response) {
@@ -71,7 +72,7 @@ export async function getHtmlStyleConfig(
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.get(`http://localhost:3000/htmlStyle`);
+    const { data } = await axios.get(`${addr}/htmlStyle`);
     setHtmlStyleValue(data);
   } catch (err: any) {
     if (err.response) {
@@ -86,7 +87,7 @@ export async function getHtmlStyleConfig(
       );
     } else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach http://localhost:3000/htmlStyle.`
+        `Network error — no response received when attempting to reach ${addr}/htmlStyle.`
       );
     } else {
       setError(`Unexpected error while fetching html_style: ${err.message}`);
@@ -99,7 +100,7 @@ export async function setHtmlStyleConfig(
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`http://localhost:3000/htmlStyle`, { style });
+    const { data } = await axios.post<string>(`${addr}/htmlStyle`, { style });
 
     if (data === 'y') {
       return;
@@ -119,7 +120,7 @@ export async function setHtmlStyleConfig(
       );
     } else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach http://localhost:3000/htmlStyle.`
+        `Network error — no response received when attempting to reach ${addr}/htmlStyle.`
       );
     } else {
       setError(`Unexpected error while setting html_style: ${err.message}`);

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Quiz, QuiZRequestItem } from "../objects";
+import { addr } from "./utils";
 
 export async function submiForEvaluation(
   quiz: Quiz,
@@ -7,7 +8,7 @@ export async function submiForEvaluation(
   setError: Function
 ): Promise<boolean> {
   try {
-    const response = await axios.post(`http://localhost:3000/Evaluare`, {
+    const response = await axios.post(`${addr}/Evaluare`, {
       quiz: {
         intrebari: quiz.intrebari,
         is_grila: quiz.is_grila,
@@ -36,7 +37,7 @@ export async function submiForEvaluation(
 
 export async function clear_evaluare(setError: Function): Promise<boolean> {
   try {
-    const response = await axios.get(`http://localhost:3000/ClearEvaluare`, {
+    const response = await axios.get(`${addr}/ClearEvaluare`, {
       responseType: 'text'
     });
     
@@ -52,7 +53,7 @@ export async function GenerateNewQuiz(
   setError: Function,
 ): Promise<boolean> {
   try {
-    const response = await fetch(`http://localhost:3000/GenerateNewQuiz`, {
+    const response = await fetch(`${addr}/GenerateNewQuiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +84,7 @@ export async function ReGenerateNewQuiz(
   setError: Function,
 ): Promise<boolean> {
   try {
-    const response = await fetch(`http://localhost:3000/ReGenerateNewQuiz`, {
+    const response = await fetch(`${addr}/ReGenerateNewQuiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +118,7 @@ export async function DeleteQuiz(
   setError: Function,
 ): Promise<boolean> {
   try {
-    const response = await fetch(`http://localhost:3000/DeleteQuiz`, {
+    const response = await fetch(`${addr}/DeleteQuiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

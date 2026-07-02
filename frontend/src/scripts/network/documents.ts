@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as mammoth from 'mammoth';
+import { addr } from "./utils";
 
 export async function AskDocumentQuestion(
   question: string,
@@ -10,7 +11,7 @@ export async function AskDocumentQuestion(
 ): Promise<boolean> {
   try {
     const response = await axios.post(
-      `http://localhost:3000/askFileQuestion`,
+      `${addr}/askFileQuestion`,
       {
         question,
         materie: materie.toLowerCase(),
@@ -43,7 +44,7 @@ export async function stopAnsweringQuestion(
   setError: Function,
 ): Promise<boolean> {
   try {
-    const { data } = await axios.get(`http://localhost:3000/stopAnsweringQuestion`);
+    const { data } = await axios.get(`${addr}/stopAnsweringQuestion`);
     return true;
   } catch (error: any) {
     const message = error.response
@@ -60,7 +61,7 @@ export async function delete_file(
 ): Promise<boolean> {
   try {
     const response = await axios.post<void>(
-      `http://localhost:3000/delete_file`,
+      `${addr}/delete_file`,
       { filename },
       {
         headers: { 'Content-Type': 'application/json' },

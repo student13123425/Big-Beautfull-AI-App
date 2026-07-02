@@ -1,12 +1,13 @@
 import axios from "axios";
 import { StudyGroup } from "../objects";
+import { addr } from "./utils";
 
 export async function get_data(
   setData: Function,
   setError: Function,
 ) {
   try {
-    const { data } = await axios.get<StudyGroup>(`http://localhost:3000/study`);
+    const { data } = await axios.get<StudyGroup>(`${addr}/study`);
 
     const freshCopy = JSON.parse(JSON.stringify(data));
     setData(freshCopy);
@@ -23,7 +24,7 @@ export async function get_data(
       );
     } else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach http://localhost:3000/study.`
+        `Network error — no response received when attempting to reach ${addr}/study.`
       );
     } else {
       setError(`Unexpected error while fetching configuration: ${err.message}`);
@@ -38,7 +39,7 @@ export async function add_materie(
 
   try {
     const response = await axios.post<string>(
-      `http://localhost:3000/add_materie`,
+      `${addr}/add_materie`,
       { name: name },
       {
         headers: { 'Content-Type': 'application/json' },
@@ -61,7 +62,7 @@ export async function delete_materie(
 ): Promise<boolean> {
   try {
     const response = await axios.post<string>(
-      `http://localhost:3000/delete_materie`,
+      `${addr}/delete_materie`,
       { name: name },
       {
         headers: { 'Content-Type': 'application/json' },

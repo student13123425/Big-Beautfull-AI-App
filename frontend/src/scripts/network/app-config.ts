@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Config } from "../objects";
+import { addr } from "./utils";
 
 export async function DeactivateErrorMessage(
   index: number,
@@ -7,7 +8,7 @@ export async function DeactivateErrorMessage(
 ): Promise<boolean> {
   try {
     const response = await axios.post(
-      `http://localhost:3000/DeactivateErrorMessage`,
+      `${addr}/DeactivateErrorMessage`,
       { index },
       {
         headers: {
@@ -52,7 +53,7 @@ export async function get_config(
   setError: Function
 ) {
   try {
-    const { data } = await axios.get<Partial<Config>>(`http://localhost:3000/config`);
+    const { data } = await axios.get<Partial<Config>>(`${addr}/config`);
     const config = new Config();
     if (config.loadFrom(data)) {
       setConfig(config);
@@ -75,7 +76,7 @@ export async function get_config(
     }
     else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach http://localhost:3000/config.`
+        `Network error — no response received when attempting to reach ${addr}/config.`
       );
     }
     else {
@@ -89,7 +90,7 @@ export async function setLanguageConfig(
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`http://localhost:3000/set_language`, { lang });
+    const { data } = await axios.post<string>(`${addr}/set_language`, { lang });
 
     if (data === 'y') {
       return;
@@ -108,7 +109,7 @@ export async function setLanguageConfig(
         `Unable to select language — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
-      setError(`Network error — no response received when attempting to reach http://localhost:3000/set_language.`);
+      setError(`Network error — no response received when attempting to reach ${addr}/set_language.`);
     } else {
       setError(`Unexpected error while selecting language: ${err.message}`);
     }
