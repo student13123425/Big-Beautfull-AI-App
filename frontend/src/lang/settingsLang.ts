@@ -52,7 +52,7 @@ const settingsTexts: Record<SettingsLanguage, SettingsPageText> = {
     systemPromptPlaceholder: "Definește rolul și comportamentul AI aici...",
     languageSectionTitle: "Limbă",
     contextSizeTitle: "Dimensiune Maximă Context",
-    contextSizeUnit: "Cuvinte cheie",
+    contextSizeUnit: "Tokens",
     contextSizeDescription: "Definește cantitatea maximă de informații pe care o poate reține AI.",
     htmlStyleTitle: "Stil HTML",
   },
