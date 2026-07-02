@@ -48,17 +48,18 @@ const SettingsHeader = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
   position: sticky;
   top: 10px;
   width: 100%;
   height: auto;
-  background: #2d6de5;
+  background: white;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.5);
   padding: 16px 24px;
   z-index: 100;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+  left: 0;
+  right: 0;
 
   @media (max-width: 768px) {
     padding: 12px 16px;
@@ -70,6 +71,7 @@ const HeaderTitle = styled.h1`
   font-size: 28px;
   font-weight: 600;
   margin: 0;
+  color: #1e40af;
   font-family: 'Inter', sans-serif;
 
   @media (max-width: 768px) {
