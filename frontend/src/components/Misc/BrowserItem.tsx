@@ -32,16 +32,18 @@ const Container = styled.div<{
   display: flex;
   gap: ${props => props.$isOpen ? '12px' : '0'};
   padding: ${props => props.$isOpen ? '12px' : '8px'};
-  background-color: #fff6;
+  background-color: ${props => props.$active ? 'white' : '#fff6'};
   align-items: center;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: ${props => props.$active ? '0 2px 8px rgba(59, 130, 246, 0.15)' : '0 2px 4px rgba(0,0,0,0.05)'};
   transition: all 0.2s ease;
   cursor: ${props => props.$isComputing ? 'wait' : 'pointer'};
   overflow: hidden;
   width: 100%;
   height: 3.6rem;
   min-height: 3.6rem;
+  border-left: ${props => props.$active ? '3px solid #3b82f6' : '3px solid transparent'};
+  border: ${props => props.$active ? '1px solid rgba(59, 130, 246, 0.5)' : 'none'};
   animation: ${props => 
     props.$isComputing 
       ? css`${computingPulse} 1.5s ease infinite` 
@@ -49,8 +51,8 @@ const Container = styled.div<{
 
   &:hover {
     background-color: ${props => 
-      props.$isComputing ? '#f0f9ff' : '#fff9'};
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      props.$isComputing ? '#f0f9ff' : (props.$active ? 'white' : '#fff9')};
+    box-shadow: ${props => props.$active ? '0 2px 8px rgba(59, 130, 246, 0.2)' : '0 4px 8px rgba(0,0,0,0.08)'};
   }
 
   * {
@@ -65,7 +67,7 @@ const FileIcon = styled.div<{ $active: boolean }>`
   height: 40px;
   width: 40px;
   border-radius: 8px;
-  background-color: #fffe;
+  background-color: ${props => props.$active ? 'white' : '#fffe'};
   flex-shrink: 0;
   transition: all 0.2s ease;
 `;
@@ -79,11 +81,11 @@ const FileInfo = styled.div<{ $isOpen: boolean }>`
   transition: all 0.3s ease;
 `;
 
-const FileName = styled.h3`
+const FileName = styled.h3<{ $active?: boolean }>`
   font-size: 14px;
   font-weight: 500;
   margin: 0;
-  color: #1e293b;
+  color: ${props => props.$active ? '#1e40af' : '#1e293b'};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -247,7 +249,7 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
           {icon}
         </FileIcon>
         <FileInfo $isOpen={isOpen}>
-          <FileName title={name}>
+          <FileName $active={isActive} title={name}>
             {name}
             {isComputing && " (Generating...)"}
           </FileName>
