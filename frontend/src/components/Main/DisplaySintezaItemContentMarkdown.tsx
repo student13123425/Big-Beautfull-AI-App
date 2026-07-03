@@ -6,6 +6,7 @@ import MarkdownRenderer from '../Misc/MarkdownRenderer';
 import type { FileD, FishierMaterie, Materie } from '../../scripts/objects';
 import { extractMarkdown, get_output_content } from '../../scripts/aox';
 import { getSintezaGenerationText, type SintezaGenerationLanguage } from '../../lang/sintezaGenerationLang';
+import LoadingSpinner from './LoadingSpinner';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -100,6 +101,7 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
   const rawContent = file.sinteza ?? '';
   const processedContent = get_output_content(rawContent);
   const markdownContent = extractMarkdown(processedContent);
+  const isReasoning = rawContent.trim() === 'Reasoning...';
 
   useEffect(() => {
     if (markdownContent && markdownContent.length > 0) {
@@ -109,7 +111,9 @@ export default function DisplaySintezaItemContentMarkdown({file,Zoom,isFullScree
 
   return (
     <ContentContainer $isOpen={isOpen} $fullscreen={isFullScreen}>
-      {file.sinteza === null || get_output_content(file.sinteza).length === 0 ? (
+      {isReasoning ? (
+        <LoadingSpinner />
+      ) : file.sinteza === null || get_output_content(file.sinteza).length === 0 ? (
         <EmptyContent>
           <EmptyIcon><AiFillFileMarkdown size={64} /></EmptyIcon>
           <EmptyLabel>{texts.synthesisNotGenerated}</EmptyLabel>

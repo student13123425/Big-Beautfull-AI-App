@@ -6,6 +6,7 @@ import { FaHtml5 } from "react-icons/fa";
 import type { FishierMaterie } from '../../scripts/objects';
 import { getSintezaGenerationText, type SintezaGenerationLanguage } from '../../lang/sintezaGenerationLang';
 import { extractContent, extractHTML } from '../../scripts/aox';
+import LoadingSpinner from './LoadingSpinner';
 
 const rotate = keyframes`
   from { transform: rotate(0deg); }
@@ -120,9 +121,11 @@ export default function DisplaySintezaItemContentHTML({
   if (file === null) return null;
 
   const rawHtmlContent = file.html_file ?? '';
+  const rawSinteza = file.sinteza ?? '';
   const hasHtml = !!rawHtmlContent && rawHtmlContent.trim() !== '';
   const extractedContent = extractContent(rawHtmlContent ?? '');
   const htmlContent = extractHTML(extractedContent ?? '');
+  const isReasoning = rawSinteza.trim() === 'Reasoning...';
 
   useEffect(() => {
     if (htmlContent && htmlContent.length > 0) {
@@ -133,7 +136,9 @@ export default function DisplaySintezaItemContentHTML({
 
   return (
     <ContentContainer $isOpen={isOpen} $fullscreen={isFullScreen}>
-      {!hasHtml ? (
+      {isReasoning ? (
+        <LoadingSpinner />
+      ) : !hasHtml ? (
         <EmptyContent>
           <EmptyIcon>
             <FaHtml5 size={64} />
