@@ -3,7 +3,7 @@ import styled, { keyframes, css } from 'styled-components';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import { FaPlus } from 'react-icons/fa';
 import type { FileD, Quiz, Materie } from '../../scripts/objects';
-import FileUpload from './FileUpload';
+import UploadPage from '../../pages/UploadPage';
 import QuizCreatePage from '../Main/QuizCreatePage';
 import BrowserItem from './BrowserItem';
 import { useResizeBreakpoint } from '../../hooks/useResizeBreakpoint';
@@ -248,17 +248,19 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
           ))}
         </Content>
 
-        <AddButton
-          onClick={() => setIsModalOpen(true)}
-          $isExpanded={isExpanded}
-          aria-label={type === 'file' ? 'Upload file' : 'Create quiz'}
-        >
-          <FaPlus size={22} />
-          {isExpanded && (type === 'file' ? newItemTexts.addFile : newItemTexts.createQuiz)}
-        </AddButton>
+        {!isModalOpen && (
+          <AddButton
+            onClick={() => setIsModalOpen(true)}
+            $isExpanded={isExpanded}
+            aria-label={type === 'file' ? 'Upload file' : 'Create quiz'}
+          >
+            <FaPlus size={22} />
+            {isExpanded && (type === 'file' ? newItemTexts.addFile : newItemTexts.createQuiz)}
+          </AddButton>
+        )}
 
         {isModalOpen && type === 'file' ? (
-          <FileUpload onClose={() => setIsModalOpen(false)} materie={materie} language={language} />
+          <UploadPage onClose={() => setIsModalOpen(false)} materie={materie} language={language} />
         ) : isModalOpen && type === 'quiz' ? (
           <QuizCreatePage
             materie={materie}
