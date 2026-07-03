@@ -4,6 +4,7 @@ import { get_compleation } from "../services/llm.js";
 import { AiServerError } from "./AiTypes.js";
 import { Config } from "node-tesseract-ocr";
 import { supported_models } from "../services/state.js";
+import { get_model } from "../helpers.js";
 
 export class AskQuestion{
   content:string|null=null
@@ -15,12 +16,13 @@ export class AskQuestion{
     this.is_computing=true;
     this.content=null;
     const prompt:string=get_question_prompt(materieName,file_content,question,config.limba);
-    const model_name:string=supported_models[1]
-    let model_full=models.find((it)=>it.path===model_name);
-    if(!model_full){
+    const nume_model: string = supported_models?.[1]?.toLowerCase() || "";
+    const model_full = get_model(nume_model, models);
+
+    if (!model_full) {
       this.is_computing=false;
-      setError(new AiServerError("model not found","the selected model for answering this question is not found model: "+model_name))
-      console.log("model negasit");
+      setError(new AiServerError("model not found","the selected model for answering this question is not found model: "+nume_model));
+      console.log(`[Question] Model not found: ${nume_model}`);
       return;
     }
     this.content = await get_compleation(
