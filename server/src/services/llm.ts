@@ -6,6 +6,26 @@ import { Config } from "node-tesseract-ocr";
 
 dotenv.config({ path: '.env' });
 
+const IS_CONTENT_ONLY_FORCED = true;
+
+function stripReasoningBlock(rawText: string): string {
+  const thinkEndIndex = rawText.lastIndexOf("</think>");
+  if (thinkEndIndex !== -1) {
+    return rawText.substring(thinkEndIndex + "</think>".length).trimStart();
+  }
+  
+  if (IS_CONTENT_ONLY_FORCED) {
+    return "Reasoning...";
+  }
+
+  const thinkStartIndex = rawText.indexOf("<think>");
+  if (thinkStartIndex !== -1) {
+    return rawText.substring(0, thinkStartIndex).trimStart();
+  }
+
+  return rawText;
+}
+
 export async function getCompletion(
   content: string,
   system_prompt: string,
@@ -43,7 +63,8 @@ export async function getCompletion(
           { type: 'text', text: content },
           { type: 'image_url', image_url: { url: image_path } }
         ] : content
-      }
+      },
+      { role: 'assistant', content: '<think>\n' }
     ];
 
     const chat = Chat.from(messages);
@@ -96,11 +117,13 @@ export async function getCompletion(
 
       output += contentFragment;
 
+      let cleanedOutput = stripReasoningBlock(output);
       let filteredOutput: string;
+      
       if (model_name === "gpt-oss") {
-        filteredOutput = extractFinalContent(output);
+        filteredOutput = extractFinalContent(cleanedOutput);
       } else {
-        filteredOutput = removeXmlStyleTags(output);
+        filteredOutput = removeXmlStyleTags(cleanedOutput);
       }
 
       if (typeof realTimeUpdate === "function") {
@@ -108,11 +131,13 @@ export async function getCompletion(
       }
     }
 
+    let finalCleaned = stripReasoningBlock(output);
     let finalFiltered: string;
+    
     if (model_name === "gpt-oss") {
-      finalFiltered = extractFinalContent(output).trim();
+      finalFiltered = extractFinalContent(finalCleaned).trim();
     } else {
-      finalFiltered = removeXmlStyleTags(output).trim();
+      finalFiltered = removeXmlStyleTags(finalCleaned).trim();
     }
 
     if (reasoningBuffer) {
