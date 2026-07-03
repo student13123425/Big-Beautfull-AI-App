@@ -57,19 +57,6 @@ const Subtitle = styled.p`
     margin: 0;
 `;
 
-const HeaderIcon = styled.div`
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-    flex-shrink: 0;
-`;
-
 const DropZone = styled.div<{ $isDragOver: boolean }>`
     padding: ${props => props.$isDragOver ? '3rem' : '2.5rem'};
     text-align: center;
@@ -555,8 +542,7 @@ export default function DocumentUpload(props: DocumentUploadProps) {
             <UploadCard>
                 <Header>
                     <Title>
-                        <HeaderIcon>📄</HeaderIcon>
-                        {texts.uploadTitle}
+                        📄 {texts.uploadTitle}
                     </Title>
                     <Subtitle>{texts.uploadSubtitle}</Subtitle>
                 </Header>

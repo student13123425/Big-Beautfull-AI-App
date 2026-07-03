@@ -357,7 +357,6 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => 
     const [imageTitles, setImageTitles] = useState<Record<number, string>>({});
     const fileInputRef = useRef<HTMLInputElement>(null);
     
-    // Drag and drop reordering state
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [overIndex, setOverIndex] = useState<number | null>(null);
 

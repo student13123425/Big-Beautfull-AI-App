@@ -1,12 +1,10 @@
 export class Image {
   path: string;
   text: string;
-  order: number;
 
-  constructor(path: string, text: string, order: number) {
+  constructor(path: string, text: string) {
     this.path = path;
     this.text = text;
-    this.order = order;
   }
 }
 
@@ -21,7 +19,6 @@ export class ImageGroup {
 
   addImage(image: Image): void {
     this.images.push(image);
-    this.images.sort((a, b) => a.order - b.order);
   }
 
   removeImageAt(index: number): Image | null {

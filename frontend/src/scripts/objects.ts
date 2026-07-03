@@ -376,3 +376,5 @@ export class StyleConfigList {
 
 
 export {FishierMaterie,Intrebare,Materie,Quiz,StudyGroup}
+
+
