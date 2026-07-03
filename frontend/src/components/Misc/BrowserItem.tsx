@@ -60,14 +60,14 @@ const Container = styled.div<{
   }
 `;
 
-const FileIcon = styled.div<{ $active: boolean }>`
+const FileIcon = styled.div<{ $active: boolean, $iconColor?: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 40px;
   width: 40px;
   border-radius: 8px;
-  background-color: ${props => props.$active ? '#3b82f6' : '#fffe'};
+  background-color: ${props => props.$active ? (props.$iconColor || '#3b82f6') : '#fffe'};
   flex-shrink: 0;
   transition: all 0.2s ease;
 `;
@@ -145,6 +145,17 @@ const iconConfig: Record<string, React.ReactNode> = {
   png: <FcImageFile size={18} />,
 };
 
+const iconAccentColors: Record<string, string> = {
+  pdf: '#ef4444',
+  docx: '#2563eb',
+  doc: '#2563eb',
+  pptx: '#f97316',
+  ppt: '#f97316',
+  jpeg: '#8b5cf6',
+  jpg: '#8b5cf6',
+  png: '#8b5cf6',
+};
+
 type BrowserItemType = 'quiz' | 'file';
 
 interface BrowserItemProps {
@@ -194,12 +205,15 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
   let extension: string | null = null;
   let isActive = false;
 
+  let iconColor: string | undefined = undefined;
+
   if (type === 'quiz') {
     const quiz = item as Quiz;
     name = quiz.title.toUpperCase();
     isActive = selectedItem !== null && 
       'title' in selectedItem && 
       selectedItem.title === quiz.title;
+    iconColor = '#1E88E5';
     icon = quiz.is_grila ? 
       <MdFormatListNumbered color={isActive ? '#ffffff' : '#1E88E5'} size={22} /> : 
       <MdTextFields color={isActive ? '#ffffff' : '#1E88E5'} size={22} />;
@@ -209,6 +223,7 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
     isActive = selectedItem !== null && 
       'nume' in selectedItem && 
       selectedItem.nume === file.nume;
+    iconColor = iconAccentColors[fileExt];
     const nameSegments = file.nume.split("/");
     name = nameSegments.length === 0 ? file.nume : nameSegments[nameSegments.length - 1];
     extension = fileExt;
@@ -249,7 +264,7 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
         $isComputing={isComputing}
         onClick={handleClick}
       >
-        <FileIcon $active={isActive}>
+        <FileIcon $active={isActive} $iconColor={iconColor}>
           {icon}
         </FileIcon>
         <FileInfo $isOpen={isOpen}>
