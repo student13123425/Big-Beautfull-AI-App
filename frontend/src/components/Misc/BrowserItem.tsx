@@ -67,7 +67,7 @@ const FileIcon = styled.div<{ $active: boolean }>`
   height: 40px;
   width: 40px;
   border-radius: 8px;
-  background-color: ${props => props.$active ? 'white' : '#fffe'};
+  background-color: ${props => props.$active ? '#3b82f6' : '#fffe'};
   flex-shrink: 0;
   transition: all 0.2s ease;
 `;
@@ -196,23 +196,27 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
 
   if (type === 'quiz') {
     const quiz = item as Quiz;
-    icon = quiz.is_grila ? 
-      <MdFormatListNumbered color="#1E88E5" size={22} /> : 
-      <MdTextFields size={22} color="#1E88E5" />;
     name = quiz.title.toUpperCase();
     isActive = selectedItem !== null && 
       'title' in selectedItem && 
       selectedItem.title === quiz.title;
+    icon = quiz.is_grila ? 
+      <MdFormatListNumbered color={isActive ? '#ffffff' : '#1E88E5'} size={22} /> : 
+      <MdTextFields color={isActive ? '#ffffff' : '#1E88E5'} size={22} />;
   } else {
     const file = item as FileD;
     const fileExt = file.tip.toLowerCase();
-    icon = iconConfig[fileExt] || <FaFile size={18} color="#64748b" />;
-    const nameSegments = file.nume.split("/");
-    name = nameSegments.length === 0 ? file.nume : nameSegments[nameSegments.length - 1];
-    extension = fileExt;
     isActive = selectedItem !== null && 
       'nume' in selectedItem && 
       selectedItem.nume === file.nume;
+    const nameSegments = file.nume.split("/");
+    name = nameSegments.length === 0 ? file.nume : nameSegments[nameSegments.length - 1];
+    extension = fileExt;
+    if (isActive && iconConfig[fileExt]) {
+      icon = React.cloneElement(iconConfig[fileExt] as React.ReactElement, { color: '#ffffff' });
+    } else {
+      icon = iconConfig[fileExt] || <FaFile size={18} color="#64748b" />;
+    }
   }
 
   const handleClick = () => {
