@@ -164,7 +164,7 @@ type UploadType = 'document' | 'image';
 const UploadPage: React.FC<UploadPageProps> = ({ materie, onClose, language }) => {
   const [uploadType, setUploadType] = useState<UploadType>('document');
 
-  useDocumentTitle(`AI App - Upload: ${materie.name}`, true);
+  useDocumentTitle(`AI App - Upload: ${materie.name}`);
 
   const path: string = `./data/${materie.name.toLowerCase()}`;
   const subjectInitial = materie.name.charAt(0).toUpperCase();

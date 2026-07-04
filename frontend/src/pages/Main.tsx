@@ -64,7 +64,7 @@ export default function Main(props: {
     }
     return 'AI App';
   })();
-  useDocumentTitle(currentTitle, true);
+  useDocumentTitle(currentTitle);
 
   useEffect(() => {
     if (props.GlobalData) {
