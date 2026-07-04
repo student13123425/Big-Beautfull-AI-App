@@ -125,7 +125,7 @@ export default function DisplaySintezaItemContentHTML({
   const hasHtml = !!rawHtmlContent && rawHtmlContent.trim() !== '';
   const extractedContent = extractContent(rawHtmlContent ?? '');
   const htmlContent = extractHTML(extractedContent ?? '');
-  const isReasoning = rawSinteza.trim() === 'Reasoning...';
+  const isReasoning = rawHtmlContent.trim() === 'Reasoning...';
 
   useEffect(() => {
     if (htmlContent && htmlContent.length > 0) {
