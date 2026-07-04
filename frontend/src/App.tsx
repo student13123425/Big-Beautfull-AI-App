@@ -11,53 +11,45 @@ import NetworkErrorPage from './pages/NetworkErrorPage';
 import LMStudioConnectionError from './pages/LMStudioConnectionError';
 import LoginPage from './pages/LoginPage';
 
-let isPollingActive = true;
-
 function App() {
   const [GlobalData, setGlobalData] = useState<null | StudyGroup>(null);
   const [Error, setError] = useState<null | string>(null);
   const [IsLmstudio, setIsLmstudio] = useState<string>("all valid");
   const [config, setConfig] = useState<null | Config>(null);
-  const [SupportedModels,setSupportedModel]=useState<string[]>([])
-  const [LogInToken,setLogInToken]=useState<string|null>("bypassed");
-  const [HtmlPosibleStyles,setHtmlPosibleStyles]=useState<StyleConfigList|null>(null)
+  const [SupportedModels, setSupportedModel] = useState<string[]>([]);
+  const [LogInToken, setLogInToken] = useState<string | null>("bypassed");
+  const [HtmlPosibleStyles, setHtmlPosibleStyles] = useState<StyleConfigList | null>(null);
 
-  async function update_data(setGlobalData:Function, setError:Function){
-    if (!isPollingActive) return;
-
-    await get_data(setGlobalData, setError);
-
-    setTimeout(() => {
-        if (isPollingActive) {
-            update_data(setGlobalData,setError)
-        }
-    }, 200);
-  }
-
-  async function update_config(setConfig:Function, setError:Function){
-    if (!isPollingActive) return;
-
-    await get_config(setConfig, setError);
-
-    setTimeout(() => {
-        if (isPollingActive) {
-            update_config(setConfig,setError)
-        }
-    }, 200);
-  }
-  
   useEffect(() => {
-    isPollingActive = true;
+    let isMounted = true;
 
-    update_data(setGlobalData, setError);
-    update_config(setConfig, setError);
+    async function pollData() {
+      if (!isMounted) return;
+      await get_data(setGlobalData, setError);
+      
+      setTimeout(() => {
+        if (isMounted) pollData();
+      }, 200);
+    }
+
+    async function pollConfig() {
+      if (!isMounted) return;
+      await get_config(setConfig, setError);
+      
+      setTimeout(() => {
+        if (isMounted) pollConfig();
+      }, 200);
+    }
+
+    pollData();
+    pollConfig();
 
     getSupportedModels(setSupportedModel, setError);
     getAvailableStyles(setHtmlPosibleStyles, setError);
     getGuestToken(setLogInToken, setError);
 
     return () => {
-      isPollingActive = false;
+      isMounted = false;
     };
   }, []);
 
@@ -79,11 +71,11 @@ function App() {
     );
   }
   
-  if(LogInToken==null){
+  if (LogInToken == null) {
     return <LoginPage onLoginSuccess={(token: string) => setLogInToken(token)} setError={setError} />;
   }
   
-  if(GlobalData === null && Error == null){
+  if (GlobalData === null && Error == null) {
     return <LoadingScreen />;
   }
   
