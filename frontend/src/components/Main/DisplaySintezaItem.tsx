@@ -379,7 +379,7 @@ export default function DisplaySintezaItem({
           </Icon>
            <Label title={cleanName}>{cleanName}</Label>
           {file.sinteza ? (
-            <StatusIndicator $isGenerating={isGenerating} />
+            <StatusIndicator $isGenerating={isGenerating || file.is_computing_sinteza || file.is_computing_html} />
           ) : (
             <FileMeta>{texts.noSynthesisLabel}</FileMeta>
           )}
