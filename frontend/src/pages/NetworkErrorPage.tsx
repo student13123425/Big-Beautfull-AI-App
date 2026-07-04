@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { styled, keyframes } from 'styled-components';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 import { FaPlug } from 'react-icons/fa';
 
 const pulse = keyframes`
@@ -102,6 +103,8 @@ interface NetworkErrorProps {
 }
 
 const NetworkErrorPage: React.FC<NetworkErrorProps> = ({ errorMessage }) => {
+  useDocumentTitle('AI App - Connection Error');
+
   const [capturedMessage, setCapturedMessage] = React.useState<string | null>(null);
 
   // Capture the error message only once — never update after first render

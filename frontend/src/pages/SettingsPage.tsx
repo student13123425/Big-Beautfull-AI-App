@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 import { setContextSizeConfig, setSystemPromptConfig } from '../network/ai-models';
 import { setLanguageConfig } from '../network/app-config';
 import { getHtmlStyleConfig, setHtmlStyleConfig } from '../network/html-generator';
@@ -184,6 +185,8 @@ export default function SettingsPage(props: {
 
   const langToUse = (language as SettingsLanguage) || 'English';
   const texts = getSettingsPageText(langToUse);
+
+  useDocumentTitle('AI App - Settings');
 
   useEffect(() => {
     getHtmlStyleConfig(

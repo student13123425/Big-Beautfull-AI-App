@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import type { AiServerError, Config, StudyGroup, StyleConfigList } from '../scripts/objects'
 
 let lastGlobalDataHash: string = '';
@@ -52,6 +53,19 @@ export default function Main(props: {
   const [Selected, setSelected] = useState<null | string>(null);
   const [IsSetings,setIsSetings]=useState<boolean>(false)
   const [ErrorMessage,setErrorMessages]=useState<AiServerError[]>([])
+
+  // Dynamic page title based on selection state (hook called at top level for React rules compliance)
+  const currentTitle = (() => {
+    if (!Selected) return 'AI App';
+    const file = props.GlobalData?.data.flatMap((m: any) => m.files).find((f: any) => f.path === Selected);
+    if (file) {
+      const fileName = (file.path as string).split('/').pop()?.split('.')[0] || Selected;
+      return `AI App - ${fileName}`;
+    }
+    return 'AI App';
+  })();
+  useDocumentTitle(currentTitle, true);
+
   useEffect(() => {
     if (props.GlobalData) {
       const currentHash = getStudyGroupHash(props.GlobalData);

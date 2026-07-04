@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 import { FaLock, FaUser, FaArrowRight, FaUserPlus, FaShieldAlt, FaExclamationTriangle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { evaluatePasswordComplexity } from '../scripts/aox';
 import { registerUser, loginUser } from '../network/auth';
@@ -227,6 +228,7 @@ interface AuthProps {
 }
 
 const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
+  useDocumentTitle('AI App - Login');
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoginFailed, setIsLoginFailed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

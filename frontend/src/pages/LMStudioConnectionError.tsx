@@ -1,5 +1,6 @@
 import React from 'react';
 import { styled, keyframes } from 'styled-components';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 import { FaWifi, FaRedo, FaDownload } from 'react-icons/fa';
 
 const subtlePulse = keyframes`
@@ -151,6 +152,8 @@ interface ServerErrorProps {
 const LMStudioConnectionError: React.FC<ServerErrorProps> = ({ 
   errorMessage = "We couldn't find the LM Studio server on your local network."
 }) => {
+  useDocumentTitle('AI App - LM Studio Error');
+
   const handleRetry = () => {
     window.location.reload();
   };

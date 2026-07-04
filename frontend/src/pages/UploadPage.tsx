@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DocumentUpload from '../components/Misc/DocumentUpload';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 import UploadImgGroup from '../components/Misc/UploadImgGroup';
 import type { Materie } from '../scripts/objects';
 import { styled, keyframes } from 'styled-components';
@@ -162,6 +163,8 @@ type UploadType = 'document' | 'image';
 
 const UploadPage: React.FC<UploadPageProps> = ({ materie, onClose, language }) => {
   const [uploadType, setUploadType] = useState<UploadType>('document');
+
+  useDocumentTitle(`AI App - Upload: ${materie.name}`, true);
 
   const path: string = `./data/${materie.name.toLowerCase()}`;
   const subjectInitial = materie.name.charAt(0).toUpperCase();
