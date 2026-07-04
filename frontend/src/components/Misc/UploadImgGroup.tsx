@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import type { Materie } from '../../scripts/objects';
+import { Image, ImageGroup } from '../../scripts/objects';
 
 // Image formats: jpg, jpeg, png, gif, bmp, webp, svg, tiff
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'tiff'];
@@ -351,14 +352,16 @@ const isImageValid = (file: File): boolean => {
 };
 
 const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => {
-    const [images, setImages] = useState<ImageItem[]>([]);
-    const [groupTitle, setGroupTitle] = useState('');
+    const [imageGroup, setImageGroup] = useState<ImageGroup>(new ImageGroup(''));
     const [isDragOver, setIsDragOver] = useState(false);
-    const [imageTitles, setImageTitles] = useState<Record<number, string>>({});
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [overIndex, setOverIndex] = useState<number | null>(null);
+
+    const getPreviewForFile = useCallback((file: File) => {
+        return URL.createObjectURL(file);
+    }, []);
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -386,30 +389,45 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => 
     };
 
     const addFiles = (files: File[]) => {
-        const newImages: ImageItem[] = [];
-        
-        files.forEach(file => {
-            const preview = URL.createObjectURL(file);
-            newImages.push({
-                file,
-                preview,
-                title: file.name
+        setImageGroup(prev => {
+            const newImages = [...prev.images];
+            
+            files.forEach(file => {
+                const preview = getPreviewForFile(file);
+                const imageItem: ImageItem = { file, preview, title: file.name };
+                const image = new Image(preview, file.name);
+                newImages.push(image);
             });
-        });
 
-        setImages(prev => [...prev, ...newImages]);
+            const updatedGroup = new ImageGroup(prev.title, newImages);
+            return updatedGroup;
+        });
     };
 
     const removeImage = (index: number) => {
-        setImages(prev => {
-            const newImages = [...prev];
-            URL.revokeObjectURL(newImages[index].preview);
-            newImages.splice(index, 1);
-            return newImages;
+        setImageGroup(prev => {
+            const removed = prev.removeImageAt(index);
+            if (removed) {
+                URL.revokeObjectURL(removed.path);
+            }
+            return new ImageGroup(prev.title, [...prev.images]);
         });
     };
 
-    // HTML5 Drag and Drop reordering handlers
+    const updateTitle = (title: string) => {
+        setImageGroup(prev => new ImageGroup(title, [...prev.images]));
+    };
+
+    const updateImageTitle = (index: number, title: string) => {
+        setImageGroup(prev => {
+            const images = [...prev.images];
+            if (images[index]) {
+                images[index] = new Image(images[index].path, title);
+            }
+            return new ImageGroup(prev.title, images);
+        });
+    };
+
     const handleCardDragStart = (index: number) => {
         setDraggedIndex(index);
     };
@@ -426,16 +444,12 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => 
         
         if (draggedIndex === null || draggedIndex === targetIndex) return;
         
-        setImages(prev => {
-            const newImages = [...prev];
-            const draggedItem = newImages[draggedIndex];
-            
-            // Remove from old position
-            newImages.splice(draggedIndex, 1);
-            // Insert at new position
-            newImages.splice(targetIndex, 0, draggedItem);
-            
-            return newImages;
+        setImageGroup(prev => {
+            const images = [...prev.images];
+            const draggedItem = images[draggedIndex];
+            images.splice(draggedIndex, 1);
+            images.splice(targetIndex, 0, draggedItem);
+            return new ImageGroup(prev.title, images);
         });
         
         setDraggedIndex(null);
@@ -447,14 +461,20 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => 
         setOverIndex(null);
     };
 
-    const updateImageTitle = (index: number, title: string) => {
-        setImageTitles(prev => ({ ...prev, [index]: title }));
+    const handleUpload = async () => {
     };
 
     const handleClose = () => {
-        images.forEach(img => URL.revokeObjectURL(img.preview));
+        imageGroup.images.forEach(img => {
+            if (img.path.startsWith('blob:')) {
+                URL.revokeObjectURL(img.path);
+            }
+        });
+        setImageGroup(new ImageGroup(''));
         onClose();
     };
+
+    const images = imageGroup.images;
 
     return (
         <Container>
@@ -468,8 +488,8 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => 
                         <TitleInput
                             id="group-title"
                             type="text"
-                            value={groupTitle}
-                            onChange={(e) => setGroupTitle(e.target.value)}
+                            value={imageGroup.title}
+                            onChange={(e) => updateTitle(e.target.value)}
                             placeholder="Enter image group title..."
                         />
                     </InputGroup>
@@ -524,11 +544,11 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => 
                                     onDragEnd={handleCardDragEnd}
                                 >
                                     <DragHandle>⠿</DragHandle>
-                                    <ImagePreview src={image.preview} alt={image.title} />
+                                    <ImagePreview src={image.path} alt={image.text} />
                                     <ImageActions>
                                         <ImageTitleInput
                                             type="text"
-                                            value={imageTitles[index] || image.title}
+                                            value={image.text}
                                             onChange={(e) => updateImageTitle(index, e.target.value)}
                                             placeholder="Image title..."
                                         />
@@ -545,16 +565,23 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => 
 
                         <Footer>
                             <span style={{ display: 'flex', alignItems: 'center', color: '#64748b', fontSize: '0.9rem' }}>
-                                {images.length} image{images.length !== 1 ? 's' : ''} • 
-                                {(() => {
-                                    const totalSize = images.reduce((acc, img) => acc + img.file.size, 0);
-                                    return formatFileSize(totalSize);
-                                })()}
+                                {images.length} image{images.length !== 1 ? 's' : ''}
                             </span>
                             <Button variant="secondary" onClick={handleClose}>
                                 Cancel
                             </Button>
                         </Footer>
+
+                        <div style={{ padding: '0 2rem 1rem' }}>
+                            <Button 
+                                variant="primary" 
+                                onClick={handleUpload}
+                                disabled={images.length === 0}
+                                style={{ width: '100%' }}
+                            >
+                                📤 Upload Image Group
+                            </Button>
+                        </div>
                     </>
                 )}
             </UploadCard>

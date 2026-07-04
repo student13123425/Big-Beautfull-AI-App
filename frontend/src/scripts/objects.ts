@@ -39,13 +39,16 @@ class FishierMaterie{
   }
 }
 
-class Materie{
-  name:string
-  quizs:Quiz[]=[]
-  files:FishierMaterie[]=[]
-  constructor(name:string){
-    this.name=name
+export class Materie {
+  name: string;
+  quizs: Quiz[] = [];
+  files: FishierMaterie[] = [];
+  imageGroups: ImageGroup[] = [];
+
+  constructor(name: string) {
+    this.name = name;
   }
+
   get_is_computing(): boolean {
     return this.files.some(file => 
       file.is_computing || 
@@ -375,6 +378,37 @@ export class StyleConfigList {
 }
 
 
-export {FishierMaterie,Intrebare,Materie,Quiz,StudyGroup}
+export {FishierMaterie,Intrebare,Quiz,StudyGroup}
+
+
+export class Image {
+  path: string;
+  text: string;
+
+  constructor(path: string, text: string) {
+    this.path = path;
+    this.text = text;
+  }
+}
+
+export class ImageGroup {
+  title: string;
+  images: Image[];
+
+  constructor(title: string, images?: Image[]) {
+    this.title = title ?? '';
+    this.images = images || [];
+  }
+
+  addImage(image: Image): void {
+    this.images.push(image);
+  }
+
+  removeImageAt(index: number): Image | null {
+    if (index < 0 || index >= this.images.length) return null;
+    return this.images.splice(index, 1)[0];
+  }
+}
+
 
 
