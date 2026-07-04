@@ -29,13 +29,17 @@ class FishierMaterie{
   path:string=""
   sinteza:string|null=null
   html_file:string|null=null
-  is_computing=false;
+  is_computing_sinteza:boolean=false;
+  is_computing_html:boolean=false;
   content:string|null=null
   materie:string=""
   is_failed:boolean=false
   file_type:string|null|undefined=null
   constructor(path:string,materie:string,save:Function){
 
+  }
+  getIfComputing(): boolean {
+    return this.is_computing_sinteza || this.is_computing_html;
   }
 }
 
@@ -51,7 +55,7 @@ export class Materie {
 
   get_is_computing(): boolean {
     return this.files.some(file => 
-      file.is_computing || 
+      file.getIfComputing() || 
       this.quizs.some(quiz => quiz.is_computing)
     );
   }
