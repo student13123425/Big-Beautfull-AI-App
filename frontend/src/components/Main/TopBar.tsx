@@ -90,7 +90,6 @@ const DeleteButton = styled.button<{ $active?: boolean }>`
   &:hover {
     background: ${props => props.$active ? '#fecaca' : 'rgba(254, 215, 215, 0.3)'};
     color: ${props => props.$active ? '#b91c1c' : '#c53030'};
-    transform: scale(1.1);
   }
 `
 
@@ -110,7 +109,25 @@ const AddButton = styled.div`
 
   &:hover {
     background: #059669;
-    transform: scale(1.05);
+  }
+`
+
+const LogoutButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex-shrink: 0;
+  background: #ef4444;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+  &:hover {
+    background: #dc2626;
   }
 `
 
@@ -306,9 +323,9 @@ export default function TopBar(props: {
             {props.onLogout && (
               <>
                 <Gap />
-                <AddButton onClick={props.onLogout} aria-label="Deconectare" style={{ background: '#ef4444' }}>
+                <LogoutButton onClick={props.onLogout} aria-label="Deconectare">
                   <FaSignOutAlt size={16} color="white" />
-                </AddButton>
+                </LogoutButton>
               </>
             )}
           </>
@@ -339,9 +356,9 @@ export default function TopBar(props: {
         {props.onLogout && !isOverflowing && (
           <>
             <Gap />
-            <AddButton onClick={props.onLogout} aria-label="Deconectare" style={{ background: '#ef4444' }}>
+            <LogoutButton onClick={props.onLogout} aria-label="Deconectare">
               <FaSignOutAlt size={16} color="white" />
-            </AddButton>
+            </LogoutButton>
           </>
         )}
       </Container>
