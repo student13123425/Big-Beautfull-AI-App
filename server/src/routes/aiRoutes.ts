@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { broadcastConfigData, getLmStudioDevice } from "../index.js";
+import { broadcastConfigData, discoverLmStudioDevice } from "../index.js";
 import { ai_models_available, config, device_ip, set_device_id, supported_models } from "../services/state.js";
 
 export async function getModels(req: Request, res: Response): Promise<void> {
   try {
     if (ai_models_available.length === 0) {
-      set_device_id(await getLmStudioDevice());
+      await discoverLmStudioDevice();
     }
     res.json(ai_models_available);
   } catch (error) {
@@ -16,7 +16,7 @@ export async function getModels(req: Request, res: Response): Promise<void> {
 export async function getModelPaths(req: Request, res: Response): Promise<void> {
   try {
     if (ai_models_available.length === 0) {
-      set_device_id(await getLmStudioDevice());
+      await discoverLmStudioDevice();
     }
     res.json(ai_models_available.map((it) => it.path));
   } catch (error) {
@@ -26,11 +26,7 @@ export async function getModelPaths(req: Request, res: Response): Promise<void> 
 
 export async function getIP(req: Request, res: Response): Promise<void> {
   if (device_ip === null) {
-    try {
-      set_device_id(await getLmStudioDevice());
-    } catch (err) {
-      console.error("Error during LM Studio discovery in /ip:", err);
-    }
+    await discoverLmStudioDevice();
   }
   res.json(device_ip);
 }

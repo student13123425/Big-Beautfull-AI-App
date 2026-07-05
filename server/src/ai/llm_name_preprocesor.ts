@@ -1,22 +1,15 @@
-import { getLmStudioDevice } from "../index.js";
-import { LMStudioClient } from "@lmstudio/sdk";
+import { discoverLmStudioDevice } from "../index.js";
+import { ai_models_available } from "../services/state.js";
 
 export async function getSupportedModels(): Promise<string[]> {
-  const address: string | null | undefined = await getLmStudioDevice();
-  
-  if (!address) {
-    throw new Error("Failed to connect to LM Studio.");
-  }
+  // Ensure models are loaded via discovery (reads address from .env)
+  await discoverLmStudioDevice();
 
-  const client = new LMStudioClient({ baseUrl: address });
-  
-  const models: any[] = await client.system.listDownloadedModels();
-
-  if (models.length === 0) {
+  if (ai_models_available.length === 0) {
     return [];
   }
 
-  return models.map((model) => model.path as string);
+  return ai_models_available.map((model) => model.path as string);
 }
 
 export async function llm_name_preprocessor(supportedModels: string[]): Promise<string[]> {

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { ModelInfo } from "@lmstudio/sdk";
 import { isValidQuizItem } from "../services/data_validation.js";
 
-import { broadcastStudyData, getLmStudioDevice } from '../index.js';
+import { broadcastStudyData } from '../index.js';
 import { ai_models_available, config, data_study, device_ip, set_device_id } from '../services/state.js';
 import { Quiz, QuiZRequestItem } from '../objects/quiz.js';
 import { AiServerError } from '../objects/AiTypes.js';

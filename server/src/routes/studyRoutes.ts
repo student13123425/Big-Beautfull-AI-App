@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { mkdir, mkdirSync, rmSync } from "fs";
-import { broadcastStudyData, config, getLmStudioDevice } from "../index.js";
+import { broadcastStudyData, config, discoverLmStudioDevice } from "../index.js";
 import { get_file_name, getDirectoryContent } from "../services/file-processor.js";
 import { ai_models_available, data_study, device_ip, htmlStyles } from "../services/state.js";
 import { AiServerError } from "../objects/AiTypes.js";
@@ -10,7 +10,7 @@ async function ensureModelsAvailable(): Promise<void> {
   if (ai_models_available.length === 0) {
     console.log("[studyRoutes] ai_models_available is empty, fetching models from LM Studio...");
     try {
-      await getLmStudioDevice();
+      await discoverLmStudioDevice();
     } catch (err) {
       console.error("[studyRoutes] Failed to fetch models from LM Studio:", err);
     }

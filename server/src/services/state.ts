@@ -1,4 +1,4 @@
-import { LMStudioClient, ModelInfo } from "@lmstudio/sdk";
+import { ModelInfo } from "@lmstudio/sdk";
 import { compareConfigs, compareStudyGroup } from "./data_validation.js";
 import { getServerOS, isFolderSizeBiggerThan, checkDependencies } from "./environment.js";
 import { fileURLToPath } from "url";
@@ -74,31 +74,6 @@ export async function refresh(): Promise<void> {
   } catch {
     isMemOverflow = false;
   }
-}
-
-export async function getLmStudioDevice(): Promise<string | null> {
-  let targetUrl = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234";
-  targetUrl = targetUrl.replace(/^https?:\/\/|^wss?:\/\//, "");
-  const address = `ws://${targetUrl}`;
-
-  try {
-    console.log(`Attempting to connect to LM Studio at ${address}...`);
-    const client = new LMStudioClient({ baseUrl: address });
-    const models = await withTimeout(client.system.listDownloadedModels(), 30000, "Request timed out - listDownloadedModels took too long");
-    ai_models_available = models;
-    device_ip = address;
-    console.log(`Successfully connected to LM Studio at ${address}`);
-    console.log(`[getLmStudioDevice] Fetched ${models.length} models from LM Studio`);
-    return address;
-  } catch (err) {
-    console.error("LM Studio discovery failed:", err);
-    return null;
-  }
-}
-
-function withTimeout<T>(promise: Promise<T>, ms: number, errorMessage = "Operation timed out"): Promise<T> {
-  const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error(errorMessage)), ms));
-  return Promise.race([promise, timeout]);
 }
 
 export function set_v(value: number): void {

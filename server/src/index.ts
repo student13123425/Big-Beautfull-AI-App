@@ -1,10 +1,8 @@
 import express from 'express';
 import multer from "multer";
-import os from 'node:os';
 import { createReadStream, existsSync, promises as fs, statSync, unlinkSync } from 'fs';
-import { LMStudioClient, ModelInfo } from '@lmstudio/sdk';
-import findDevices from 'local-devices';
 import cors from 'cors';
+import { LMStudioClient, ModelInfo } from '@lmstudio/sdk';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
@@ -25,7 +23,7 @@ import { __dirname } from './services/state.js';
 import { getGuestToken, loginEndpoint, registerEndpoint, verifyTokenEndpoint, initGuestFolder } from './routes/auth.js';
 import { initializeUserDatabase } from './services/auth.js';
 import { runTest } from './test/llm_completion_test.js';
-import { ai_models_available, set_device_id } from './services/state.js';
+import { ai_models_available, device_ip, set_device_id } from './services/state.js';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
@@ -123,8 +121,15 @@ const upload = multer({ storage: tempStorage ,limits:{fileSize:200 * 1024 * 1024
 
     cb(null, true);
 }});
-export async function getLmStudioDevice(): Promise<string|null> {
-  // Read from .env, falling back to localhost:1234 default
+
+export function get_lm_studio_address(): string | null {
+  let targetUrl = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234";
+  // Strip any existing protocol prefix to avoid doubling (ws://, wss://, http://, https://)
+  targetUrl = targetUrl.replace(/^https?:\/\/|^wss?:\/\//, "");
+  return `ws://${targetUrl}`;
+}
+
+export async function discoverLmStudioDevice(): Promise<string | null> {
   let targetUrl = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234";
   // Strip any existing protocol prefix to avoid doubling (ws://, wss://, http://, https://)
   targetUrl = targetUrl.replace(/^https?:\/\/|^wss?:\/\//, "");
@@ -132,30 +137,31 @@ export async function getLmStudioDevice(): Promise<string|null> {
 
   try {
     console.log(`Attempting to connect to LM Studio at ${address}...`);
-    
+
     const client = new LMStudioClient({ baseUrl: address });
-    
+
     const models = await withTimeout(
       client.system.listDownloadedModels(),
-      30000, 
+      30000,
       'Request timed out - listDownloadedModels took too long'
     );
 
     // Update the shared state variables (from state.ts) - mutate in place
     ai_models_available.length = 0; // Clear existing array contents
     models.forEach(m => ai_models_available.push(m));
-    
+
     // Update device_ip using the setter from state.ts
     set_device_id(address);
-    
+
     console.log(`Successfully connected to LM Studio at ${address}`);
-    console.log(`[getLmStudioDevice] Fetched ${models.length} models from LM Studio`);
+    console.log(`[discoverLmStudioDevice] Fetched ${models.length} models from LM Studio`);
     return address;
   } catch (err) {
     console.error("LM Studio discovery failed:", err);
     return null;
   }
 }
+
 function withTimeout<T>(
   promise: Promise<T>,
   ms: number,
@@ -329,7 +335,7 @@ app.get("/studyDirect", (req, res) => {
 });
 
 app.get('/get_valid_study_lmstudio', async (req, res) => {
-  const ip = await getLmStudioDevice();
+  const ip = get_lm_studio_address();
   // device_ip is now managed by state.ts via set_device_id()
   if (!ip) res.send("no server running lmstudio was found on local network");
   res.send("all valid");

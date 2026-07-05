@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { broadcastStudyData, getLmStudioDevice } from "../index.js";
+import { broadcastStudyData, discoverLmStudioDevice } from "../index.js";
 import { check_evaluation_parameters } from "../services/data_validation.js";
 import { get_file_name } from "../services/file-processor.js";
 import { ai_models_available, config, data_study, device_ip, set_device_id, set_v, v_interval } from "../services/state.js";
@@ -34,7 +34,7 @@ export async function askFileQuestion(req: Request, res: Response): Promise<void
   }
 
   if (!device_ip) {
-    set_device_id(await getLmStudioDevice());
+    await discoverLmStudioDevice();
     if (!device_ip) {
       const front_end_error_message = new AiServerError("lmstudio not found", `no lmstudio instance found on the local network`);
       data_study.AiServerError.push(front_end_error_message);
