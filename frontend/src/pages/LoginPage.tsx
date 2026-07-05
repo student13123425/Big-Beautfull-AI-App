@@ -222,12 +222,36 @@ const SwitchButton = styled.button`
   }
 `;
 
+const GuestButton = styled.button`
+  background: none;
+  border: 2px solid #3b82f6;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+  }
+`;
+
 interface AuthProps {
   onLoginSuccess: (token: string | null) => void;
+  onGuestLogin?: () => void;
   onError?: (msg: string) => void;
 }
 
-const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
+const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onError }) => {
   useDocumentTitle('AI App - Login');
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoginFailed, setIsLoginFailed] = useState(false);
@@ -419,6 +443,13 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onError }) => {
             ? 'Already have an account? Log in' 
             : 'Don\'t have an account? Create one'}
         </SwitchButton>
+
+        {onGuestLogin && (
+          <GuestButton type="button" onClick={onGuestLogin}>
+            <FaUser size={16} />
+            Continue as Guest
+          </GuestButton>
+        )}
       </Card>
     </PageContainer>
   );

@@ -17,7 +17,7 @@ function App() {
   const [IsLmstudio, setIsLmstudio] = useState<string>("all valid");
   const [config, setConfig] = useState<null | Config>(null);
   const [SupportedModels, setSupportedModel] = useState<string[]>([]);
-  const [LogInToken, setLogInToken] = useState<string | null>("bypassed");
+  const [LogInToken, setLogInToken] = useState<string | null>(null);
   const [HtmlPosibleStyles, setHtmlPosibleStyles] = useState<StyleConfigList | null>(null);
 
   useEffect(() => {
@@ -46,7 +46,6 @@ function App() {
 
     getSupportedModels(setSupportedModel, setError);
     getAvailableStyles(setHtmlPosibleStyles, setError);
-    getGuestToken(setLogInToken, setError);
 
     return () => {
       isMounted = false;
@@ -71,8 +70,12 @@ function App() {
     );
   }
   
-  if (LogInToken == null) {
-    return <LoginPage onLoginSuccess={(token: string) => setLogInToken(token)} setError={setError} />;
+  const handleGuestLogin = () => {
+    getGuestToken(setLogInToken, setError);
+  };
+
+  if (LogInToken == null && Error == null) {
+    return <LoginPage onLoginSuccess={(token: string) => setLogInToken(token)} onGuestLogin={handleGuestLogin} setError={setError} />;
   }
   
   if (GlobalData === null && Error == null) {
