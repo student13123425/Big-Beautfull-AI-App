@@ -209,6 +209,7 @@ export default function TopBar(props: {
   const [isOverflowing,setIsOverflowing] = useState(false);
   const [IsConfirm, setIsConfirm] = useState<string | null>(null);
   const [Open, setOpen] = useState<boolean>(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const measurementRef = useRef<HTMLDivElement>(null);
@@ -309,6 +310,18 @@ export default function TopBar(props: {
           );
         })()}
 
+        {showLogoutConfirm && (
+          <ConfirmModal 
+            title='Deconectare' 
+            content={`Esti sigur că vrei să te deconectezi?`} 
+            onClose={(value: boolean) => {
+              setShowLogoutConfirm(false);
+              if (value) props.onLogout?.();
+            }} 
+            language={props.language} 
+          />
+        )}
+
         <AddButton onClick={() => props.setIsSetings(!props.IsSetings)}>
           {props.IsSetings ? <MdClose color="white" size={22} /> : <MdSettings color="white" size={22} />}
         </AddButton>
@@ -323,7 +336,7 @@ export default function TopBar(props: {
             {props.onLogout && (
               <>
                 <Gap />
-                <LogoutButton onClick={props.onLogout} aria-label="Deconectare">
+                <LogoutButton onClick={() => setShowLogoutConfirm(true)} aria-label="Deconectare">
                   <FaSignOutAlt size={16} color="white" />
                 </LogoutButton>
               </>
@@ -356,7 +369,7 @@ export default function TopBar(props: {
         {props.onLogout && !isOverflowing && (
           <>
             <Gap />
-            <LogoutButton onClick={props.onLogout} aria-label="Deconectare">
+            <LogoutButton onClick={() => setShowLogoutConfirm(true)} aria-label="Deconectare">
               <FaSignOutAlt size={16} color="white" />
             </LogoutButton>
           </>
