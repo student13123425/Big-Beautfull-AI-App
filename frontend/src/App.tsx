@@ -1,24 +1,26 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import type { Config, StudyGroup, StyleConfigList } from './scripts/objects';
 import { get_config } from './network/app-config';
 import { get_data } from './network/study-groups';
 import { getAvailableStyles } from './network/html-generator';
-import { getGuestToken, getSupportedModels, getValidStudyLmstudio } from './network/ai-models';
+import { getGuestToken, getSupportedModels } from './network/ai-models';
 import Main from './pages/Main';
 import LoadingScreen from './components/Main/LoadingScreen';
 import "./scss/main.scss";
 import NetworkErrorPage from './pages/NetworkErrorPage';
 import LMStudioConnectionError from './pages/LMStudioConnectionError';
 import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
 
 function App() {
   const [GlobalData, setGlobalData] = useState<null | StudyGroup>(null);
   const [Error, setError] = useState<null | string>(null);
-  const [IsLmstudio, setIsLmstudio] = useState<string>("all valid");
+  const [isLmstudio] = useState<string>('all valid');
   const [config, setConfig] = useState<null | Config>(null);
   const [SupportedModels, setSupportedModel] = useState<string[]>([]);
   const [LogInToken, setLogInToken] = useState<string | null>(null);
   const [HtmlPosibleStyles, setHtmlPosibleStyles] = useState<StyleConfigList | null>(null);
+  const [ShowHomePage, setShowHomePage] = useState<boolean>(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -54,7 +56,7 @@ function App() {
 
   if (Error != null) console.log(Error);
 
-  if (Error != null && Error !== "all valid") {
+  if (Error != null && Error !== 'all valid') {
     return (
       <>
         <NetworkErrorPage errorMessage={Error} />
@@ -62,10 +64,10 @@ function App() {
     );
   }
   
-  if (IsLmstudio !== "all valid" && IsLmstudio != null) {
+  if (isLmstudio !== 'all valid' && isLmstudio != null) {
     return (
       <>
-        <LMStudioConnectionError errorMessage={IsLmstudio} />
+        <LMStudioConnectionError errorMessage={isLmstudio} />
       </>
     );
   }
@@ -76,10 +78,16 @@ function App() {
 
   const handleLogout = () => {
     setLogInToken(null);
+    setShowHomePage(true);
   };
 
+  // Show HomePage first, then Login page, then Main app
+  if (ShowHomePage && Error == null) {
+    return <HomePage onLoginClick={() => setShowHomePage(false)} />;
+  }
+  
   if (LogInToken == null && Error == null) {
-    return <LoginPage onLoginSuccess={(token: string) => setLogInToken(token)} onGuestLogin={handleGuestLogin} setError={setError} />;
+    return <LoginPage onLoginSuccess={(token: string | null) => setLogInToken(token)} onGuestLogin={handleGuestLogin} onBackToHome={() => setShowHomePage(true)} setError={setError} />;
   }
   
   if (GlobalData === null && Error == null) {

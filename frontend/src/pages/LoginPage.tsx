@@ -243,13 +243,35 @@ const GuestButton = styled.button`
   }
 `;
 
+const BackButton = styled.button`
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #3b82f6;
+  }
+`;
+
 interface AuthProps {
   onLoginSuccess: (token: string | null) => void;
   onGuestLogin?: () => void;
+  onBackToHome?: () => void;
   onError?: (msg: string) => void;
 }
 
-const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onError }) => {
+const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onBackToHome, onError }) => {
   useDocumentTitle('AI App - Login');
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoginFailed, setIsLoginFailed] = useState(false);
@@ -447,6 +469,12 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onError }
             <FaUser size={16} />
             Continue as Guest
           </GuestButton>
+        )}
+
+        {onBackToHome && (
+          <BackButton type="button" onClick={onBackToHome}>
+            ← Back to Home
+          </BackButton>
         )}
       </Card>
     </PageContainer>
