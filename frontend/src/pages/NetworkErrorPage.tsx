@@ -107,7 +107,6 @@ const NetworkErrorPage: React.FC<NetworkErrorProps> = ({ errorMessage }) => {
 
   const [capturedMessage, setCapturedMessage] = React.useState<string | null>(null);
 
-  // Capture the error message only once — never update after first render
   useEffect(() => {
     if (errorMessage && !capturedMessage) {
       setCapturedMessage(errorMessage);
