@@ -52,32 +52,6 @@ const Content = styled.div`
   text-align: center;
 `;
 
-const Badge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 8px 20px;
-  border-radius: 50px;
-  margin-bottom: 2rem;
-  animation: ${fadeInUp} 0.6s ease-out;
-  
-  span {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-  }
-  
-  @media (max-width: 768px) {
-    margin-bottom: 1.5rem;
-    
-    span { font-size: 0.75rem; }
-  }
-`;
-
 const LogoWrapper = styled.div`
   margin-bottom: 2rem;
   animation: ${fadeInUp} 0.8s ease-out;
@@ -187,16 +161,6 @@ const CTAButton = styled.button`
   }
 `;
 
-const SecondaryText = styled.p`
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
-  margin-top: 1.2rem;
-  
-  @media (max-width: 768px) {
-    font-size: 0.75rem;
-  }
-`;
-
 interface HeroSectionProps {
   onLoginClick: () => void;
 }
@@ -211,10 +175,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
       <Particle $size={80} $delay={6} />
 
       <Content>
-        <Badge>
-          <span>🚀 AI-Powered Learning Platform</span>
-        </Badge>
-
         <LogoWrapper>
           <LogoIcon>
             🎓
@@ -222,25 +182,22 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
         </LogoWrapper>
 
         <Title>
-          Learn Smarter with{' '}
-          <span className="highlight">AI Assistant</span>
+          AI Study Assistant
         </Title>
 
         <Tagline>
-          Transform your lecture notes, textbooks, and study materials into interactive summaries, 
-          quizzes, and personalized learning experiences — all powered by artificial intelligence.
+          Upload your lecture notes, textbooks, and study materials to generate 
+          AI-powered summaries, quizzes, and interactive Q&A.
         </Tagline>
 
         <CTAButton onClick={onLoginClick}>
-          Get Started — It's Free
+          Start Studying
           <span className="arrow-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </span>
         </CTAButton>
-
-        <SecondaryText>No credit card required • Free for students</SecondaryText>
       </Content>
     </Container>
   );

@@ -3,12 +3,7 @@ import {
   HeroSection,
   FeaturesSection,
   HowItWorksSection,
-  StatsSection,
   SupportedFormats,
-  TestimonialsSection,
-  FAQSection,
-  CTASection,
-  HomeFooter,
 } from '../components/home';
 
 interface HomePageProps {
@@ -21,12 +16,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
       <HeroSection onLoginClick={onLoginClick} />
       <FeaturesSection />
       <HowItWorksSection />
-      <StatsSection />
       <SupportedFormats />
-      <TestimonialsSection />
-      <FAQSection />
-      <CTASection onLoginClick={onLoginClick} />
-      <HomeFooter />
     </>
   );
 };
