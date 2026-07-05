@@ -254,16 +254,19 @@ export async function handleContentGeneration(req: Request, res: Response) {
         return res.send("n");
     }
 
-    // Clear existing content
-    targetFile.sinteza = null;
-    targetFile.html_file = null;
-    data_study.save();
-    broadcastStudyData();
+    // Preserve existing sinteza in case generation fails.
+    const savedSinteza = targetFile.sinteza;
+    const savedHtml = targetFile.html_file;
 
-    console.log('[handleContentGeneration] Cleared existing content, starting sinteza generation...');
+    console.log('[handleContentGeneration] Starting sinteza generation...');
     const sintezaSuccess = await genereazSinteza(name_materie, file_name);
     if (!sintezaSuccess) {
-        console.log('[handleContentGeneration] Sinteza generation failed');
+        console.log('[handleContentGeneration] Sinteza generation failed — restoring previous data.');
+        // Restore previously saved values (genereaza_sinteza error callback sets them to null).
+        targetFile.sinteza = savedSinteza;
+        targetFile.html_file = savedHtml;
+        data_study.save();
+        broadcastStudyData();
         return res.send("n");
     }
     console.log('[handleContentGeneration] Sinteza generation complete, data saved & broadcasted');
@@ -273,7 +276,11 @@ export async function handleContentGeneration(req: Request, res: Response) {
     console.log('[handleContentGeneration] Starting HTML generation...');
     const htmlSuccess = await genereazHTML(name_materie, file_name);
     if (!htmlSuccess) {
-        console.log('[handleContentGeneration] HTML generation failed');
+        console.log('[handleContentGeneration] HTML generation failed — keeping existing sinteza.');
+        // Keep the successfully generated sinteza; restore html_file if it was valid before.
+        targetFile.html_file = savedHtml;
+        data_study.save();
+        broadcastStudyData();
         return res.send("n");
     }
     console.log('[handleContentGeneration] HTML generation complete, data saved & broadcasted');

@@ -89,16 +89,35 @@ export class StudyGroup{
         let files: FishierMaterie[] = local.files;
         for (let f of files) {
           let index_fishier = -1;
-          for (let i = 0; i < this.data[index_materie].files.length; i++)
-            if (
-              this.data[index_materie].files[i].path === f.path
-            )
+          // Match by filename (last path segment) instead of full absolute path,
+          // because paths can differ between restarts if the home directory
+          // resolution changes (symlinks, mounts, etc.).
+          const storedFileName = f.path.split('/').pop();
+          for (let i = 0; i < this.data[index_materie].files.length; i++) {
+            const currentFileName = this.data[index_materie].files[i].path.split('/').pop();
+            if (currentFileName === storedFileName) {
               index_fishier = i;
-          if (index_fishier === -1) continue;
-          let sinteza: string | null = f.sinteza;
-          let content:string|null=f.content
-          this.data[index_materie].files[index_fishier].sinteza = sinteza;
-          this.data[index_materie].files[index_fishier].content = content;
+              break;
+            }
+          }
+          if (index_fishier === -1) {
+            console.warn(`[StudyGroup.load] Could not restore sinteza for file ${f.path} — no matching file found on disk.`);
+            continue;
+          }
+          const existingSinteza = this.data[index_materie].files[index_fishier].sinteza;
+          if (f.sinteza != null && f.sinteza !== existingSinteza) {
+            console.log(`[StudyGroup.load] Restored sinteza (${(f.sinteza||"").length} chars) for ${storedFileName}`);
+            this.data[index_materie].files[index_fishier].sinteza = f.sinteza;
+          }
+          if (f.content != null && f.content !== existingSinteza) {
+            console.log(`[StudyGroup.load] Restored content (${(f.content||"").length} chars) for ${storedFileName}`);
+            this.data[index_materie].files[index_fishier].content = f.content;
+          }
+          const existingHtml = this.data[index_materie].files[index_fishier].html_file;
+          if (f.html_file != null && f.html_file !== existingHtml) {
+            console.log(`[StudyGroup.load] Restored html_file (${(f.html_file||"").length} chars) for ${storedFileName}`);
+            this.data[index_materie].files[index_fishier].html_file = f.html_file;
+          }
         }
       }
     } catch (e) {
