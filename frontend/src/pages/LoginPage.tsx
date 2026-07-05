@@ -198,7 +198,6 @@ const SubmitButton = styled.button`
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 
   &:hover {
-    transform: translateY(-2px);
     filter: brightness(1.1);
   }
 
@@ -241,7 +240,6 @@ const GuestButton = styled.button`
 
   &:hover {
     background: rgba(59, 130, 246, 0.1);
-    transform: translateY(-2px);
   }
 `;
 

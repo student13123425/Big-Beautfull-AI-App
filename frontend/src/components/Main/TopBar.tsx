@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState, useMemo } from 'react'
 import { styled } from 'styled-components'
-import { FaPlus, FaTrash } from 'react-icons/fa'
+import { FaPlus, FaTrash, FaSignOutAlt } from 'react-icons/fa'
 import { get_matery_list, type StudyGroup } from '../../scripts/objects'
 import { capitalizeFirstLetter } from '../../scripts/aox'
 import { add_materie, delete_materie } from '../../network/study-groups'
@@ -185,7 +185,8 @@ export default function TopBar(props: {
   Selected: string | null,
   setIsSetings: Function,
   IsSetings: boolean,
-  language?: string
+  language?: string,
+  onLogout?: () => void
 }) {
   const [IsModal, setIsModal] = useState<boolean>(false)
   const [isOverflowing,setIsOverflowing] = useState(false);
@@ -302,7 +303,14 @@ export default function TopBar(props: {
                 <MdKeyboardArrowDown size={30} />
               </IconWrapper>
             </AddButton>
-            <Gap />
+            {props.onLogout && (
+              <>
+                <Gap />
+                <AddButton onClick={props.onLogout} aria-label="Deconectare" style={{ background: '#ef4444' }}>
+                  <FaSignOutAlt size={16} color="white" />
+                </AddButton>
+              </>
+            )}
           </>
         ) : (
           list.map((it, i) => {
@@ -327,6 +335,15 @@ export default function TopBar(props: {
         <AddButton onClick={() => setIsModal(true)} aria-label="Adaugă materie nouă">
           <FaPlus size={16} />
         </AddButton>
+
+        {props.onLogout && !isOverflowing && (
+          <>
+            <Gap />
+            <AddButton onClick={props.onLogout} aria-label="Deconectare" style={{ background: '#ef4444' }}>
+              <FaSignOutAlt size={16} color="white" />
+            </AddButton>
+          </>
+        )}
       </Container>
     </>
   )

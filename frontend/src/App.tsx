@@ -74,6 +74,10 @@ function App() {
     getGuestToken(setLogInToken, setError);
   };
 
+  const handleLogout = () => {
+    setLogInToken(null);
+  };
+
   if (LogInToken == null && Error == null) {
     return <LoginPage onLoginSuccess={(token: string) => setLogInToken(token)} onGuestLogin={handleGuestLogin} setError={setError} />;
   }
@@ -84,7 +88,7 @@ function App() {
   
   return (
     <>
-      <Main HtmlPosibleStyles={HtmlPosibleStyles} SupportedModels={SupportedModels} setConfig={setConfig} config={config} onError={setError} GlobalData={GlobalData} />
+      <Main HtmlPosibleStyles={HtmlPosibleStyles} SupportedModels={SupportedModels} setConfig={setConfig} config={config} onError={setError} GlobalData={GlobalData} onLogout={handleLogout} />
     </>
   );
 }

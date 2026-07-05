@@ -48,7 +48,8 @@ export default function Main(props: {
   config:Config,
   setConfig:Function,
   SupportedModels:string[],
-  HtmlPosibleStyles:StyleConfigList|null
+  HtmlPosibleStyles:StyleConfigList|null,
+  onLogout?: () => void
 }) {
   const [Selected, setSelected] = useState<null | string>(null);
   const [IsSetings,setIsSetings]=useState<boolean>(false)
@@ -87,6 +88,7 @@ export default function Main(props: {
           onDelete={(it) => {}} 
           IsSetings={IsSetings}
           onError={props.onError} 
+          onLogout={props.onLogout}
           setSelected={setSelected} 
           Selected={Selected ?? null}
           key={Selected ?? 'none'}
