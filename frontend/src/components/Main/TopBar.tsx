@@ -10,6 +10,7 @@ import { MdKeyboardArrowDown, MdSettings, MdClose } from 'react-icons/md'
 import { useWindowResize } from '../../hooks/useWindowResize'
 import useKeyRelease from '../../hooks/useKeyRelease'
 import { getAddMaterieText, type AddMaterieLanguage } from '../../lang/modals/addMaterieText'
+import { getTopBarLogoutText, type TopBarLogoutLanguage } from '../../lang/topBar'
 
 const Container = styled.div`
   position: relative;
@@ -310,17 +311,21 @@ export default function TopBar(props: {
           );
         })()}
 
-        {showLogoutConfirm && (
-          <ConfirmModal 
-            title='Deconectare' 
-            content={`Esti sigur că vrei să te deconectezi?`} 
-            onClose={(value: boolean) => {
-              setShowLogoutConfirm(false);
-              if (value) props.onLogout?.();
-            }} 
-            language={props.language} 
-          />
-        )}
+        {showLogoutConfirm && (() => {
+          const lang = (props.language as TopBarLogoutLanguage) || 'English';
+          const logoutTexts = getTopBarLogoutText(lang);
+          return (
+            <ConfirmModal 
+              title={logoutTexts.title} 
+              content={logoutTexts.content} 
+              onClose={(value: boolean) => {
+                setShowLogoutConfirm(false);
+                if (value) props.onLogout?.();
+              }} 
+              language={props.language} 
+            />
+          );
+        })()}
 
         <AddButton onClick={() => props.setIsSetings(!props.IsSetings)}>
           {props.IsSetings ? <MdClose color="white" size={22} /> : <MdSettings color="white" size={22} />}
