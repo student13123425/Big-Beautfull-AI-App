@@ -9,7 +9,7 @@ const fadeInUp = keyframes`
 
 const Container = styled.section`
   padding: 5rem 2rem;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   
   @media (max-width: 768px) {
     padding: 4rem 1.5rem;
@@ -83,7 +83,7 @@ const SectionLabel = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #eff6ff;
+  background: rgba(255, 255, 255, 0.9);
   color: #2563eb;
   padding: 8px 18px;
   border-radius: 50px;

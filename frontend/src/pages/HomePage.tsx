@@ -16,8 +16,8 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
     <>
       <HeroSection onLoginClick={onLoginClick} />
       <FeaturesSection />
-      <HowItWorksSection />
       <SupportedFormats />
+      <HowItWorksSection />
       <AboutAuthor />
     </>
   );
