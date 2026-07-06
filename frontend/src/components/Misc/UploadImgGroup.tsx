@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import type { Materie } from '../../scripts/objects';
 import { Image, ImageGroup } from '../../scripts/objects';
 
-// Image formats: jpg, jpeg, png, gif, bmp, webp, svg, tiff
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'tiff'];
 
 interface UploadImgGroupProps {

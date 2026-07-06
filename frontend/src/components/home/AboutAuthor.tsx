@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { FaReact, FaRobot, FaGithub, FaNodeJs } from 'react-icons/fa';
 import { fetchAuthorBirthday } from '../../network/profile';
 
 const fadeInUp = keyframes`
@@ -131,7 +132,11 @@ const SkillItem = styled.div`
 `;
 
 const SkillIcon = styled.span`
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const calculateAge = (birthdate: Date): number => {
@@ -220,19 +225,19 @@ const AboutAuthor: React.FC = () => {
 
           <SkillsGrid>
             <SkillItem>
-              <SkillIcon>⚛️</SkillIcon>
+              <SkillIcon><FaReact /></SkillIcon>
               <span>React / TypeScript</span>
             </SkillItem>
             <SkillItem>
-              <SkillIcon>🟢</SkillIcon>
+              <SkillIcon><FaNodeJs /></SkillIcon>
               <span>Node.js / Express</span>
             </SkillItem>
             <SkillItem>
-              <SkillIcon>🤖</SkillIcon>
+              <SkillIcon><FaRobot /></SkillIcon>
               <span>AI / LLM Integration</span>
             </SkillItem>
             <SkillItem>
-              <SkillIcon>🐙</SkillIcon>
+              <SkillIcon><FaGithub /></SkillIcon>
               <span>Git / GitHub</span>
             </SkillItem>
           </SkillsGrid>

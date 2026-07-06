@@ -1,4 +1,5 @@
 import React from 'react';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 import {
   HeroSection,
   FeaturesSection,
@@ -12,6 +13,8 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
+  useDocumentTitle('AI Study Assistant');
+
   return (
     <>
       <HeroSection onLoginClick={onLoginClick} />
