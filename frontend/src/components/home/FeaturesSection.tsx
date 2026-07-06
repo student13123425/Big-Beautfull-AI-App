@@ -8,8 +8,8 @@ const fadeInUp = keyframes`
 `;
 
 const Container = styled.section`
-  padding: 6rem 2rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  padding: 5rem 2rem;
+  background: #ffffff;
   position: relative;
   
   @media (max-width: 768px) {
@@ -86,11 +86,11 @@ const Grid = styled.div`
 `;
 
 const Card = styled.div<{ $delay?: number }>`
-  background: white;
+  background: #f8fafc;
   border-radius: 20px;
   padding: 2.5rem 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e8ecf4;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: ${fadeInUp} 0.7s ease-out;
   animation-delay: ${props => props.$delay || 0}s;
@@ -98,8 +98,8 @@ const Card = styled.div<{ $delay?: number }>`
   
   &:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.12);
-    border-color: #bfdbfe;
+    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
+    border-color: #93b4f5;
   }
   
   @media (max-width: 768px) {

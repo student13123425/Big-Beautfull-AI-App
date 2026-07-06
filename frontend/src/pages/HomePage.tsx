@@ -4,6 +4,7 @@ import {
   FeaturesSection,
   HowItWorksSection,
   SupportedFormats,
+  AboutAuthor,
 } from '../components/home';
 
 interface HomePageProps {
@@ -17,6 +18,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
       <FeaturesSection />
       <HowItWorksSection />
       <SupportedFormats />
+      <AboutAuthor />
     </>
   );
 };

@@ -2,3 +2,4 @@ export { default as HeroSection } from './HeroSection';
 export { default as FeaturesSection } from './FeaturesSection';
 export { default as HowItWorksSection } from './HowItWorksSection';
 export { default as SupportedFormats } from './SupportedFormats';
+export { default as AboutAuthor } from './AboutAuthor';

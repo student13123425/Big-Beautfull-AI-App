@@ -8,8 +8,8 @@ const fadeInUp = keyframes`
 `;
 
 const Container = styled.section`
-  padding: 6rem 2rem;
-  background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%);
+  padding: 5rem 2rem;
+  background: #f8fafc;
   position: relative;
   
   @media (max-width: 768px) {

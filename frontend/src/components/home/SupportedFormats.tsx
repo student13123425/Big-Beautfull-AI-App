@@ -11,7 +11,7 @@ const Container = styled.section`
   background: #ffffff;
   
   @media (max-width: 768px) {
-    padding: 3.5rem 1.5rem;
+    padding: 4rem 1.5rem;
   }
 `;
 
@@ -57,13 +57,13 @@ const FormatsGrid = styled.div`
 `;
 
 const FormatCard = styled.div<{ $delay?: number }>`
-  background: white;
+  background: #f8fafc;
   border-radius: 16px;
   padding: 2rem 1.5rem;
   width: 140px;
   text-align: center;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  border: 2px solid #e8ecf4;
+  border: 2px solid #e2e8f0;
   transition: all 0.3s ease;
   animation: ${fadeInUp} 0.6s ease-out;
   animation-delay: ${props => props.$delay || 0}s;
@@ -71,8 +71,8 @@ const FormatCard = styled.div<{ $delay?: number }>`
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
-    border-color: #bfdbfe;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+    border-color: #93b4f5;
   }
 `;
 
