@@ -467,7 +467,6 @@ export default function DocumentUpload(props: DocumentUploadProps) {
         setError('');
 
         try {
-            // Check for existing files before uploading
             const existing = await checkForExistingFiles();
             
             if (existing.length > 0) {
@@ -475,7 +474,6 @@ export default function DocumentUpload(props: DocumentUploadProps) {
                 return;
             }
 
-            // Upload all files sequentially with progress tracking
             let totalProgress = 0;
             for (let i = 0; i < files.length; i++) {
                 await uploadFile(files[i], () => {
@@ -499,13 +497,12 @@ export default function DocumentUpload(props: DocumentUploadProps) {
         setError('');
 
         try {
-            // Upload all files sequentially with progress tracking (replace mode)
             let totalProgress = 0;
             for (let i = 0; i < files.length; i++) {
                 await uploadFile(files[i], () => {
                     totalProgress = Math.round(((i + 1) / files.length) * 100);
                     setUploadProgress(totalProgress);
-                }, true); // replace=true
+                }, true);
             }
 
             props.onClose();

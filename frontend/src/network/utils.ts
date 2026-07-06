@@ -1,4 +1,3 @@
-/** Base URL for all network requests. Change this to match your backend address. */
 export const addr: string = "http://localhost:3000";
 
 export const getFileType = (path: string): 'pdf' | 'pptx' => {

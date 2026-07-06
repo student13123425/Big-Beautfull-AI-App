@@ -162,7 +162,6 @@ const AboutAuthor: React.FC = () => {
         const birthdate = new Date(birthdayStr);
         setAge(calculateAge(birthdate));
       } else {
-        // Fallback to hardcoded birthday if API fails
         const fallbackDate = new Date(2001, 1, 3);
         setAge(calculateAge(fallbackDate));
       }
@@ -172,7 +171,6 @@ const AboutAuthor: React.FC = () => {
 
     initBirthday();
 
-    // Recalculate age periodically (every hour) in case page stays open across midnight
     const interval = setInterval(() => {
       const birthdayStr = process.env.AUTHOR_BIRTHDAY || '2001-02-03';
       const birthdate = new Date(birthdayStr);
