@@ -24,6 +24,7 @@ import { getGuestToken, loginEndpoint, registerEndpoint, verifyTokenEndpoint, in
 import { initializeUserDatabase } from './services/auth.js';
 import { runTest } from './test/llm_completion_test.js';
 import { ai_models_available, device_ip, set_device_id } from './services/state.js';
+import { getBirthday } from './routes/profileRoutes.js';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
@@ -188,6 +189,10 @@ app.get('/models_paths', async (req, res) => {
 
 app.get('/ip', async (req, res) => {
   getIP(req,res);
+});
+
+app.get('/profile/birthday', async (req, res) => {
+  getBirthday(req, res);
 });
 
 app.get('/config', async (req, res) => {

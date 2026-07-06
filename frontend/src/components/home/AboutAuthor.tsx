@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-
-const BIRTHDATE = new Date(2001, 1, 3); // February 3rd, 2001 (month is 0-indexed)
-
-const calculateAge = (birthdate: Date): number => {
-  const today = new Date();
-  let age = today.getFullYear() - birthdate.getFullYear();
-  const monthDiff = today.getMonth() - birthdate.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
-    age--;
-  }
-  return age;
-};
+import { fetchAuthorBirthday } from '../../network/profile';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -131,12 +120,12 @@ const SkillItem = styled.div`
   align-items: center;
   gap: 10px;
   padding: 0.75rem 1rem;
-  background: #f8fafc;
+  background: #3b82f6;
   border-radius: 12px;
   
   span {
     font-size: 0.95rem;
-    color: #475569;
+    color: #ffffff;
     font-weight: 500;
   }
 `;
@@ -145,19 +134,63 @@ const SkillIcon = styled.span`
   font-size: 1.2rem;
 `;
 
+const calculateAge = (birthdate: Date): number => {
+  const today = new Date();
+  let age = today.getFullYear() - birthdate.getFullYear();
+  const monthDiff = today.getMonth() - birthdate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+
 const AboutAuthor: React.FC = () => {
-  const [age, setAge] = useState<number>(calculateAge(BIRTHDATE));
+  const [age, setAge] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Recalculate age on mount and periodically thereafter
-    const updateAge = () => {
-      setAge(calculateAge(BIRTHDATE));
+    const initBirthday = async () => {
+      const birthdayStr = await fetchAuthorBirthday();
+      
+      if (birthdayStr) {
+        const birthdate = new Date(birthdayStr);
+        setAge(calculateAge(birthdate));
+      } else {
+        // Fallback to hardcoded birthday if API fails
+        const fallbackDate = new Date(2001, 1, 3);
+        setAge(calculateAge(fallbackDate));
+      }
+      
+      setLoading(false);
     };
-    updateAge();
-    // Check once per day in case the page stays open across midnight
-    const interval = setInterval(updateAge, 60 * 60 * 1000); // every hour
+
+    initBirthday();
+
+    // Recalculate age periodically (every hour) in case page stays open across midnight
+    const interval = setInterval(() => {
+      const birthdayStr = process.env.AUTHOR_BIRTHDAY || '2001-02-03';
+      const birthdate = new Date(birthdayStr);
+      setAge(calculateAge(birthdate));
+    }, 60 * 60 * 1000);
+
     return () => clearInterval(interval);
   }, []);
+
+  if (loading) {
+    return (
+      <Container>
+        <Inner>
+          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            <SectionLabel>👤 About the Author</SectionLabel>
+          </div>
+          <Card>
+            <p>Loading...</p>
+          </Card>
+        </Inner>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -180,11 +213,6 @@ const AboutAuthor: React.FC = () => {
           <BioText>
             Numele meu este Mihai Nicolae, am {age} de ani și sunt student în anul I la Facultatea de Informatică Managerială din cadrul Universității Romano-Americane. Sunt pasionat de tehnologie și programare, domeniu pe care îl studiez autodidact de peste 3 ani.
           </BioText>
-
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#eff6ff', color: '#2563eb', padding: '8px 18px', borderRadius: '50px', fontSize: '0.85rem', fontWeight: '600', marginTop: '1rem' }}>
-            <span>🎂</span>
-            <span>Born on February 3rd, 2001 • Age: {age}</span>
-          </div>
 
           <BioText>
             Acest proiect este un portfolio personal — am creat AI Study Assistant pentru a arăta angajatorilor că îmi place să construiesc lucruri utile și să învăț constant tehnologii noi. Obiectivul meu este să obțin o calificare profesională în IT și să dobândesc experiență practică printr-un job în domeniu.

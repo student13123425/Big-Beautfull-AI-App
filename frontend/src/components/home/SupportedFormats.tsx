@@ -8,7 +8,7 @@ const fadeInUp = keyframes`
 
 const Container = styled.section`
   padding: 5rem 2rem;
-  background: #ffffff;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   
   @media (max-width: 768px) {
     padding: 4rem 1.5rem;
@@ -24,7 +24,7 @@ const Inner = styled.div`
 const SectionTitle = styled.h2`
   font-size: 2rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #ffffff;
   margin: 0 0 0.75rem;
   letter-spacing: -0.5px;
   
@@ -35,7 +35,7 @@ const SectionTitle = styled.h2`
 
 const SectionSubtitle = styled.p`
   font-size: 1.05rem;
-  color: #64748b;
+  color: #dbeafe;
   margin: 0 auto 3rem;
   max-width: 550px;
   
@@ -57,13 +57,13 @@ const FormatsGrid = styled.div`
 `;
 
 const FormatCard = styled.div<{ $delay?: number }>`
-  background: #f8fafc;
+  background: #ffffff;
   border-radius: 16px;
   padding: 2rem 1.5rem;
   width: 140px;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  border: 2px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
   transition: all 0.3s ease;
   animation: ${fadeInUp} 0.6s ease-out;
   animation-delay: ${props => props.$delay || 0}s;
@@ -71,8 +71,8 @@ const FormatCard = styled.div<{ $delay?: number }>`
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
-    border-color: #93b4f5;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+    border-color: #ffffff;
   }
 `;
 
@@ -98,7 +98,7 @@ const FormatName = styled.span`
 const FormatDesc = styled.span`
   display: block;
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: #64748b;
 `;
 
 const Formats = [
