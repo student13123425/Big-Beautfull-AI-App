@@ -1,5 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
+
+const BIRTHDATE = new Date(2001, 1, 3); // February 3rd, 2001 (month is 0-indexed)
+
+const calculateAge = (birthdate: Date): number => {
+  const today = new Date();
+  let age = today.getFullYear() - birthdate.getFullYear();
+  const monthDiff = today.getMonth() - birthdate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+    age--;
+  }
+  return age;
+};
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -134,6 +146,19 @@ const SkillIcon = styled.span`
 `;
 
 const AboutAuthor: React.FC = () => {
+  const [age, setAge] = useState<number>(calculateAge(BIRTHDATE));
+
+  useEffect(() => {
+    // Recalculate age on mount and periodically thereafter
+    const updateAge = () => {
+      setAge(calculateAge(BIRTHDATE));
+    };
+    updateAge();
+    // Check once per day in case the page stays open across midnight
+    const interval = setInterval(updateAge, 60 * 60 * 1000); // every hour
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Container>
       <Inner>
@@ -153,8 +178,13 @@ const AboutAuthor: React.FC = () => {
           </Header>
 
           <BioText>
-            Numele meu este Mihai Nicolae, am 24 de ani și sunt student în anul I la Facultatea de Informatică Managerială din cadrul Universității Romano-Americane. Sunt pasionat de tehnologie și programare, domeniu pe care îl studiez autodidact de peste 3 ani.
+            Numele meu este Mihai Nicolae, am {age} de ani și sunt student în anul I la Facultatea de Informatică Managerială din cadrul Universității Romano-Americane. Sunt pasionat de tehnologie și programare, domeniu pe care îl studiez autodidact de peste 3 ani.
           </BioText>
+
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#eff6ff', color: '#2563eb', padding: '8px 18px', borderRadius: '50px', fontSize: '0.85rem', fontWeight: '600', marginTop: '1rem' }}>
+            <span>🎂</span>
+            <span>Born on February 3rd, 2001 • Age: {age}</span>
+          </div>
 
           <BioText>
             Acest proiect este un portfolio personal — am creat AI Study Assistant pentru a arăta angajatorilor că îmi place să construiesc lucruri utile și să învăț constant tehnologii noi. Obiectivul meu este să obțin o calificare profesională în IT și să dobândesc experiență practică printr-un job în domeniu.
