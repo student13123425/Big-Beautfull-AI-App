@@ -14,8 +14,8 @@ const Container=styled.div`
   flex-direction: row;
   height: 100%;
   max-height: 100%;
-    min-height: 0;       /* ← allows vertical shrinking */
-  min-width: 0;        /* ← allows horizontal shrinking */
+    min-height: 0;
+  min-width: 0;
 `
 
 const BrowserContainer=styled.div`
@@ -24,10 +24,9 @@ const BrowserContainer=styled.div`
   flex: 1;
   height: 100%;
   max-height: 100%;
-  /* allow its children to shrink */
   min-height: 0;
-    min-height: 0;       /* ← allows vertical shrinking */
-  min-width: 0;        /* ← allows horizontal shrinking */
+    min-height: 0;
+  min-width: 0;
 `
 
 const Hide=styled.div`

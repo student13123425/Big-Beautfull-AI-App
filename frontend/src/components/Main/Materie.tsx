@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import type { FileD, Materie as Mt, StudyGroup } from '../../scripts/objects'
 import { get_file_elements, get_selected } from '../../scripts/aox'
 
-// Hash comparison to detect actual data changes from polling
 let lastMaterieDataHash: string = '';
 function getMaterieDataHash(data: StudyGroup): string {
   let hash = '';

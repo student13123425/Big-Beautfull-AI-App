@@ -9,7 +9,6 @@ import AcknowledgeModal from '../Misc/AcknowledgeModal'
 import { AlertTriangle } from 'lucide-react'
 import { getQuizPageText, type QuizLanguage } from '../../lang/quizLang'
 
-// Animations
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -25,7 +24,6 @@ const scaleIn = keyframes`
   to { transform: scale(1); opacity: 1; }
 `;
 
-// Styled components
 const Container = styled.div<{ $isClosing: boolean }>`
   position: fixed;
   top: 0;
@@ -378,7 +376,6 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
   const [IsInvalidDataModal,setIsInvalidDataModal]=useState<boolean>(false);
   const max_intrebari = [1, 20];
 
-  // Get translations based on language prop
   const langToUse = (props.language as QuizLanguage) || 'English';
   const texts = getQuizPageText(langToUse);
   useEffect(() => {
@@ -390,7 +387,7 @@ export default function QuizCreatePage(props: {materie:Materie,QuizList:Quiz[], 
     setIsClosing(true);
     setTimeout(() => {
       props.onClose();
-    }, 250); // Match animation duration
+    }, 250);
   };
   
   useKeyPress('Escape', () => {

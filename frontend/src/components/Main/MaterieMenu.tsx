@@ -5,18 +5,18 @@ import { getTabTexts, type TabLanguage } from '../../lang/tabs';
 
 const Container = styled.div`
   width: 100%;
-  height: 3.5rem; /* Reduced height for compactness */
+  height: 3.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 0.5rem; /* Reduced padding */
+  padding: 0 0.5rem;
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 
   @media (max-width: 500px) {
-    padding: 0.2rem 0.4rem; /* Further reduced padding for mobile */
-    height: 3rem; /* Smaller height for mobile */
+    padding: 0.2rem 0.4rem;
+    height: 3rem;
   }
 `;
 
@@ -78,11 +78,11 @@ const MenuItem = styled.div<{ $selected: boolean }>`
 
   @media (max-width: 500px) {
     min-width: auto;
-    width: 40px; /* Reduced width for mobile */
-    height: 36px; /* Reduced height for mobile */
+    width: 40px;
+    height: 36px;
     padding: 0;
-    margin: 0 0.25rem; /* Reduced margin for compactness */
-    border-radius: 6px; /* Slightly smaller border radius */
+    margin: 0 0.25rem;
+    border-radius: 6px;
     flex: 1;
   }
 
@@ -100,7 +100,7 @@ const IconWrapper = styled.span<{ $selected: boolean }>`
   }
 
   @media (max-width: 500px) {
-    font-size: 1rem; /* Reduced icon size for compactness */
+    font-size: 1rem;
   }
 `;
 

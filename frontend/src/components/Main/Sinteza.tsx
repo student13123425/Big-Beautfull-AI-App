@@ -4,7 +4,6 @@ import { styled } from 'styled-components'
 import DisplaySinteza from './DisplaySinteza'
 import ResourceBrowser from '../Misc/ResourceBrowser'
 
-// Hash comparison to detect actual data changes from polling
 let lastSintezaMaterieHash: string = '';
 function getSintezaMaterieHash(materie: Materie): string {
   let hash = `${materie.name}:`;
@@ -21,8 +20,8 @@ const Container=styled.div`
   display: flex;
   flex-direction: row;
     max-height: 100%;
-    min-height: 0;       /* ← allows vertical shrinking */
-  min-width: 0;  
+    min-height: 0;
+  min-width: 0;
 `
 
 const BrowserContainer=styled.div`
