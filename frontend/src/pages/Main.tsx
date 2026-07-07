@@ -49,7 +49,8 @@ export default function Main(props: {
   setConfig:Function,
   SupportedModels:string[],
   HtmlPosibleStyles:StyleConfigList|null,
-  onLogout?: () => void
+  onLogout?: () => void,
+  userId?: string | null
 }) {
   const [Selected, setSelected] = useState<null | string>(null);
   const [IsSetings,setIsSetings]=useState<boolean>(false)
@@ -94,6 +95,7 @@ export default function Main(props: {
           key={Selected ?? 'none'}
           data={props.GlobalData}
           language={props.config?.limba || 'romana'}
+          userId={props.userId}
         />
         <ContentArea>
           {IsSetings===true?<SettingsPage HtmlPosibleStyles={props.HtmlPosibleStyles} SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError}/>:(<>

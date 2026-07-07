@@ -204,7 +204,8 @@ export default function TopBar(props: {
   setIsSetings: Function,
   IsSetings: boolean,
   language?: string,
-  onLogout?: () => void
+  onLogout?: () => void,
+  userId?: string | null
 }) {
   const [IsModal, setIsModal] = useState<boolean>(false)
   const [isOverflowing,setIsOverflowing] = useState(false);
@@ -291,7 +292,7 @@ export default function TopBar(props: {
       <Container ref={containerRef}>
         {IsConfirm !== null && <ConfirmModal title='stergere materie' content={`Esti sigur că vrei să ștergi această materie și toate fișierele sale?`} onClose={(value: boolean) => {
           setIsConfirm(null);
-          if (value) delete_materie(props.onError, IsConfirm);
+          if (value) delete_materie(props.onError, IsConfirm, props.userId);
         }} language={props.language} />}
         {IsModal && (() => {
           const lang = (props.language as AddMaterieLanguage) || 'Romanian';
@@ -302,7 +303,7 @@ export default function TopBar(props: {
               placeholder={modalTexts.placeholder}
               onClose={(out: string | null) => {
                 setIsModal(false);
-                if (out?.trim()) add_materie(props.onError, out.trim());
+                if (out?.trim()) add_materie(props.onError, out.trim(), props.userId);
               }}
               content={modalTexts.content}
               cancelText={modalTexts.cancelText}

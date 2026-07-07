@@ -24,15 +24,17 @@ export async function addMaterie(req: Request, res: Response): Promise<void> {
     return;
   }
   
+  const userId = req.body.userId as string | undefined;
   const name: string = req.body.name;
-  const list: string[] = getDirectoryContent(getUserFolderPath());
+  const list: string[] = getDirectoryContent(getUserFolderPath(userId));
   
   if (list.map((it) => it.toLowerCase()).includes(name.toLowerCase())) {
     let front_end_error_message = new AiServerError(`materia deja exista`, `materia ${name.toLowerCase()} deja exista in system`, true);
     data_study.AiServerError.push(front_end_error_message);
     res.send("n");
   } else {
-    await mkdirSync(`${getUserFolderPath()}/${name}`, { recursive: true });
+    await mkdirSync(`${getUserFolderPath(userId)}/${name}`, { recursive: true });
+    // Reload singleton data_study from disk so WebSocket clients see updated data
     data_study.load(config);
     broadcastStudyData();
     res.send("y");
@@ -41,21 +43,56 @@ export async function addMaterie(req: Request, res: Response): Promise<void> {
 
 export async function deleteMaterie(req: Request, res: Response): Promise<void> {
   if (!req.body.name) {
+    console.log('[deleteMaterie] Missing name in request body');
     res.send("n");
     return;
   }
   
+  const userId = req.body.userId as string | undefined;
   const name: string = req.body.name;
-  const list: string[] = getDirectoryContent(getUserFolderPath());
+  const folderPath = getUserFolderPath(userId);
   
-  if (list.map((it) => it.toLowerCase()).includes(name.toLowerCase())) {
-    await rmSync(`${getUserFolderPath()}/${name}`, { recursive: true, force: true });
-    data_study.load(config);
-    broadcastStudyData();
-    res.send("y");
+  console.log('[deleteMaterie] userId:', userId, 'name:', name, 'folderPath:', folderPath);
+  
+  const list: string[] = getDirectoryContent(folderPath);
+  console.log('[deleteMaterie] folders in user path:', list);
+  
+  // Find matching materiel by lowercase comparison
+  const matchingIndex = list.findIndex((it) => it.toLowerCase() === name.toLowerCase());
+  
+  if (matchingIndex !== -1) {
+    const actualFolderName = list[matchingIndex];
+    console.log('[deleteMaterie] deleting folder:', `${folderPath}/${actualFolderName}`);
+    
+    try {
+      await rmSync(`${folderPath}/${actualFolderName}`, { recursive: true, force: true });
+      
+      // Reload singleton data_study from disk so WebSocket clients see updated data
+      data_study.load(config);
+      
+      broadcastStudyData();
+      console.log('[deleteMaterie] successfully deleted:', actualFolderName);
+      res.send("y");
+    } catch (err) {
+      console.error('[deleteMaterie] error deleting folder:', err);
+      const front_end_error_message = new AiServerError(
+        `eroare stergere`,
+        `nu s-a putut sterge materia ${name}: ${err instanceof Error ? err.message : 'unknown error'}`,
+        true
+      );
+      data_study.AiServerError.push(front_end_error_message);
+      broadcastStudyData();
+      res.send("n");
+    }
   } else {
-    let front_end_error_message = new AiServerError(`materia nu exista`, `materia ${name.toLowerCase()} nu exista in system`, true);
+    console.log('[deleteMaterie] materiel not found:', name, '(lowercase: ' + name.toLowerCase() + ')');
+    let front_end_error_message = new AiServerError(
+      `materia nu exista`,
+      `materia ${name.toLowerCase()} nu exista in system`,
+      true
+    );
     data_study.AiServerError.push(front_end_error_message);
+    broadcastStudyData();
     res.send("n");
   }
 }

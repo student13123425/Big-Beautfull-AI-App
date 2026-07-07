@@ -39,13 +39,17 @@ export async function get_data(
 
 export async function add_materie(
   setError: Function,
-  name: string
+  name: string,
+  userId: string | null = null
 ): Promise<boolean> {
 
   try {
+    const body: { name: string; userId?: string } = { name };
+    if (userId) body.userId = userId;
+    
     const response = await axios.post<string>(
       `${addr}/add_materie`,
-      { name: name },
+      body,
       {
         headers: { 'Content-Type': 'application/json' },
         responseType: 'text',
@@ -63,12 +67,16 @@ export async function add_materie(
 
 export async function delete_materie(
   setError: Function,
-  name: string
+  name: string,
+  userId: string | null = null
 ): Promise<boolean> {
   try {
+    const body: { name: string; userId?: string } = { name };
+    if (userId) body.userId = userId;
+
     const response = await axios.post<string>(
       `${addr}/delete_materie`,
-      { name: name },
+      body,
       {
         headers: { 'Content-Type': 'application/json' },
         responseType: 'text',
