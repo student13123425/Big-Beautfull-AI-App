@@ -18,7 +18,7 @@ function App() {
   const [isLmstudio] = useState<string>('all valid');
   const [config, setConfig] = useState<null | Config>(null);
   const [SupportedModels, setSupportedModel] = useState<string[]>([]);
-  const [LogInToken, setLogInToken] = useState<string | null>(null);
+  const [UserID, setUserID] = useState<string | null>(null);
   const [HtmlPosibleStyles, setHtmlPosibleStyles] = useState<StyleConfigList | null>(null);
   const [ShowHomePage, setShowHomePage] = useState<boolean>(true);
 
@@ -73,11 +73,11 @@ function App() {
   }
   
   const handleGuestLogin = () => {
-    getGuestToken(setLogInToken, setError);
+    getGuestToken(setUserID, setError);
   };
 
   const handleLogout = () => {
-    setLogInToken(null);
+    setUserID(null);
     setShowHomePage(true);
   };
 
@@ -86,8 +86,8 @@ function App() {
     return <HomePage onLoginClick={() => setShowHomePage(false)} />;
   }
   
-  if (LogInToken == null && Error == null) {
-    return <LoginPage onLoginSuccess={(token: string | null) => setLogInToken(token)} onGuestLogin={handleGuestLogin} onBackToHome={() => setShowHomePage(true)} setError={setError} />;
+  if (UserID == null && Error == null) {
+    return <LoginPage onLoginSuccess={(userId: string | null) => setUserID(userId)} onGuestLogin={handleGuestLogin} onBackToHome={() => setShowHomePage(true)} setError={setError} />;
   }
   
   if (GlobalData === null && Error == null) {

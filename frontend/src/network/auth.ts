@@ -19,7 +19,7 @@ export async function registerUser(
     if (response.data && response.data.token) {
       return true;
     } else {
-      setError("Registration failed: No token received");
+      setError("Registration failed: No user ID received");
       return false;
     }
   } catch (error: any) {
@@ -48,7 +48,7 @@ export async function loginUser(
     if (response.data && response.data.token) {
       return true;
     } else {
-      setError("Login failed: No token received");
+      setError("Login failed: No user ID received");
       return false;
     }
   } catch (error: any) {
@@ -61,13 +61,13 @@ export async function loginUser(
 }
 
 
-export async function verifyToken(
-  token: string,
+export async function verifyUserId(
+  userId: string,
   setError: Function
 ): Promise<boolean> {
   try {
     const response = await axios.post(`${addr}/verify_token`, {
-      token,
+      userId,
     }, {
       headers: { 'Content-Type': 'application/json' },
       responseType: 'text',
@@ -75,7 +75,7 @@ export async function verifyToken(
 
     const data = response.data.trim();
     if (data === "null") {
-      setError("Invalid or expired token");
+      setError("Invalid or expired user ID");
       return false;
     } else if (!isNaN(Number(data))) {
       return true;
@@ -86,14 +86,14 @@ export async function verifyToken(
   } catch (error: any) {
     const message = error.response
       ? `Server error (${error.response.status}): ${error.response.data?.message || error.response.statusText}`
-      : `Network error during token verification: ${error.message}`;
+      : `Network error during user ID verification: ${error.message}`;
     setError(message);
     return false;
   }
 }
 
-export async function getGuestToken(
-  setToken: Function,
+export async function getGuestUserId(
+  setUserID: Function,
   setError: Function
 ): Promise<boolean> {
   try {
@@ -101,17 +101,17 @@ export async function getGuestToken(
       headers: { 'Content-Type': 'application/json' }
     });
 
-    if (response.data && response.data.token) {
-      setToken(response.data.token);
+    if (response.data && response.data.userId) {
+      setUserID(response.data.userId);
       return true;
     } else {
-      setError("Failed to get guest token: No token received");
+      setError("Failed to get guest user ID: No user ID received");
       return false;
     }
   } catch (error: any) {
     const message = error.response
       ? `Server error (${error.response.status}): ${error.response.data?.message || error.response.statusText}`
-      : `Network error getting guest token: ${error.message}`;
+      : `Network error getting guest user ID: ${error.message}`;
     setError(message);
     return false;
   }

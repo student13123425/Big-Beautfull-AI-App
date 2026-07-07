@@ -209,14 +209,14 @@ export async function getValidStudyLmstudio(
 }
 
 export async function getGuestToken(
-  setToken: Function,
+  setUserID: Function,
   setError: Function
 ): Promise<void> {
   try {
-    const { data } = await axios.get<{ token: string }>(`${addr}/guestToken`);
-    setToken(data.token);
+    const { data } = await axios.get<{ userId: string }>(`${addr}/guestToken`);
+    setUserID(data.userId);
   } catch (err: any) {
-    setToken(null);
+    setUserID(null);
     if (err.response) {
       const { status, data: respData, statusText } = err.response;
       const serverMsg =
@@ -224,14 +224,14 @@ export async function getGuestToken(
         statusText ||
         'Unknown server error';
       setError(
-        `Unable to get guest token — server responded with ${status}: ${serverMsg}.`
+        `Unable to get guest ID — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach ${addr}/guestToken.`
+        `Network error — no response received when attempting to reach ${addr}/guestID.`
       );
     } else {
-      setError(`Unexpected error while fetching guest token: ${err.message}`);
+      setError(`Unexpected error while fetching guest ID: ${err.message}`);
     }
   }
 }

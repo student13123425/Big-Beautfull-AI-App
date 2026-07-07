@@ -265,7 +265,7 @@ const BackButton = styled.button`
 `;
 
 interface AuthProps {
-  onLoginSuccess: (token: string | null) => void;
+  onLoginSuccess: (userId: string | null) => void;
   onGuestLogin?: () => void;
   onBackToHome?: () => void;
   onError?: (msg: string) => void;

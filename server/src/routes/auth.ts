@@ -76,36 +76,36 @@ export function createTokenFolder(token: string): void {
 }
 
 export function initGuestFolder(): void {
-  const guestToken = process.env.GUEST_TOKEN;
-  if (guestToken) {
-    createTokenFolder(guestToken);
+  const guestUserId = process.env.GUEST_USER_ID;
+  if (guestUserId) {
+    createTokenFolder(guestUserId);
   }
 }
 
-export function getUserFolderPath(token?: string): string {
-  const guestToken = process.env.GUEST_TOKEN;
-  const effectiveToken = token || guestToken;
-  if (!effectiveToken) {
-    throw new Error("No token provided and no GUEST_TOKEN configured");
+export function getUserFolderPath(userId?: string): string {
+  const guestUserId = process.env.GUEST_USER_ID;
+  const effectiveId = userId || guestUserId;
+  if (!effectiveId) {
+    throw new Error("No user ID provided and no GUEST_USER_ID configured");
   }
-  return join("data", effectiveToken);
+  return join("data", effectiveId);
 }
 
-export function getUserMetaDataSpot(token?: string): string {
-  const guestToken = process.env.GUEST_TOKEN;
-  const effectiveToken = token || guestToken;
-  if (!effectiveToken) {
-    throw new Error("No token provided and no GUEST_TOKEN configured");
+export function getUserMetaDataSpot(userId?: string): string {
+  const guestUserId = process.env.GUEST_USER_ID;
+  const effectiveId = userId || guestUserId;
+  if (!effectiveId) {
+    throw new Error("No user ID provided and no GUEST_USER_ID configured");
   }
-  return join("data","UserMetadata", `${effectiveToken}.json`);
+  return join("data","UserMetadata", `${effectiveId}.json`);
 }
 
 export function getGuestToken(req: Request, res: Response): void {
-  const guestToken = process.env.GUEST_TOKEN;
-  if (!guestToken) {
-    res.status(500).json({ error: "GUEST_TOKEN not configured" });
+  const guestUserId = process.env.GUEST_USER_ID;
+  if (!guestUserId) {
+    res.status(500).json({ error: "GUEST_USER_ID not configured" });
     return;
   }
-  res.json({ token: guestToken });
+  res.json({ userId: guestUserId });
 }
 
