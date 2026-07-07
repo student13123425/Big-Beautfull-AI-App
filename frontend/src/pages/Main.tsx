@@ -104,6 +104,7 @@ export default function Main(props: {
                 selected={Selected} 
                 data={props.GlobalData}
                 language={props.config?.limba || 'romana'}
+                userId={props.userId}
               />
           </>)}
         </ContentArea>

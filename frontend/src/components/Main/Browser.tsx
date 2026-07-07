@@ -33,11 +33,11 @@ const Hide=styled.div`
   display: none;
 `
 
-export default function Browser(props:{File:FileD|null,setFile:Function,materie:Materie,file_list:FileD[],setError:Function,language?:string}) {
+export default function Browser(props:{File:FileD|null,setFile:Function,materie:Materie,file_list:FileD[],setError:Function,language?:string,userId?:string|null}) {
   if(props.File===null)
       return (
                 <Container>
-                  {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'} language={props.language}/>}
+                  {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'} language={props.language} userId={props.userId}/>}
                   <BrowserContainer>
                     <FilePlaceholder language={props.language}/>
                   </BrowserContainer>
@@ -45,12 +45,12 @@ export default function Browser(props:{File:FileD|null,setFile:Function,materie:
               )
   return (
     <Container>
-      {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'} language={props.language}/>}
+          {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'} language={props.language} userId={props.userId}/>}
       <BrowserContainer>
         {props.File===null?<FilePlaceholder language={props.language}/>:<Hide/>}
-        {(props.File.tip==='pdf'||props.File.tip==='ppt'||props.File.tip==='pptx')?<PDFViewer key={1} serverUrl='http://localhost:3000' filePath={props.File.nume}/>:<Hide/>}
-        {((props.File.tip==='docx'||props.File.tip==='doc'))?<DocViewer key={2} serverUrl={'http://localhost:3000'} filePath={props.File.nume}/>:<Hide/>}
-        {((props.File.tip==='jpeg'||props.File.tip==='png'||props.File.tip==='jpg'))?<ImageViewer key={2} serverUrl={'http://localhost:3000'} filePath={props.File.nume}/>:<Hide/>}
+        {(props.File.tip==='pdf'||props.File.tip==='ppt'||props.File.tip==='pptx')?<PDFViewer key={1} serverUrl='http://localhost:3000' filePath={props.File.nume} userId={props.userId}/>:<Hide/>}
+        {((props.File.tip==='docx'||props.File.tip==='doc'))?<DocViewer key={2} serverUrl={'http://localhost:3000'} filePath={props.File.nume} userId={props.userId}/>:<Hide/>}
+        {((props.File.tip==='jpeg'||props.File.tip==='png'||props.File.tip==='jpg'))?<ImageViewer key={2} serverUrl={'http://localhost:3000'} filePath={props.File.nume} userId={props.userId}/>:<Hide/>}
       </BrowserContainer>
     </Container>
   )

@@ -161,7 +161,7 @@ type BrowserItemType = 'quiz' | 'file';
 interface BrowserItemProps {
   type: BrowserItemType;
   item: Quiz | FileD;
-  onDelete?: () => void;
+  onDelete?: Function;
   isOpen: boolean;
   setItem: Function;
   setError: Function;
@@ -169,6 +169,7 @@ interface BrowserItemProps {
   materie_name?: string;
   list: FishierMaterie[] | null;
   language?: string;
+  userId?: string | null;
 }
 
 const BrowserItem: React.FC<BrowserItemProps> = ({ 
@@ -181,8 +182,9 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
   selectedItem,
   materie_name,
   list,
-  language
-}) => {
+  language,
+  userId
+ }) => {
   const modalLang = (language as CommonModalLanguage) || 'English';
   const modalTexts = getCommonModalText(modalLang);
   const [isComputing, setIsComputing] = useState<boolean>(false);
@@ -250,7 +252,7 @@ const BrowserItem: React.FC<BrowserItemProps> = ({
       DeleteQuiz(quiz.title, materie_name || '', setError);
     } else {
       const file = item as FileD;
-      delete_file(setError, file.nume);
+      delete_file(setError, file.nume, userId);
     }
     if (onDelete) onDelete();
     if (isActive) setItem(null);

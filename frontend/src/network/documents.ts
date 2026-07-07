@@ -90,13 +90,18 @@ export interface DocLoaderParams {
   serverUrl: string;
   filePath: string;
   abortSignal: AbortSignal;
+  userId?: string;
 }
 
 export async function loadDocumentContent(input: DocLoaderParams): Promise<string> {
+  const body: { path: string; userId?: string } = { path: input.filePath };
+  if (input.userId) {
+    body.userId = input.userId;
+  }
   const response = await fetch(`${input.serverUrl}/get_file`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ path: input.filePath }),
+    body: JSON.stringify(body),
     signal: input.abortSignal
   });
 
@@ -125,14 +130,18 @@ export async function loadDocumentContent(input: DocLoaderParams): Promise<strin
   throw new Error(`Unsupported file type: .${fileExtension}`);
 }
 
-export const fetchFileFromServer = async (path: string, serverUrl: string = "http://localhost:3000"): Promise<Uint8Array> => {
+export const fetchFileFromServer = async (path: string, serverUrl: string = "http://localhost:3000", userId?: string | null): Promise<Uint8Array> => {
   try {
+    const body: { path: string; userId?: string } = { path };
+    if (userId) {
+      body.userId = userId;
+    }
     const response = await fetch(`${serverUrl}/get_file`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ path }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

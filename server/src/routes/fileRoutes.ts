@@ -109,13 +109,21 @@ export async function sendFile(
 
 export async function checkExisting(req: Request, res: Response): Promise<void> {
   try {
-    const { paths }: { paths?: string[] } = req.body;
+    const { paths, userId }: { paths?: string[]; userId?: string } = req.body;
     if (!paths || !Array.isArray(paths)) {
       res.status(400).json({ error: "Invalid request" });
       return;
     }
 
-    const sanitizedPaths = paths.map((it) => sanitizePath(it));
+    // Prepend user folder to path for multi-user support
+    const basePath = userId ? getUserFolderPath(userId) : undefined;
+
+    const sanitizedPaths = paths.map((p) => {
+        if (basePath) {
+            return sanitizePath(path.join(basePath, sanitizePath(p)));
+        }
+        return sanitizePath(p);
+    });
     const existingFiles: string[] = [];
 
     for (const filePath of sanitizedPaths) {
@@ -138,8 +146,17 @@ export async function getFile(req: Request, res: Response): Promise<void> {
     return;
   }
 
+  const userId = req.body.userId as string | undefined;
+
   try {
-    const filePath = sanitizePath(req.body.path);
+    // Prepend user folder to path for multi-user support
+    let filePath: string;
+    const basePath = userId ? getUserFolderPath(userId) : undefined;
+    if (basePath) {
+        filePath = sanitizePath(path.join(basePath, sanitizePath(req.body.path)));
+    } else {
+        filePath = sanitizePath(req.body.path);
+    }
     if (!existsSync(filePath)) {
       res.status(404).send("File not found");
       return;

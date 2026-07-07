@@ -437,12 +437,14 @@ interface PDFViewerProps {
   filePath?: string;
   serverUrl?: string;
   className?: string;
+  userId?: string | null;
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
   filePath,
   serverUrl = "http://localhost:3000",
-  className = ""
+  className = "",
+  userId
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prevCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -562,7 +564,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
       setError(null);
 
       try {
-        const fileData = await fetchFileFromServer(filePath, serverUrl);
+        const fileData = await fetchFileFromServer(filePath, serverUrl, userId);
         const type = getFileType(filePath);
         setFileType(type);
 

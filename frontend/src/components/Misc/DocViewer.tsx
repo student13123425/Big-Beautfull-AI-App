@@ -8,6 +8,7 @@ import Loading from './Loading';
 interface DocViewerProps {
   serverUrl: string;
   filePath: string | null;
+  userId?: string | null;
 }
 
 type DocViewerState = {
@@ -294,7 +295,7 @@ const ErrorContainer = styled.div`
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `;
 
-const DocViewer = memo(({ serverUrl, filePath }: DocViewerProps) => {
+const DocViewer = memo(({ serverUrl, filePath, userId }: DocViewerProps) => {
   const [docState, setDocState] = useState<DocViewerState>({
     content: '',
     loading: true,
@@ -325,7 +326,8 @@ const DocViewer = memo(({ serverUrl, filePath }: DocViewerProps) => {
       const content = await loadDocumentContent({
         serverUrl,
         filePath,
-        abortSignal
+        abortSignal,
+        userId: userId ?? undefined
       });
       
       setDocState({

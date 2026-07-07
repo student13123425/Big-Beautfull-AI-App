@@ -157,16 +157,19 @@ interface UploadPageProps {
   materie: Materie;
   onClose: () => void;
   language?: string;
+  userId?: string | null;
 }
 
 type UploadType = 'document' | 'image';
 
-const UploadPage: React.FC<UploadPageProps> = ({ materie, onClose, language }) => {
+const UploadPage: React.FC<UploadPageProps> = ({ materie, onClose, language, userId }) => {
   const [uploadType, setUploadType] = useState<UploadType>('document');
 
   useDocumentTitle(`AI App - Upload: ${materie.name}`);
 
-  const path: string = `./data/${materie.name.toLowerCase()}`;
+  const basePath = userId 
+    ? `./data/${userId}/${materie.name.toLowerCase()}`
+    : `./data/${materie.name.toLowerCase()}`;
   const subjectInitial = materie.name.charAt(0).toUpperCase();
 
   return (
@@ -180,7 +183,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ materie, onClose, language }) =
                 <SubjectIcon>{subjectInitial}</SubjectIcon>
                 {materie.name}
               </SubjectTitle>
-              <PathIndicator>Upload path: {path}</PathIndicator>
+              <PathIndicator>Upload path: {basePath}</PathIndicator>
             </div>
 
             <ToggleGroup>
@@ -206,12 +209,14 @@ const UploadPage: React.FC<UploadPageProps> = ({ materie, onClose, language }) =
           materie={materie}
           onClose={onClose}
           language={language}
+          userId={userId}
         />
       ) : (
         <UploadImgGroup
           materie={materie}
           onClose={onClose}
           language={language}
+          userId={userId}
         />
       )}
     </Container>

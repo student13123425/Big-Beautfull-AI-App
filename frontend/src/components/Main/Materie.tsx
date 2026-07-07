@@ -64,8 +64,9 @@ export default function Materie(props: {
   selected: string | null, 
   data: StudyGroup, 
   setError: Function,
-  language?: string
-}) {
+  language?: string,
+  userId?: string | null
+ }) {
   const lang = (props.language as import('../../lang/placeholders').PlaceholderLanguage) || 'Romanian';
   const value: Mt | null = get_selected(props.selected, props.data);
 
@@ -105,9 +106,9 @@ export default function Materie(props: {
     <Container>
       <MaterieMenu mode={Mode} setMode={setMode} language={lang} />
       <ContentContainer>
-        {Mode === 0 ? <Browser File={File} setFile={setFile} setError={props.setError} materie={value} file_list={files_list} language={lang} /> : <Hide />}
-        {Mode === 1 ? <Sinteza File={File} setFile={setFile} AskQustionOutput={props.data.CurrentAskedQuestion} setError={props.setError} materie={value} file_list={files_list} language={lang} /> : <Hide />}
-        {Mode === 2 ? <Quizs correction={props.data.AiTextCorrection} setError={props.setError} materie={value} file_list={files_list} language={lang} /> : <Hide />}
+        {Mode === 0 ? <Browser File={File} setFile={setFile} setError={props.setError} materie={value} file_list={files_list} language={lang} userId={props.userId} /> : <Hide />}
+        {Mode === 1 ? <Sinteza File={File} setFile={setFile} AskQustionOutput={props.data.CurrentAskedQuestion} setError={props.setError} materie={value} file_list={files_list} language={lang} userId={props.userId} /> : <Hide />}
+        {Mode === 2 ? <Quizs correction={props.data.AiTextCorrection} setError={props.setError} materie={value} file_list={files_list} language={lang} userId={props.userId} /> : <Hide />}
       </ContentContainer>
     </Container>
   )

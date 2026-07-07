@@ -7,6 +7,7 @@ import { MdRefresh } from 'react-icons/md';
 interface ImageViewerProps {
   serverUrl: string;
   filePath: string | null;
+  userId?: string | null;
 }
 
 type ImageViewerState = {
@@ -209,7 +210,7 @@ const ErrorContainer = styled.div`
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `;
 
-const ImageViewer = memo(({ serverUrl, filePath }: ImageViewerProps) => {
+const ImageViewer = memo(({ serverUrl, filePath, userId }: ImageViewerProps) => {
   const [imageState, setImageState] = useState<ImageViewerState>({
     imageUrl: null,
     loading: true,
@@ -238,11 +239,15 @@ const ImageViewer = memo(({ serverUrl, filePath }: ImageViewerProps) => {
         error: null 
       });
       
+      const body: { path: string; userId?: string } = { path: filePath };
+      if (userId) {
+        body.userId = userId;
+      }
       const endpoint = `${serverUrl}/get_file`;
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: filePath }),
+        body: JSON.stringify(body),
         signal: abortSignal
       });
       

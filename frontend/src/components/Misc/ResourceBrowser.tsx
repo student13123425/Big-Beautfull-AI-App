@@ -167,6 +167,7 @@ interface ResourceBrowserProps {
   setError: Function;
   selectedResource: FileD | Quiz | null;
   language?: string;
+  userId?: string | null;
 }
 
 const MobileGap = styled.div`
@@ -182,7 +183,8 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
   setResource,
   setError,
   selectedResource,
-  language
+  language,
+  userId
 }) => {
   const lang = (language as NewItemLanguage) || 'English';
   const newItemTexts = getNewItemsTexts(lang);
@@ -244,6 +246,7 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
               materie_name={type === 'quiz' ? materie.name : undefined}
               list={type === 'file' ? materie.files : null}
               language={language}
+              userId={userId}
             />
           ))}
         </Content>
@@ -260,7 +263,7 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
         )}
 
         {isModalOpen && type === 'file' ? (
-          <UploadPage onClose={() => setIsModalOpen(false)} materie={materie} language={language} />
+          <UploadPage onClose={() => setIsModalOpen(false)} materie={materie} language={language} userId={userId} />
         ) : isModalOpen && type === 'quiz' ? (
           <QuizCreatePage
             materie={materie}
