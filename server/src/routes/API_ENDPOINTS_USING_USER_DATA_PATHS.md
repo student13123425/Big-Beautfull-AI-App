@@ -1,138 +1,105 @@
-# API Endpoints Accessing User-Specific Data Without UserID Parameter
+# API Endpoints Accessing User-Specific Data Paths with UserID Parameter
 
 ## Overview
 
-This document tracks endpoints that access user-specific data paths derived from `getUserFolderPath()` and `getUserMetaDataSpot()` (defined in `server/src/routes/auth.ts`). All endpoints now properly accept and propagate a userId from the frontend where they directly call these functions without arguments.
+This document tracks endpoints that access user-specific data paths derived from `getUserFolderPath()` (defined in `server/src/routes/auth.ts`). These endpoints properly accept and propagate a userId from the frontend.
 
 ---
 
-## POST Endpoints (12)
+## POST Endpoints (4)
 
-### 1. POST `/genereaza_sinteza` — ✅ FIXED: now uses userId from request body
-- **Handler:** `handleContentGeneration` — `studyRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, creates user-specific StudyGroup instance, reloads singleton after operations
+### 1. POST `/add_materie`
+- **Handler:** `addMaterie` — `studyRoutes.ts` lines 21-42
+- **userId source:** `req.body.userId` (line 27)
+- **Usage:** Calls `getUserFolderPath(userId)` at line 29, 36
 
-### 2. POST `/regenereaza_sinteza` — ✅ FIXED: now uses userId from request body
-- **Handler:** `regenereazSinteza` — `studyRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, creates user-specific StudyGroup instance for data access
+### 2. POST `/delete_materie`
+- **Handler:** `deleteMaterie` — `studyRoutes.ts` lines 44-98
+- **userId source:** `req.body.userId` (line 51)
+- **Usage:** Calls `getUserFolderPath(userId)` at line 53
 
 ### 3. POST `/send_file`
-- **Handler:** `sendFile` — `fileRoutes.ts` lines 28-102
-- **Indirect calls:** Calls `data_study.load(config)` (lines 71, 83) → triggers full `StudyGroup.load()` chain → `getUserFolderPath()`, `getUserMetaDataSpot()`
+- **Handler:** `sendFile` — `fileRoutes.ts` lines 29-108
+- **userId source:** `req.body.userId` (line 45)
+- **Usage:** Calls `getUserFolderPath(userId)` at line 53, passes userId to `onFileCreate()` callback
 
-### 4. POST `/delete_file` — ✅ FIXED: now uses userId from request body
-- **Handler:** `deleteFile` — `fileRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, creates user-specific StudyGroup instance for file operations
+### 4. POST `/delete_file`
+- **Handler:** `deleteFile` — `fileRoutes.ts` lines 189-219
+- **userId source:** `req.body.userId` (line 191)
+- **Usage:** Calls `getUserFolderPath(userId)` at line 200
 
-### 5. POST `/askFileQuestion` — ✅ FIXED: now uses userId from request body
-- **Handler:** `askFileQuestion` — `evaluationRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, accesses user-specific data via StudyGroup(userId)
+### 5. POST `/checkExisting`
+- **Handler:** `checkExisting` — `fileRoutes.ts` lines 110-141
+- **userId source:** `req.body.userId` (line 112)
+- **Usage:** Calls `getUserFolderPath(userId)` at line 119
 
-### 6. POST `/Evaluare` — ✅ FIXED: now uses userId from request body
-- **Handler:** `processEvaluare` — `evaluationRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, accesses user metadata JSON via getUserMetaDataSpot(userId)
-
-### 7. POST `/DeactivateErrorMessage` — ✅ FIXED: now uses userId from request body
-- **Handler:** `DeactivateErrorMessage` — `evaluationRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, modifies user-specific AiServerError array
-
-### 8. POST `/select_model` — ✅ FIXED: now uses userId from request body
-- **Handler:** `setSelectedModel` — `aiRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, stores config in user data directory
-
-### 9. POST `/set_language` — ✅ FIXED: now uses userId from request body
-- **Handler:** `setLanguage` — `configRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, saves to getUserFolderPath(userId)
-
-### 10. POST `/set_context_size` — ✅ FIXED: now uses userId from request body
-- **Handler:** `setContextSize` — `configRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, saves to getUserFolderPath(userId)
-
-### 11. POST `/set_system_prompt` — ✅ FIXED: now uses userId from request body
-- **Handler:** `setSystemPrompt` — `configRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, saves to getUserFolderPath(userId)
-
-### 12. POST `/GenerateNewQuiz` — ✅ FIXED: now uses userId from request body
-- **Handler:** `generateQuiz` — `quizRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, creates user-specific StudyGroup, calls data_study.save() with userId context
-
-### 13. POST `/ReGenerateNewQuiz` — ✅ FIXED: now uses userId from request body
-- **Handler:** `regenerateQuiz` — `quizRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, creates user-specific StudyGroup, calls data_study.save() with userId context
-
-### 14. POST `/DeleteQuiz` — ✅ FIXED: now uses userId from request body
-- **Handler:** `deleteQuiz` — `quizRoutes.ts`
-- **Fix:** Reads `userId = req.body.userId`, creates user-specific StudyGroup, calls data_study.save() with userId context
+### 6. POST `/get_file`
+- **Handler:** `getFile` — `fileRoutes.ts` lines 143-187
+- **userId source:** `req.body.userId` (line 149)
+- **Usage:** Calls `getUserFolderPath(userId)` at line 154
 
 ---
 
-## GET Endpoints (4)
+## GET Endpoints (1)
 
-### 1. GET `/ClearEvaluare` — ✅ FIXED: now uses userId from request body
-- **Handler:** `ClearEvaluare` — `evaluationRoutes.ts`
-- **Fix:** Reads `userId = req.query.userId`, accesses user metadata JSON via getUserMetaDataSpot(userId)
-
-### 2. GET `/stopAnsweringQuestion` — ✅ FIXED: now uses userId from request body
-- **Handler:** `stopAnsweringQuestion` — `evaluationRoutes.ts`
-- **Fix:** Reads `userId = req.query.userId`, accesses user-specific question state
+### 1. GET `/study`
+- **Handler:** `getStudy` — `studyRoutes.ts` lines 100-117
+- **userId source:** `req.query.userId` (line 101)
+- **Usage:** Creates `new StudyGroup(userId)` at line 108 when userId is provided
 
 ---
 
 ## Summary Table
 
-| HTTP Method | Endpoint | Route File | Direct Call? | Indirect via data_study? | Status |
-|-------------|----------|------------|--------------|--------------------------|--------|
-| POST | `/genereaza_sinteza` | studyRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/regenereaza_sinteza` | studyRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/send_file` | fileRoutes.ts | No (indirect) | Yes (data_study.load) | ⚠️ NEEDS REVIEW |
-| POST | `/delete_file` | fileRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/askFileQuestion` | evaluationRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/Evaluare` | evaluationRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/DeactivateErrorMessage` | evaluationRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/select_model` | aiRoutes.ts | No (indirect) | Yes (shared state) | ✅ FIXED |
-| POST | `/set_language` | configRoutes.ts | No (indirect) | Yes (config save) | ✅ FIXED |
-| POST | `/set_context_size` | configRoutes.ts | No (indirect) | Yes (config save) | ✅ FIXED |
-| POST | `/set_system_prompt` | configRoutes.ts | No (indirect) | Yes (config save) | ✅ FIXED |
-| POST | `/GenerateNewQuiz` | quizRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/ReGenerateNewQuiz` | quizRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| POST | `/DeleteQuiz` | quizRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| GET | `/ClearEvaluare` | evaluationRoutes.ts | No (indirect) | Yes | ✅ FIXED |
-| GET | `/stopAnsweringQuestion` | evaluationRoutes.ts | No (indirect) | Yes | ✅ FIXED |
+| HTTP Method | Endpoint | Route File | Handler | userId Source | Status |
+|-------------|----------|------------|---------|---------------|--------|
+| POST | `/add_materie` | studyRoutes.ts | addMaterie | req.body.userId | ✅ Uses userId |
+| POST | `/delete_materie` | studyRoutes.ts | deleteMaterie | req.body.userId | ✅ Uses userId |
+| POST | `/send_file` | fileRoutes.ts | sendFile | req.body.userId | ✅ Uses userId |
+| POST | `/delete_file` | fileRoutes.ts | deleteFile | req.body.userId | ✅ Uses userId |
+| POST | `/checkExisting` | fileRoutes.ts | checkExisting | req.body.userId | ✅ Uses userId |
+| POST | `/get_file` | fileRoutes.ts | getFile | req.body.userId | ✅ Uses userId |
+| GET | `/study` | studyRoutes.ts | getStudy | req.query.userId | ✅ Uses userId |
 
-**Total: 16 endpoints (12 POST + 4 GET)** — all now properly accept and propagate a UserID from the frontend.
+**Total: 7 endpoints (6 POST + 1 GET) — all properly accept and propagate a UserID from the frontend.**
 
 ---
 
 ## Functions Called Without Arguments
 
-### `getUserFolderPath()` — now accepts userId from request/query:
-- **studyRoutes.ts:** ✅ Fixed — reads userId from req.body.userId or req.query.userId
-- **StudyGroup.ts:** ✅ Fixed — constructor receives userId from route handlers
-- **file-processor.ts:** ✅ Fixed — called via StudyGroup.load() with userId context
+The following functions have optional userId parameters that fall back to `process.env.GUEST_USER_ID` when not provided. These are called indirectly via the singleton `data_study` which stores `_userId`:
 
-### `getUserMetaDataSpot()` — now accepts userId from request/query:
-- **StudyGroup.ts:** ✅ Fixed — receives userId in constructor from route handlers
-- **file-processor.ts:** ✅ Fixed — called via StudyGroup with userId context
-
----
-
-## Removed (Fixed) Endpoints
-
-The following endpoints were removed from this list because they have been fixed and no longer call `getUserFolderPath()` or `getUserMetaDataSpot()` without arguments:
-
-- ~~POST `/add_materie`~~ — now reads userId from req.body.userId
-- ~~POST `/delete_materie`~~ — now reads userId from req.body.userId
-- ~~GET `/study`~~ — now reads userId from req.query.userId
-- ~~GET `/studyDirect`~~ — same as /study, uses the same handler
+### `getUserFolderPath(userId?: string)` — called without arguments from:
+- **StudyGroup.ts:** Constructor receives userId and stores it in `_userId` property
+- **file-processor.ts:** Called via StudyGroup methods with userId context
 
 ---
 
 ## Frontend Changes
 
-### `frontend/src/network/study-groups.ts`
-- `get_data()` — accepts optional `userId` parameter, appends to URL as query param
-- `add_materie()` — accepts optional `userId` parameter, includes in request body
-- `delete_materie()` — accepts optional `userId` parameter, includes in request body
+### Network Layer (`frontend/src/network/documents.ts`)
+- `delete_file()` — accepts optional `userId` parameter, includes in request body
+- `fetchFileFromServer()` — accepts optional `userId` parameter, includes in request body
+- `loadDocumentContent()` — accepts optional `userId` parameter, includes in request body
 
-### Component chain (App.tsx → Main.tsx → TopBar.tsx)
-- All components now pass `userId` through props to ensure user-specific operations
+### Component Chain (userId flows from App.tsx through props):
+1. **App.tsx** → passes `userId` to `<Main>`
+2. **Main.tsx** → passes `userId` to `<Materie>`, `<UploadPage>`
+3. **Materie.tsx** → passes `userId` to `<Browser>`, `<Sinteza>`, `<Quizs>`
+4. **Browser.tsx** → passes `userId` to:
+   - `<ResourceBrowser>` (file list and upload)
+   - `<PDFViewer>` (PDF/PPT viewing)
+   - `<DocViewer>` (DOCX viewing)
+   - `<ImageViewer>` (image viewing)
+5. **ResourceBrowser.tsx** → passes `userId` to:
+   - `<BrowserItem>` (file deletion)
+   - `<UploadPage>` (file upload)
+6. **UploadPage.tsx** → passes `userId` to:
+   - `<DocumentUpload>` (document uploads)
+   - `<UploadImgGroup>` (image uploads)
+7. **BrowserItem.tsx** → passes `userId` to `delete_file()` call
+
+All viewers pass userId when fetching files from server:
+- **PDFViewer** → `fetchFileFromServer(path, url, userId)`
+- **DocViewer** → `loadDocumentContent({path, userId})`
+- **ImageViewer** → POST `/get_file` with userId in body
