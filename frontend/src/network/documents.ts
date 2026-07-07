@@ -57,12 +57,17 @@ export async function stopAnsweringQuestion(
 
 export async function delete_file(
   setError: Function,
-  filename: string
+  filename: string,
+  userId?: string | null
 ): Promise<boolean> {
   try {
+    const body: { filename: string; userId?: string } = { filename };
+    if (userId) {
+      body.userId = userId;
+    }
     const response = await axios.post<void>(
       `${addr}/delete_file`,
-      { filename },
+      body,
       {
         headers: { 'Content-Type': 'application/json' },
         validateStatus: (status) => status === 204,

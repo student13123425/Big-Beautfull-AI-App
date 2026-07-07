@@ -325,6 +325,7 @@ interface DocumentUploadProps {
     materie: Materie;
     onClose: () => void;
     language?: string;
+    userId?: string | null;
 }
 
 export default function DocumentUpload(props: DocumentUploadProps) {
@@ -342,8 +343,10 @@ export default function DocumentUpload(props: DocumentUploadProps) {
     const langToUse = (props.language as UploadLanguage) || 'English';
     const texts = getUploadPageText(langToUse);
 
-    const path: string = `./data/${props.materie.name.toLowerCase()}`;
-    
+    const basePath = props.userId 
+        ? `./data/${props.userId}/${props.materie.name.toLowerCase()}`
+        : `./data/${props.materie.name.toLowerCase()}`;
+
     useKeyPress('Escape', () => {
         props.onClose()
     });
@@ -418,11 +421,12 @@ export default function DocumentUpload(props: DocumentUploadProps) {
     };
 
     const checkForExistingFiles = async (): Promise<string[]> => {
-        const filePaths = files.map(file => `${path}/${file.name}`);
+        const filePaths = files.map(file => `${basePath}/${file.name}`);
         
         try {
             const response = await axios.post('http://localhost:3000/check_existing', {
-                paths: filePaths
+                paths: filePaths,
+                userId: props.userId || undefined
             });
             return response.data.existingFiles || [];
         } catch (err) {
@@ -434,7 +438,10 @@ export default function DocumentUpload(props: DocumentUploadProps) {
     const uploadFile = async (file: File, onProgress: (progress: number) => void): Promise<void> => {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('path', path);
+        formData.append('path', basePath);
+        if (props.userId) {
+            formData.append('userId', props.userId);
+        }
         
         try {
             const response = await axios.post(`http://localhost:3000/upload`, formData, {

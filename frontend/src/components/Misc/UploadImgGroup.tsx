@@ -9,6 +9,7 @@ interface UploadImgGroupProps {
   materie: Materie;
   onClose: () => void;
   language?: string;
+  userId?: string | null;
 }
 
 interface ImageItem {
@@ -350,7 +351,7 @@ const isImageValid = (file: File): boolean => {
     return IMAGE_EXTENSIONS.includes(extension);
 };
 
-const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose }) => {
+const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userId }) => {
     const [imageGroup, setImageGroup] = useState<ImageGroup>(new ImageGroup(''));
     const [isDragOver, setIsDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);

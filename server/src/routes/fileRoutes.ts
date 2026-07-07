@@ -7,6 +7,7 @@ import os from "node:os";
 import {config, broadcastStudyData, isMemOverflow, refresh } from '../index.js';
 import { mkdirSync, realpath, realpathSync, rmSync } from "node:fs";
 import { data_study } from "../services/state.js";
+import { getUserFolderPath } from "./auth.js";
 
 async function withTempDir(fn: Function) {
   const tempBase = realpathSync(os.tmpdir());
@@ -41,11 +42,16 @@ export async function sendFile(
       return;
     }
 
-    const desiredPath = sanitizePath(req.body.path as string);
-    if (!desiredPath) {
+    const userId = req.body.userId as string | undefined;
+    const desiredPathRaw = sanitizePath(req.body.path as string);
+    if (!desiredPathRaw) {
       res.status(400).json({ success: false, message: "Path is required." });
       return;
     }
+
+    // Prepend user folder to path for multi-user support
+    const basePath = userId ? getUserFolderPath(userId) : undefined;
+    const desiredPath = basePath ? sanitizePath(path.join(basePath, desiredPathRaw)) : desiredPathRaw;
 
     const absFileTempPath = path.resolve(req.file.path);
     const sanitizedName = sanitizeFilename(path.basename(req.file.originalname));
@@ -70,7 +76,7 @@ export async function sendFile(
         onFileCreate(absFinalServerPath, () => {
           data_study.load(config);
           broadcastStudyData();
-        });
+        }, userId);
         console.log(`Successfully created PDF at: ${absFinalServerPath}`);
       });
     } else {
@@ -165,13 +171,22 @@ export async function getFile(req: Request, res: Response): Promise<void> {
 
 export async function deleteFile(req: Request, res: Response): Promise<void> {
   const { filename }: { filename?: string } = req.body;
+  const userId = req.body.userId as string | undefined;
   try {
     if (!filename) {
       res.status(400).send("`filename` is required");
       return;
     }
 
-    let sanitizedFilename = sanitizePath(path.resolve(filename));
+    // Prepend user folder to path for multi-user support
+    let sanitizedFilename: string;
+    const basePath = userId ? getUserFolderPath(userId) : undefined;
+    if (basePath) {
+      sanitizedFilename = sanitizePath(path.join(basePath, sanitizePath(path.resolve(filename))));
+    } else {
+      sanitizedFilename = sanitizePath(path.resolve(filename));
+    }
+
     if (!sanitizedFilename || !existsSync(sanitizedFilename)) {
       res.status(404).send("File not found");
       return;
