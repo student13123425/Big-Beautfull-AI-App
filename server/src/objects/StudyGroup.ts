@@ -10,25 +10,37 @@ import { getUserFolderPath, getUserMetaDataSpot } from "../routes/auth.js";
 
 export class StudyGroup{
   data:Materie[]=[]
-  file_path:string=getUserMetaDataSpot()
+  private _userId: string | undefined;
+  file_path:string;
   AiTextCorrection:AiTextCorectionElement=new AiTextCorectionElement(new Quiz(),[])
   AiServerError:AiServerError[]=[];
   CurrentAskedQuestion:AskQuestion=new AskQuestion();
-  constructor(){
+  constructor(userId?: string) {
+    this._userId = userId;
+    this.file_path = getUserMetaDataSpot(this._userId);
+  }
 
+  setUserId(userId: string | undefined): void {
+    this._userId = userId;
+    this.file_path = getUserMetaDataSpot(this._userId);
   }
   get_is_computing(): boolean {
     return this.data.some((it)=>it.get_is_computing());
   }
   load(config:Config) {
+    this._loadWithUserId(config, this._userId);
+  }
+
+  private _loadWithUserId(config: Config, userId: string | undefined): void {
     this.data = [];
-    let dirs: string[] = getDirectoryContent(getUserFolderPath(), ["temp_uploads", "UserMetadata"]);
+    const folderPath = getUserFolderPath(userId);
+    let dirs: string[] = getDirectoryContent(folderPath, ["temp_uploads", "UserMetadata"]);
     for (let it of dirs) {
       this.data.push(new Materie(it));
-      let files: string[] = getDirectoryContent(`${getUserFolderPath()}/${it}`, []);
+      let files: string[] = getDirectoryContent(`${folderPath}/${it}`, []);
       let index: number = this.data.length - 1;
       for (let f of files) {
-        let path:string=`${getUserFolderPath()}/${it}/${f}`;
+        let path:string=`${folderPath}/${it}/${f}`;
         let filled=get_content_filled_file_list()
         this.data[index].files.push(
           new FishierMaterie(path, it, this.save,!filled.includes(path),config)

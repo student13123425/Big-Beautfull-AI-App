@@ -5,9 +5,13 @@ import { addr } from "./utils";
 export async function get_data(
   setData: Function,
   setError: Function,
+  userId: string | null = null,
 ) {
   try {
-    const { data } = await axios.get<StudyGroup>(`${addr}/study`);
+    const url = userId 
+      ? `${addr}/study?userId=${encodeURIComponent(userId)}`
+      : `${addr}/study`;
+    const { data } = await axios.get<StudyGroup>(url);
 
     const freshCopy = JSON.parse(JSON.stringify(data));
     setData(freshCopy);
@@ -23,8 +27,9 @@ export async function get_data(
         `Unable to load data — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
+      const urlDesc = userId ? `${addr}/study?userId=***` : `${addr}/study`;
       setError(
-        `Network error — no response received when attempting to reach ${addr}/study.`
+        `Network error — no response received when attempting to reach ${urlDesc}.`
       );
     } else {
       setError(`Unexpected error while fetching configuration: ${err.message}`);

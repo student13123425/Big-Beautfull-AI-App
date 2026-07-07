@@ -27,7 +27,7 @@ function App() {
 
     async function pollData() {
       if (!isMounted) return;
-      await get_data(setGlobalData, setError);
+      await get_data(setGlobalData, setError, UserID);
       
       setTimeout(() => {
         if (isMounted) pollData();

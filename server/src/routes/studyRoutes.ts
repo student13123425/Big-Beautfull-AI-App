@@ -4,6 +4,7 @@ import { broadcastStudyData, config, discoverLmStudioDevice } from "../index.js"
 import { get_file_name, getDirectoryContent } from "../services/file-processor.js";
 import { ai_models_available, data_study, device_ip, htmlStyles } from "../services/state.js";
 import { AiServerError } from "../objects/AiTypes.js";
+import { StudyGroup } from "../objects/StudyGroup.js";
 import { getUserFolderPath } from "./auth.js";
 
 async function ensureModelsAvailable(): Promise<void> {
@@ -60,7 +61,22 @@ export async function deleteMaterie(req: Request, res: Response): Promise<void> 
 }
 
 export async function getStudy(req: Request, res: Response): Promise<void> {
-  res.json(data_study);
+  const userId = req.query.userId as string | undefined;
+  
+  // If userId is provided and matches the current singleton's user, return existing data
+  if (userId) {
+    const currentUserId = (data_study as any)._userId;
+    if (currentUserId !== userId) {
+      // Create a new StudyGroup instance for this specific user
+      const userStudy = new (data_study.constructor as typeof StudyGroup)(userId);
+      userStudy.load(config);
+      res.json(userStudy);
+    } else {
+      res.json(data_study);
+    }
+  } else {
+    res.json(data_study);
+  }
 }
 
 export async function regenereazSinteza(req: Request, res: Response): Promise<void> {
