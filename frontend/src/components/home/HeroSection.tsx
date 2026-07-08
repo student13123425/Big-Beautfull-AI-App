@@ -2,6 +2,7 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { HomeBackground } from './HomeBackground';
 import { useLanguage } from './LanguageContext';
+import { FaGraduationCap, FaArrowRight } from 'react-icons/fa'; // ✅ Added arrow icon import
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -29,22 +30,6 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
-const Particle = styled.div<{ $size: number; $delay: number }>`
-  position: absolute;
-  width: ${props => props.$size}px;
-  height: ${props => props.$size}px;
-  background: rgba(255, 255, 255, ${(props) => 0.03 + (props.$size / 400) * 0.05});
-  border-radius: 50%;
-  animation: ${float} ${(props) => 8 + props.$delay}s ease-in-out infinite;
-  animation-delay: ${(props) => props.$delay}s;
-  
-  &:nth-child(1) { top: -5%; left: -5%; }
-  &:nth-child(2) { top: 60%; right: -3%; }
-  &:nth-child(3) { bottom: 10%; left: 15%; }
-  &:nth-child(4) { top: 20%; right: 20%; }
-  &:nth-child(5) { bottom: 30%; right: 10%; }
-`;
-
 const Content = styled.div`
   position: relative;
   z-index: 2;
@@ -56,7 +41,7 @@ const Content = styled.div`
 const LogoWrapper = styled.div`
   margin-bottom: 2rem;
   animation: ${fadeInUp} 0.8s ease-out;
-  
+
   @media (max-width: 768px) {
     margin-bottom: 1.5rem;
   }
@@ -65,7 +50,7 @@ const LogoWrapper = styled.div`
 const LogoIcon = styled.div`
   width: 90px;
   height: 90px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,245,255,0.9));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 245, 255, 0.9));
   border-radius: 24px;
   display: flex;
   align-items: center;
@@ -74,13 +59,9 @@ const LogoIcon = styled.div`
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   transform: rotate(-5deg);
   transition: transform 0.3s ease;
-  
+
   &:hover {
     transform: rotate(0deg) scale(1.05);
-  }
-  
-  svg {
-    font-size: 42px;
   }
 `;
 
@@ -92,14 +73,14 @@ const Title = styled.h1`
   line-height: 1.15;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   letter-spacing: -1px;
-  
+
   .highlight {
     background: linear-gradient(135deg, #fbbf24, #f59e0b);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   @media (max-width: 768px) {
     font-size: 2.4rem;
     letter-spacing: -0.5px;
@@ -113,7 +94,7 @@ const Tagline = styled.p`
   max-width: 650px;
   line-height: 1.6;
   font-weight: 400;
-  
+
   @media (max-width: 768px) {
     font-size: 1.05rem;
     margin-bottom: 2rem;
@@ -125,6 +106,7 @@ const LanguageDropdownWrapper = styled.div`
   top: 30px;
   right: 30px;
   z-index: 10;
+
   @media (max-width: 768px) {
     top: 15px;
     right: 15px;
@@ -183,25 +165,25 @@ const CTAButton = styled.button`
   gap: 12px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   animation: ${fadeInUp} 0.8s ease-out, ${pulseGlow} 3s ease-in-out infinite;
-  
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 16px 50px rgba(0, 0, 0, 0.2);
   }
-  
+
   &:active {
     transform: translateY(-2px);
   }
-  
+
   .arrow-icon {
     display: inline-flex;
     transition: transform 0.3s ease;
   }
-  
+
   &:hover .arrow-icon {
     transform: translateX(4px);
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.9rem 2rem;
     font-size: 1.05rem;
@@ -232,7 +214,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
 
   return (
     <Container>
-      <HomeBackground/>
+      <HomeBackground />
+      
       <LanguageDropdownWrapper>
         <LanguageSelect
           value={language}
@@ -243,27 +226,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
           ))}
         </LanguageSelect>
       </LanguageDropdownWrapper>
+
       <Content>
         <LogoWrapper>
           <LogoIcon>
-            🎓
+            <FaGraduationCap color="#ffffff" size={48} />
           </LogoIcon>
         </LogoWrapper>
 
-        <Title>
-          {texts.appTitle}
-        </Title>
-
-        <Tagline>
-          {texts.tagline}
-        </Tagline>
+        <Title>{texts.appTitle}</Title>
+        <Tagline>{texts.tagline}</Tagline>
 
         <CTAButton onClick={onLoginClick}>
           {texts.ctaButton}
           <span className="arrow-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <FaArrowRight size={22} /> 
           </span>
         </CTAButton>
       </Content>
