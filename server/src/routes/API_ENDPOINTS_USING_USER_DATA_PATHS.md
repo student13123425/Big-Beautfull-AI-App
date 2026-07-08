@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document tracks endpoints that access user-specific data paths derived from `getUserFolderPath()` (defined in `server/src/routes/auth.ts`). These endpoints properly accept and propagate a userId from the frontend.
+This document tracks endpoints that access user-specific data paths derived from `getUserFolderPath()` and `getUserMetaDataSpot()` (both defined in `server/src/routes/auth.ts`). These functions accept an optional `userId` parameter — when not provided, they fall back to `process.env.GUEST_USER_ID`.
 
 ---
 
-## POST Endpoints (4)
+## POST Endpoints That Properly Accept and Propagate UserID
 
 ### 1. POST `/add_materie`
 - **Handler:** `addMaterie` — `studyRoutes.ts` lines 21-42
@@ -40,7 +40,7 @@ This document tracks endpoints that access user-specific data paths derived from
 
 ---
 
-## GET Endpoints (1)
+## GET Endpoints That Properly Accept and Propagate UserID
 
 ### 1. GET `/study`
 - **Handler:** `getStudy` — `studyRoutes.ts` lines 100-117
@@ -49,7 +49,7 @@ This document tracks endpoints that access user-specific data paths derived from
 
 ---
 
-## Summary Table
+## Summary Table: Endpoints That Properly Accept UserID
 
 | HTTP Method | Endpoint | Route File | Handler | userId Source | Status |
 |-------------|----------|------------|---------|---------------|--------|
@@ -59,19 +59,81 @@ This document tracks endpoints that access user-specific data paths derived from
 | POST | `/delete_file` | fileRoutes.ts | deleteFile | req.body.userId | ✅ Uses userId |
 | POST | `/checkExisting` | fileRoutes.ts | checkExisting | req.body.userId | ✅ Uses userId |
 | POST | `/get_file` | fileRoutes.ts | getFile | req.body.userId | ✅ Uses userId |
-| GET | `/study` | studyRoutes.ts | getStudy | req.query.userId | ✅ Uses userId |
+| GET | `/study` | studyRoutes.ts | getStudy | req.query.userId | ✅ Uses userId (when provided) |
 
-**Total: 7 endpoints (6 POST + 1 GET) — all properly accept and propagate a UserID from the frontend.**
+**Total: 7 endpoints — all properly accept and propagate a UserID from the frontend.**
 
 ---
 
-## Functions Called Without Arguments
+## Endpoints That Default to Guest User (No UserID Passed)
 
-The following functions have optional userId parameters that fall back to `process.env.GUEST_USER_ID` when not provided. These are called indirectly via the singleton `data_study` which stores `_userId`:
+The following HTTP endpoints ultimately call `getUserFolderPath()` or `getUserMetaDataSpot()` **without passing a userId**, causing them to fall back to `process.env.GUEST_USER_ID`.
 
-### `getUserFolderPath(userId?: string)` — called without arguments from:
-- **StudyGroup.ts:** Constructor receives userId and stores it in `_userId` property
-- **file-processor.ts:** Called via StudyGroup methods with userId context
+### 1. Internal: `get_content_filled_file_list()` in file-processor.ts
+- **Location:** `file-processor.ts` line 192
+- **Call:** `getUserMetaDataSpot()` with no argument
+- **Called from:** `StudyGroup._loadWithUserId()` at line 44 — which already has access to `userId` but doesn't thread it through
+- **Impact:** Any file content resolution during study group loading uses guest user's metadata
+
+---
+
+## Summary Table: Endpoints That Default to Guest User
+
+| HTTP Endpoint | Method | Root Cause | Always Guest? | Conditional Guest? |
+|---|---|---|---|---|
+| `POST /add_materie` | POST | `getUserFolderPath(userId)` where userId comes from `req.body.userId` | No | If client omits userId in body |
+| `POST /delete_materie` | POST | `getUserFolderPath(userId)` where userId comes from `req.body.userId` | No | If client omits userId in body |
+
+---
+
+## Fixed: GET /study and GET /studyDirect (Previously Defaulted to Guest User)
+
+**Status:** ✅ **Fixed** — These endpoints now always receive a userId parameter from the frontend.
+
+### Changes Made
+
+| File | Change |
+|------|--------|
+| `frontend/src/network/study-groups.ts` | `get_data()` now always includes `userId` in the URL: `${addr}/study?userId=${encodeURIComponent(userId ?? '')}` |
+| `server/src/routes/studyRoutes.ts` | `getStudy()` now creates a fresh `StudyGroup` instance per request instead of returning the singleton. Sets `_userId` when provided, otherwise falls back to guest user consistently. |
+
+### New Code Flow
+
+**Frontend:** Every request to `/study` includes userId:
+```typescript
+const url = `${addr}/study?userId=${encodeURIComponent(userId ?? '')}`;
+```
+
+**Backend:** Always creates a per-user StudyGroup instance:
+```typescript
+const userStudy = new (data_study.constructor as typeof StudyGroup)();
+if (userId) {
+  (userStudy as any)._userId = userId;
+}
+userStudy.load(config);
+res.json(userStudy);
+```
+
+When `userId` is empty string, both `getUserFolderPath()` and `getUserMetaDataSpot()` fall back to `process.env.GUEST_USER_ID` internally — but this happens **explicitly** rather than silently through the singleton.
+
+## Function Call Sites Summary
+
+### `getUserFolderPath(userId?: string)` — All Call Sites
+
+| File | Line | Call Site | userId Passed? |
+|------|------|-----------|----------------|
+| `server/src/routes/studyRoutes.ts` | 29 | `getDirectoryContent(getUserFolderPath(userId))` | ✅ Yes (from req.body) |
+| `server/src/routes/studyRoutes.ts` | 36 | `mkdirSync(\`${getUserFolderPath(userId)}/${name}\`, ...)` | ✅ Yes (from req.body) |
+| `server/src/routes/studyRoutes.ts` | 53 | `const folderPath = getUserFolderPath(userId)` | ✅ Yes (from req.body) |
+| `server/src/objects/StudyGroup.ts` | 36 | `getUserFolderPath(userId)` in `_loadWithUserId()` | ✅ Yes (parameter) |
+
+### `getUserMetaDataSpot(userId?: string)` — All Call Sites
+
+| File | Line | Call Site | userId Passed? |
+|------|------|-----------|----------------|
+| `server/src/objects/StudyGroup.ts` | 20 | `this.file_path = getUserMetaDataSpot(this._userId)` | ✅ Yes (stored property) |
+| `server/src/objects/StudyGroup.ts` | 25 | `this.file_path = getUserMetaDataSpot(this._userId)` | ✅ Yes (stored property) |
+| `server/src/services/file-processor.ts` | 192 | `readFileSync(getUserMetaDataSpot(), "utf-8")` | ❌ **NO** — always guest user |
 
 ---
 

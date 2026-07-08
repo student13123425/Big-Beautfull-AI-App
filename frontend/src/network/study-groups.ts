@@ -8,9 +8,9 @@ export async function get_data(
   userId: string | null = null,
 ) {
   try {
-    const url = userId 
-      ? `${addr}/study?userId=${encodeURIComponent(userId)}`
-      : `${addr}/study`;
+    // Always include userId in the URL to ensure consistent backend behavior.
+    // When userId is null/empty, the backend will use GUEST_USER_ID fallback.
+    const url = `${addr}/study?userId=${encodeURIComponent(userId ?? '')}`;
     const { data } = await axios.get<StudyGroup>(url);
 
     const freshCopy = JSON.parse(JSON.stringify(data));
@@ -27,7 +27,8 @@ export async function get_data(
         `Unable to load data — server responded with ${status}: ${serverMsg}.`
       );
     } else if (err.request) {
-      const urlDesc = userId ? `${addr}/study?userId=***` : `${addr}/study`;
+      // URL now always includes userId parameter
+      const urlDesc = `${addr}/study?userId=***`;
       setError(
         `Network error — no response received when attempting to reach ${urlDesc}.`
       );

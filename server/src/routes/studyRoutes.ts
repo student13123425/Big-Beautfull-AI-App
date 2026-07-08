@@ -100,20 +100,16 @@ export async function deleteMaterie(req: Request, res: Response): Promise<void> 
 export async function getStudy(req: Request, res: Response): Promise<void> {
   const userId = req.query.userId as string | undefined;
   
-  // If userId is provided and matches the current singleton's user, return existing data
+  // Always create a fresh StudyGroup instance for the requested user.
+  // This ensures consistent behavior regardless of the singleton's state.
+  // When userId is empty/undefined, both getUserFolderPath() and getUserMetaDataSpot()
+  // will fall back to process.env.GUEST_USER_ID internally.
+  const userStudy = new (data_study.constructor as typeof StudyGroup)();
   if (userId) {
-    const currentUserId = (data_study as any)._userId;
-    if (currentUserId !== userId) {
-      // Create a new StudyGroup instance for this specific user
-      const userStudy = new (data_study.constructor as typeof StudyGroup)(userId);
-      userStudy.load(config);
-      res.json(userStudy);
-    } else {
-      res.json(data_study);
-    }
-  } else {
-    res.json(data_study);
+    (userStudy as any)._userId = userId;
   }
+  userStudy.load(config);
+  res.json(userStudy);
 }
 
 export async function regenereazSinteza(req: Request, res: Response): Promise<void> {

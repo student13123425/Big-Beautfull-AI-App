@@ -82,7 +82,7 @@ export function initGuestFolder(): void {
   }
 }
 
-export function getUserFolderPath(userId?: string): string {
+export function getUserFolderPath(userId: string): string {
   const guestUserId = process.env.GUEST_USER_ID;
   const effectiveId = userId || guestUserId;
   if (!effectiveId) {
@@ -91,7 +91,7 @@ export function getUserFolderPath(userId?: string): string {
   return join("data", effectiveId);
 }
 
-export function getUserMetaDataSpot(userId?: string): string {
+export function getUserMetaDataSpot(userId: string): string {
   const guestUserId = process.env.GUEST_USER_ID;
   const effectiveId = userId || guestUserId;
   if (!effectiveId) {
