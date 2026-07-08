@@ -82,7 +82,7 @@ const supportedLanguages = [
 
 export type HomeLanguage = (typeof supportedLanguages)[number];
 
-const homeTexts: Record<HomeLanguage, HomePageText> = {
+export const homeTexts: Record<HomeLanguage, HomePageText> = {
   English: {
     appTitle: "AI Study Assistant",
     tagline: "Upload your lecture notes, textbooks, and study materials to generate AI-powered summaries, quizzes, and interactive Q&A.",

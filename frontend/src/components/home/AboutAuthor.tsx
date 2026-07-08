@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaReact, FaRobot, FaGithub, FaNodeJs } from 'react-icons/fa';
 import { fetchAuthorBirthday } from '../../network/profile';
+import { useLanguage } from './LanguageContext';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -139,6 +140,8 @@ const SkillIcon = styled.span`
   justify-content: center;
 `;
 
+const skillIcons = [<FaReact />, <FaNodeJs />, <FaRobot />, <FaGithub />];
+
 const calculateAge = (birthdate: Date): number => {
   const today = new Date();
   let age = today.getFullYear() - birthdate.getFullYear();
@@ -149,10 +152,10 @@ const calculateAge = (birthdate: Date): number => {
   return age;
 };
 
-
 const AboutAuthor: React.FC = () => {
   const [age, setAge] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const { texts } = useLanguage();
 
   useEffect(() => {
     const initBirthday = async () => {
@@ -185,7 +188,7 @@ const AboutAuthor: React.FC = () => {
       <Container>
         <Inner>
           <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <SectionLabel>👤 About the Author</SectionLabel>
+            <SectionLabel>{texts.aboutAuthorBadge}</SectionLabel>
           </div>
           <Card>
             <p>Loading...</p>
@@ -199,45 +202,35 @@ const AboutAuthor: React.FC = () => {
     <Container>
       <Inner>
         <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-          <SectionLabel>👤 About the Author</SectionLabel>
+          <SectionLabel>{texts.aboutAuthorBadge}</SectionLabel>
         </div>
         
         <Card>
           <Header>
             <Avatar>MN</Avatar>
             <div>
-              <AuthorName>Mihai Nicolae</AuthorName>
+              <AuthorName>{texts.authorName}</AuthorName>
               <AuthorRole>
-                Student at Universitatea Romano-Americana • Aspiring Software Developer
+                {texts.authorRole}
               </AuthorRole>
             </div>
           </Header>
 
           <BioText>
-            Numele meu este Mihai Nicolae, am {age} de ani și sunt student în anul I la Facultatea de Informatică Managerială din cadrul Universității Romano-Americane. Sunt pasionat de tehnologie și programare, domeniu pe care îl studiez autodidact de peste 3 ani.
+            {texts.bioTexts[0].replace('{age}', String(age))}
           </BioText>
 
           <BioText>
-            Acest proiect este un portfolio personal — am creat AI Study Assistant pentru a arăta angajatorilor că îmi place să construiesc lucruri utile și să învăț constant tehnologii noi. Obiectivul meu este să obțin o calificare profesională în IT și să dobândesc experiență practică printr-un job în domeniu.
+            {texts.bioTexts[1]}
           </BioText>
 
           <SkillsGrid>
-            <SkillItem>
-              <SkillIcon><FaReact /></SkillIcon>
-              <span>React / TypeScript</span>
-            </SkillItem>
-            <SkillItem>
-              <SkillIcon><FaNodeJs /></SkillIcon>
-              <span>Node.js / Express</span>
-            </SkillItem>
-            <SkillItem>
-              <SkillIcon><FaRobot /></SkillIcon>
-              <span>AI / LLM Integration</span>
-            </SkillItem>
-            <SkillItem>
-              <SkillIcon><FaGithub /></SkillIcon>
-              <span>Git / GitHub</span>
-            </SkillItem>
+            {texts.skillLabels.map((label, index) => (
+              <SkillItem key={index}>
+                <SkillIcon>{skillIcons[index]}</SkillIcon>
+                <span>{label}</span>
+              </SkillItem>
+            ))}
           </SkillsGrid>
         </Card>
       </Inner>

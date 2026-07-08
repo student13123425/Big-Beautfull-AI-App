@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useLanguage } from './LanguageContext';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -101,31 +102,28 @@ const FormatDesc = styled.span`
   color: #64748b;
 `;
 
-const Formats = [
-  { icon: '📕', bg: '#fef2f2', name: 'PDF', desc: 'Portable Document' },
-  { icon: '📘', bg: '#eff6ff', name: 'DOCX', desc: 'Word Documents' },
-  { icon: '📙', bg: '#fff7ed', name: 'PPTX', desc: 'PowerPoint' },
-  { icon: '📷', bg: '#f0fdf4', name: 'JPG/PNG', desc: 'Images' },
-  { icon: '📝', bg: '#faf5ff', name: 'TXT', desc: 'Plain Text' },
-];
+const formatIcons = ['📕', '📘', '📙', '📷', '📝'];
+const formatBgs = ['#fef2f2', '#eff6ff', '#fff7ed', '#f0fdf4', '#faf5ff'];
 
 const SupportedFormats: React.FC = () => {
+  const { texts } = useLanguage();
+
   return (
     <Container>
       <Inner>
-        <SectionTitle>Supported File Formats</SectionTitle>
+        <SectionTitle>{texts.formatsSectionTitle}</SectionTitle>
         <SectionSubtitle>
-          Upload any of these file types and let AI extract the key information for you.
+          {texts.formatsSectionSubtitle}
         </SectionSubtitle>
 
         <FormatsGrid>
-          {Formats.map((format, index) => (
+          {texts.formatNames.map((name, index) => (
             <FormatCard key={index} $delay={index * 0.1}>
-              <FormatIcon style={{ background: format.bg }}>
-                {format.icon}
+              <FormatIcon style={{ background: formatBgs[index] }}>
+                {formatIcons[index]}
               </FormatIcon>
-              <FormatName>{format.name}</FormatName>
-              <FormatDesc>{format.desc}</FormatDesc>
+              <FormatName>{name}</FormatName>
+              <FormatDesc>{texts.formatDescriptions[index]}</FormatDesc>
             </FormatCard>
           ))}
         </FormatsGrid>

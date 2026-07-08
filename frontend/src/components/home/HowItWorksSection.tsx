@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaUpload, FaCogs, FaWrench, FaTrophy } from 'react-icons/fa';
+import { useLanguage } from './LanguageContext';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -173,56 +174,37 @@ const Connector = styled.div`
   }
 `;
 
-const StepData = [
-  {
-    icon: <FaUpload />,
-    title: 'Upload Materials',
-    description: 'Drag and drop your PDFs, Word docs, PowerPoint presentations, or images into the platform.',
-  },
-  {
-    icon: <FaCogs />,
-    title: 'AI Processing',
-    description: 'Our AI analyzes and understands your documents, extracting key concepts and important information.',
-  },
-  {
-    icon: <FaWrench />,
-    title: 'Generate Content',
-    description: 'Get AI-generated summaries, interactive quizzes, and study materials tailored to your content.',
-  },
-  {
-    icon: <FaTrophy />,
-    title: 'Study & Succeed',
-    description: 'Use the generated materials to study effectively and ace your exams with confidence.',
-  },
-];
+const stepIcons = [<FaUpload />, <FaCogs />, <FaWrench />, <FaTrophy />];
 
 const HowItWorksSection: React.FC = () => {
+  const { texts } = useLanguage();
+
   return (
     <Container>
       <Inner>
         <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-          <SectionBadge>📋 Simple Process</SectionBadge>
+          <SectionBadge>{texts.simpleProcessBadge}</SectionBadge>
         </div>
         <SectionTitle>
-          How It{' '}
-          <span className="highlight">Works</span>
+          {texts.howItWorksTitlePart1}{' '}
+          <span className="highlight">{texts.howItWorksTitlePart2}</span>
         </SectionTitle>
         <SectionSubtitle>
-          Get started in four simple steps and transform the way you study.
+          {texts.howItWorksSubtitle}
         </SectionSubtitle>
 
         <StepsGrid>
-          {StepData.map((step, index) => (
+          {texts.stepTitles.map((title, index) => (
             <React.Fragment key={index}>
               <StepCard $delay={index * 0.15}>
                 <StepNumber>{index + 1}</StepNumber>
                 <IconWrapper>
-                  {step.icon}
+                  {stepIcons[index]}
                 </IconWrapper>
-                <StepTitle>{step.title}</StepTitle>
-                <StepDescription>{step.description}</StepDescription>
+                <StepTitle>{title}</StepTitle>
+                <StepDescription>{texts.stepDescriptions[index]}</StepDescription>
               </StepCard>
-              {index < StepData.length -1 && <Connector />}
+              {index < texts.stepTitles.length - 1 && <Connector />}
             </React.Fragment>
           ))}
         </StepsGrid>

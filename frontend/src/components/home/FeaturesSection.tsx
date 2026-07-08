@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaBrain, FaQuestionCircle, FaCheckCircle, FaFolderOpen, FaBolt, FaChartLine } from 'react-icons/fa';
+import { useLanguage } from './LanguageContext';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -135,74 +136,51 @@ const CardDescription = styled.p`
   margin: 0;
 `;
 
-const FeatureData = [
-  {
-    icon: <FaBrain />,
-    iconBg: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
-    iconColor: '#2563eb',
-    title: 'AI-Powered Summaries (Sinteză)',
-    description: 'Generate comprehensive, structured summaries from any PDF, DOCX, or presentation file using advanced AI models that understand academic content.',
-  },
-  {
-    icon: <FaQuestionCircle />,
-    iconBg: 'linear-gradient(135deg, #fef3c7, #fde68a)',
-    iconColor: '#d97706',
-    title: 'Smart Document Q&A',
-    description: 'Ask specific questions about your uploaded documents and get instant, context-aware answers powered by AI — like having a tutor available 24/7.',
-  },
-  {
-    icon: <FaCheckCircle />,
-    iconBg: 'linear-gradient(135deg, #d1fae5, #a7f3d0)',
-    iconColor: '#059669',
-    title: 'Auto Quiz Generation',
-    description: 'Create customized multiple-choice quizzes from your study materials. Configure question count and difficulty for effective self-assessment.',
-  },
-  {
-    icon: <FaFolderOpen />,
-    iconBg: 'linear-gradient(135deg, #ede9fe, #ddd6fe)',
-    iconColor: '#7c3aed',
-    title: 'Subject Organization',
-    description: 'Organize all your study materials by subject (materie). Keep everything structured and easily accessible throughout the semester.',
-  },
-  {
-    icon: <FaBolt />,
-    iconBg: 'linear-gradient(135deg, #ffedd5, #fed7aa)',
-    iconColor: '#ea580c',
-    title: 'Multi-Format Support',
-    description: 'Upload PDFs, Word documents, PowerPoint presentations, and images. The AI processes and extracts key information from any format.',
-  },
-  {
-    icon: <FaChartLine />,
-    iconBg: 'linear-gradient(135deg, #fce7f3, #fbcfe8)',
-    iconColor: '#db2777',
-    title: 'Progress Tracking',
-    description: 'Track your learning progress with built-in analytics. See which topics you\'ve mastered and where you need more practice.',
-  },
+const featureIcons = [
+  <FaBrain />,
+  <FaQuestionCircle />,
+  <FaCheckCircle />,
+  <FaFolderOpen />,
+  <FaBolt />,
+  <FaChartLine />,
+];
+
+const featureStyles = [
+  { iconBg: 'linear-gradient(135deg, #dbeafe, #bfdbfe)', iconColor: '#2563eb' },
+  { iconBg: 'linear-gradient(135deg, #fef3c7, #fde68a)', iconColor: '#d97706' },
+  { iconBg: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', iconColor: '#059669' },
+  { iconBg: 'linear-gradient(135deg, #ede9fe, #ddd6fe)', iconColor: '#7c3aed' },
+  { iconBg: 'linear-gradient(135deg, #ffedd5, #fed7aa)', iconColor: '#ea580c' },
+  { iconBg: 'linear-gradient(135deg, #fce7f3, #fbcfe8)', iconColor: '#db2777' },
 ];
 
 const FeaturesSection: React.FC = () => {
+  const { texts } = useLanguage();
+
   return (
     <Container>
       <Inner>
         <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-          <SectionBadge>✨ Core Features</SectionBadge>
+          <SectionBadge>{texts.coreFeaturesBadge}</SectionBadge>
         </div>
         <SectionTitle>
-          Everything You Need to{' '}
-          <span className="highlight">Ace Your Exams</span>
+          {texts.sectionTitlePart1}{' '}
+          <span className="highlight">{texts.sectionTitlePart2}</span>
         </SectionTitle>
         <SectionSubtitle>
-          Powerful AI tools designed specifically for students who want to study smarter, not harder.
+          {texts.sectionSubtitle}
         </SectionSubtitle>
 
         <Grid>
-          {FeatureData.map((feature, index) => (
+          {texts.featureTitles.map((title, index) => (
             <Card key={index} $delay={index * 0.1}>
-              <IconWrapper style={{ background: feature.iconBg }}>
-                <span style={{ color: feature.iconColor }}>{feature.icon}</span>
+              <IconWrapper style={{ background: featureStyles[index].iconBg }}>
+                <span style={{ color: featureStyles[index].iconColor }}>
+                  {featureIcons[index]}
+                </span>
               </IconWrapper>
-              <CardTitle>{feature.title}</CardTitle>
-              <CardDescription>{feature.description}</CardDescription>
+              <CardTitle>{title}</CardTitle>
+              <CardDescription>{texts.featureDescriptions[index]}</CardDescription>
             </Card>
           ))}
         </Grid>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { HomeBackground } from './HomeBackground';
-import { getSupportedLanguages } from '../../scripts/aox';
+import { useLanguage } from './LanguageContext';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -213,18 +213,30 @@ interface HeroSectionProps {
   onLoginClick: () => void;
 }
 
-const supportedLanguages: string[] = getSupportedLanguages();
+const supportedLanguages: string[] = [
+  "English",
+  "Mandarin Chinese",
+  "Romanian",
+  "Spanish",
+  "Modern Standard Arabic",
+  "French",
+  "Russian",
+  "German",
+  "Japanese",
+  "Vietnamese",
+  "Turkish",
+];
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
+  const { language, setLanguage, texts } = useLanguage();
 
   return (
     <Container>
       <HomeBackground/>
       <LanguageDropdownWrapper>
         <LanguageSelect
-          value={selectedLanguage}
-          onChange={(e) => setSelectedLanguage(e.target.value)}
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as typeof language)}
         >
           {supportedLanguages.map((lang) => (
             <option key={lang} value={lang}>{lang}</option>
@@ -239,16 +251,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
         </LogoWrapper>
 
         <Title>
-          AI Study Assistant
+          {texts.appTitle}
         </Title>
 
         <Tagline>
-          Upload your lecture notes, textbooks, and study materials to generate 
-          AI-powered summaries, quizzes, and interactive Q&A.
+          {texts.tagline}
         </Tagline>
 
         <CTAButton onClick={onLoginClick}>
-          Start Studying
+          {texts.ctaButton}
           <span className="arrow-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
