@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { HomeBackground } from './HomeBackground';
+import { getSupportedLanguages } from '../../scripts/aox';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -119,6 +120,53 @@ const Tagline = styled.p`
   }
 `;
 
+const LanguageDropdownWrapper = styled.div`
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  z-index: 10;
+  @media (max-width: 768px) {
+    top: 15px;
+    right: 15px;
+  }
+`;
+
+const LanguageSelect = styled.select`
+  background: rgba(255, 255, 255, 0.95);
+  color: #2563eb;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 160px;
+  outline: none;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+  }
+
+  option {
+    background: #ffffff;
+    color: #333;
+    padding: 8px;
+  }
+
+  @media (max-width: 768px) {
+    min-width: 120px;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+  }
+`;
+
 const CTAButton = styled.button`
   background: linear-gradient(135deg, #ffffff, #f0f4ff);
   color: #2563eb;
@@ -165,10 +213,24 @@ interface HeroSectionProps {
   onLoginClick: () => void;
 }
 
+const supportedLanguages: string[] = getSupportedLanguages();
+
 const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
+
   return (
     <Container>
       <HomeBackground/>
+      <LanguageDropdownWrapper>
+        <LanguageSelect
+          value={selectedLanguage}
+          onChange={(e) => setSelectedLanguage(e.target.value)}
+        >
+          {supportedLanguages.map((lang) => (
+            <option key={lang} value={lang}>{lang}</option>
+          ))}
+        </LanguageSelect>
+      </LanguageDropdownWrapper>
       <Content>
         <LogoWrapper>
           <LogoIcon>
