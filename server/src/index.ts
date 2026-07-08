@@ -81,10 +81,14 @@ export function broadcastConfigData() {
   }
 }
 
-setInterval(() => {
-  broadcastStudyData();
-  broadcastConfigData();
-}, 0);
+// COMMENTED OUT: This 0ms interval caused constant re-broadcasts which triggered
+// repeated OCR calls on every image file via FishierMaterie constructor.
+// Caused CPU max-out as long as server is running.
+// Use event-driven broadcasts or reasonable intervals (e.g., 5-10s) instead.
+// setInterval(() => {
+//   broadcastStudyData();
+//   broadcastConfigData();
+// }, 0);
 
 export async function refresh() {
   try {
@@ -95,7 +99,9 @@ export async function refresh() {
 }
 
 refresh();
-setInterval(refresh, 0);
+// COMMENTED OUT: 0ms interval causes constant refresh calls, maxing CPU.
+// Use event-driven refresh or reasonable intervals (e.g., 30-60s) instead.
+// setInterval(refresh, 0);
 if (!existsSync(TEMP_UPLOAD_DIR)) {
   fs.mkdir(TEMP_UPLOAD_DIR, { recursive: true });
 }

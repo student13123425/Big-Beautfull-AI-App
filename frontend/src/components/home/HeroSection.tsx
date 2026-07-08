@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { HomeBackground } from './HomeBackground';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -18,7 +19,6 @@ const pulseGlow = keyframes`
 
 const Container = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 40%, #2563eb 70%, #1d4ed8 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -168,12 +168,7 @@ interface HeroSectionProps {
 const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
   return (
     <Container>
-      <Particle $size={300} $delay={0} />
-      <Particle $size={200} $delay={1.5} />
-      <Particle $size={150} $delay={3} />
-      <Particle $size={100} $delay={4.5} />
-      <Particle $size={80} $delay={6} />
-
+      <HomeBackground/>
       <Content>
         <LogoWrapper>
           <LogoIcon>
