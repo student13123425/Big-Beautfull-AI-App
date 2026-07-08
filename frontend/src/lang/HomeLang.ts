@@ -84,12 +84,10 @@ export type HomeLanguage = (typeof supportedLanguages)[number];
 
 const homeTexts: Record<HomeLanguage, HomePageText> = {
   English: {
-    // HeroSection
     appTitle: "AI Study Assistant",
     tagline: "Upload your lecture notes, textbooks, and study materials to generate AI-powered summaries, quizzes, and interactive Q&A.",
     ctaButton: "Start Studying",
 
-    // FeaturesSection
     coreFeaturesBadge: "✨ Core Features",
     sectionTitlePart1: "Everything You Need to",
     sectionTitlePart2: "Ace Your Exams",
@@ -111,7 +109,6 @@ const homeTexts: Record<HomeLanguage, HomePageText> = {
       "Track your learning progress with built-in analytics. See which topics you've mastered and where you need more practice.",
     ],
 
-    // SupportedFormats
     formatsSectionTitle: "Supported File Formats",
     formatsSectionSubtitle: "Upload any of these file types and let AI extract the key information for you.",
     formatNames: ["PDF", "DOCX", "PPTX", "JPG/PNG", "TXT"],
@@ -123,7 +120,6 @@ const homeTexts: Record<HomeLanguage, HomePageText> = {
       "Plain Text",
     ],
 
-    // HowItWorksSection
     simpleProcessBadge: "📋 Simple Process",
     howItWorksTitlePart1: "How It",
     howItWorksTitlePart2: "Works",
@@ -141,7 +137,6 @@ const homeTexts: Record<HomeLanguage, HomePageText> = {
       "Use the generated materials to study effectively and ace your exams with confidence.",
     ],
 
-    // StatsSection
     statLabels: [
       "Documents Processed",
       "Quiz Questions Generated",
@@ -149,14 +144,12 @@ const homeTexts: Record<HomeLanguage, HomePageText> = {
       "Students Helping",
     ],
 
-    // CTASection
     ctaIcon: "🚀",
     ctaTitle: "Ready to Transform Your Study Game?",
     ctaDescription: "Join thousands of students who are already using AI to study smarter, not harder. Start creating powerful summaries and quizzes in seconds.",
     primaryButton: "Get Started Free",
     secondaryButton: "Learn More",
 
-    // FAQSection
     faqBadge: "❓ FAQ",
     faqSectionTitlePart1: "Frequently Asked",
     faqSectionTitlePart2: "Questions",
@@ -178,7 +171,6 @@ const homeTexts: Record<HomeLanguage, HomePageText> = {
       "Yes! Our web application is fully responsive and works great on smartphones, tablets, laptops, and desktop computers. Study anywhere, anytime without needing to install any additional apps.",
     ],
 
-    // AboutAuthor
     aboutAuthorBadge: "👤 About the Author",
     authorName: "Mihai Nicolae",
     authorRole: "Student at Universitatea Romano-Americana • Aspiring Software Developer",
@@ -193,7 +185,6 @@ const homeTexts: Record<HomeLanguage, HomePageText> = {
       "Git / GitHub",
     ],
 
-    // HomeFooter
     brandName: "🎓 AI Study Assistant",
     brandDescription: "Transform your study materials with AI-powered learning tools. Summaries, quizzes, and Q&A — all from your own documents.",
     productColumnTitle: "Product",
