@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaReact, FaRobot, FaGithub, FaNodeJs } from 'react-icons/fa';
+import { FaReact, FaRobot, FaGithub, FaNodeJs, FaUser } from 'react-icons/fa';
 import { fetchAuthorBirthday } from '../../network/profile';
 import { useLanguage } from './LanguageContext';
 
@@ -89,12 +89,9 @@ const Avatar = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.25rem;
   color: #ffffff;
-  font-weight: 700;
   flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2), 0 0 0 6px rgba(37, 99, 235, 0.1);
-  letter-spacing: -1px;
 `;
 
 const AuthorName = styled.h2`
@@ -274,7 +271,9 @@ const AboutAuthor = () => {
         
         <Card>
           <Header>
-            <Avatar>MN</Avatar>
+            <Avatar>
+              <FaUser size={40} />
+            </Avatar>
             <div>
               <AuthorName>{texts.authorName}</AuthorName>
               <AuthorRole>{texts.authorRole}</AuthorRole>
