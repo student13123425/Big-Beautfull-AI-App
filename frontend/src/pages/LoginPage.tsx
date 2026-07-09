@@ -7,27 +7,16 @@ import { registerUser, loginUser } from '../network/auth';
 import AcknowledgeModal from '../components/Misc/AcknowledgeModal';
 import useKeyPress from '../hooks/useKeyPress';
 
-const scaleIn = keyframes`
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-`;
-
-const pulse = keyframes`
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const shake = keyframes`
   0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  50% { transform: translateX(8px); }
-  75% { transform: translateX(-8px); }
-`;
-
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-6px); }
 `;
 
 const PageContainer = styled.div`
@@ -36,47 +25,57 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow: hidden;
+  position: relative;
 `;
 
 const Card = styled.div<{ $isError?: boolean }>`
-  background: rgba(255, 255, 255, 0.95);
-  padding: 3rem 2.5rem;
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  padding: 3.5rem 3rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
   text-align: center;
-  animation: ${props => props.$isError ? shake : scaleIn} 0.4s cubic-bezier(0.215, 0.610, 0.355, 1);
+  position: relative;
+  z-index: 10;
+  animation: ${props => props.$isError ? shake : fadeInUp} 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @media (max-width: 768px) {
+    padding: 2.5rem 2rem;
+    max-width: 90%;
+  }
 `;
 
 const LogoIcon = styled.div`
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  width: 56px;
+  height: 56px;
+  background: rgba(37, 99, 235, 0.08);
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  color: white;
-  font-size: 2rem;
-  animation: ${pulse} 3s ease-in-out infinite;
+  color: #2563eb;
+  font-size: 1.5rem;
 `;
 
 const Title = styled.h1`
-  color: #1e293b;
-  font-size: 1.75rem;
+  color: #0f172a;
+  font-size: 1.875rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 `;
 
 const Subtitle = styled.p`
   color: #64748b;
-  font-size: 0.95rem;
+  font-size: 1rem;
   margin-bottom: 2.5rem;
+  line-height: 1.5;
 `;
 
 const Form = styled.form`
@@ -92,17 +91,18 @@ const InputGroup = styled.div`
 
 const InputIcon = styled.div`
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
   display: flex;
   align-items: center;
+  pointer-events: none;
 `;
 
 const PasswordToggle = styled.button`
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -113,45 +113,55 @@ const PasswordToggle = styled.button`
   align-items: center;
   padding: 4px;
   z-index: 2;
+  transition: color 0.2s ease;
+
   &:hover {
-    color: #3b82f6;
+    color: #475569;
   }
 `;
 
 const StyledInput = styled.input<{ $isError?: boolean }>`
   width: 100%;
-  padding: 12px 42px 12px 42px;
-  border: ${props => props.$isError ? '2px solid #ef4444' : '1px solid #e2e8f0'};
-  border-radius: 10px;
-  font-size: 1rem;
+  padding: 14px 42px;
+  border: 1px solid ${props => props.$isError ? '#ef4444' : '#e2e8f0'};
+  border-radius: 12px;
+  font-size: 0.95rem;
   font-family: 'Inter', sans-serif;
-  background: #fff;
+  color: #1e293b;
+  background: #f8fafc;
   transition: all 0.2s ease;
   box-sizing: border-box;
 
+  &::placeholder {
+    color: #94a3b8;
+  }
+
   &:focus {
     outline: none;
+    background: #ffffff;
     border-color: ${props => props.$isError ? '#ef4444' : '#3b82f6'};
-    box-shadow: 0 0 0 3px ${props => props.$isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)'};
+    box-shadow: 0 0 0 4px ${props => props.$isError ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)'};
   }
 `;
 
 const ComplexityContainer = styled.div`
-  margin-top: -0.75rem;
-  padding: 8px 12px;
+  margin-top: -0.5rem;
+  padding: 10px 14px;
   background: #f8fafc;
-  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
-  animation: ${fadeIn} 0.3s ease;
+  animation: ${fadeInUp} 0.3s ease;
+  text-align: left;
 `;
 
 const ScoreBar = styled.div<{ $score: number }>`
   height: 4px;
-  flex: 1;
+  width: 100%;
   display: flex;
-  gap: 2px;
+  gap: 4px;
   background: #e2e8f0;
   border-radius: 2px;
   overflow: hidden;
@@ -166,13 +176,15 @@ const ScoreBar = styled.div<{ $score: number }>`
       if (props.$score <= 3) return '#f59e0b';
       return '#10b981';
     }};
-    transition: width 0.3s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
 
 const FeedbackText = styled.span<{ $score: number }>`
   font-size: 0.75rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
   color: ${props => {
     if (props.$score <= 2) return '#ef4444';
     if (props.$score <= 3) return '#f59e0b';
@@ -181,11 +193,11 @@ const FeedbackText = styled.span<{ $score: number }>`
 `;
 
 const SubmitButton = styled.button`
-  margin-top: 1rem;
-  padding: 12px;
-  border-radius: 10px;
+  margin-top: 0.5rem;
+  padding: 14px;
+  border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: #2563eb;
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -195,41 +207,50 @@ const SubmitButton = styled.button`
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 
-  &:hover {
-    filter: brightness(1.1);
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed;
+    box-shadow: none;
   }
 `;
 
 const SwitchButton = styled.button`
   background: none;
   border: none;
-  color: #3b82f6;
-  font-size: 0.85rem;
+  color: #475569;
+  font-size: 0.9rem;
   margin-top: 1.5rem;
   cursor: pointer;
   font-weight: 500;
+  transition: color 0.2s ease;
 
-  &:hover {
+  span {
+    color: #2563eb;
+    font-weight: 600;
+  }
+
+  &:hover span {
     text-decoration: underline;
   }
 `;
 
 const GuestButton = styled.button`
-  background: none;
-  border: 2px solid #3b82f6;
-  color: #3b82f6;
-  font-size: 0.9rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.95rem;
   font-weight: 600;
   margin-top: 1rem;
-  padding: 10px 20px;
-  border-radius: 10px;
+  padding: 12px 20px;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -239,7 +260,9 @@ const GuestButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(59, 130, 246, 0.1);
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
   }
 `;
 
@@ -249,18 +272,17 @@ const BackButton = styled.button`
   color: #94a3b8;
   font-size: 0.85rem;
   font-weight: 500;
-  margin-top: 0.75rem;
+  margin-top: 1.5rem;
   padding: 8px 16px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 100%;
   transition: all 0.2s ease;
 
   &:hover {
-    color: #3b82f6;
+    color: #475569;
   }
 `;
 
@@ -375,9 +397,9 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onBackToH
           {isRegistering ? <FaUserPlus /> : <FaLock />}
         </LogoIcon>
 
-        <Title>{isRegistering ? 'Create Account' : 'Welcome Back'}</Title>
+        <Title>{isRegistering ? 'Create an account' : 'Welcome back'}</Title>
         <Subtitle>
-          {isRegistering ? 'Join us to start your journey' : 'Please enter your credentials'}
+          {isRegistering ? 'Enter your details to get started' : 'Please enter your credentials to continue'}
         </Subtitle>
 
         <Form onSubmit={handleSubmit}>
@@ -398,7 +420,7 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onBackToH
               <StyledInput
                 name="email"
                 type="email"
-                placeholder="Email Address"
+                placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -416,7 +438,7 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onBackToH
               $isError={!isRegistering && isLoginFailed}
             />
             <PasswordToggle type="button" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
             </PasswordToggle>
           </InputGroup>
 
@@ -424,7 +446,7 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onBackToH
             <ComplexityContainer>
               <ScoreBar $score={complexity.score} />
               <FeedbackText $score={complexity.score}>
-                <FaShieldAlt size={12} style={{ marginRight: '4px' }} />
+                <FaShieldAlt size={12} style={{ marginRight: '6px' }} />
                 {complexity.feedback[0]}
               </FeedbackText>
             </ComplexityContainer>
@@ -436,19 +458,19 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onBackToH
               <StyledInput
                 name="confirmPassword"
                 type={showPassword ? "text" : "password"}
-                placeholder="Confirm Password"
+                placeholder="Confirm password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
               <PasswordToggle type="button" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
               </PasswordToggle>
             </InputGroup>
           )}
 
           <SubmitButton type="submit" disabled={isLoading}>
-            {isLoading ? 'Processing...' : (isRegistering ? 'Sign Up' : 'Sign In')}
-            {!isLoading && <FaArrowRight size={16} />}
+            {isLoading ? 'Processing...' : (isRegistering ? 'Sign up' : 'Sign in')}
+            {!isLoading && <FaArrowRight size={14} />}
           </SubmitButton>
         </Form>
 
@@ -459,22 +481,26 @@ const AuthPage: React.FC<AuthProps> = ({ onLoginSuccess, onGuestLogin, onBackToH
           setShowPassword(false);
           setFormData({ username: '', email: '', password: '', confirmPassword: '' });
         }}>
-          {isRegistering 
-            ? 'Already have an account? Log in' 
-            : 'Don\'t have an account? Create one'}
+          {isRegistering ? (
+            <>Already have an account? <span>Log in</span></>
+          ) : (
+            <>Don't have an account? <span>Create one</span></>
+          )}
         </SwitchButton>
 
         {onGuestLogin && (
           <GuestButton type="button" onClick={onGuestLogin}>
-            <FaUser size={16} />
-            Continue as Guest
+            <FaUser size={14} />
+            Continue as guest
           </GuestButton>
         )}
 
         {onBackToHome && (
-          <BackButton type="button" onClick={onBackToHome}>
-            ← Back to Home
-          </BackButton>
+          <div>
+            <BackButton type="button" onClick={onBackToHome}>
+              ← Back to home
+            </BackButton>
+          </div>
         )}
       </Card>
     </PageContainer>
