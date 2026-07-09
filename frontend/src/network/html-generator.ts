@@ -69,10 +69,12 @@ export async function getAvailableStyles(
 
 export async function getHtmlStyleConfig(
   setHtmlStyleValue: Function,
-  setError: Function
+  setError: Function,
+  userId: string | null = null
 ): Promise<void> {
   try {
-    const { data } = await axios.get(`${addr}/htmlStyle`);
+    const url = `${addr}/htmlStyle?userId=${encodeURIComponent(userId ?? '')}`;
+    const { data } = await axios.get(url);
     setHtmlStyleValue(data);
   } catch (err: any) {
     if (err.response) {
@@ -97,10 +99,13 @@ export async function getHtmlStyleConfig(
 
 export async function setHtmlStyleConfig(
   style: number,
-  setError: Function
+  setError: Function,
+  userId: string | null = null
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`${addr}/htmlStyle`, { style });
+    const body: { style: number; userId?: string } = { style };
+    if (userId) body.userId = userId;
+    const { data } = await axios.post<string>(`${addr}/htmlStyle`, body);
 
     if (data === 'y') {
       return;

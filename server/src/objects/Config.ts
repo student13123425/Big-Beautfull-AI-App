@@ -1,15 +1,25 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { clampNumber, LimitString } from "../helpers.js";
 import { getSupportedLanguages } from "../services/ocr.js";
+import { getUserConfig } from "../routes/auth.js";
 
 export class Config {
+    private _userId: string | undefined;
     model_token_limit: number;
     system_prompt: string;
     limba: string;
     is_saveing: boolean = false;
     html_style: number = 0;
 
-    save(path: string = "./config.json") {
+    setUserId(userId: string | undefined): void {
+        this._userId = userId;
+    }
+
+    private _getConfigPath(): string {
+        return getUserConfig(this._userId);
+    }
+
+    save(path?: string) {
         if (this.is_saveing) return;
         this.is_saveing = true;
         try {
@@ -19,7 +29,7 @@ export class Config {
                 limba: this.limba,
                 html_style: this.html_style
             };
-            writeFileSync(path, JSON.stringify(configData, null, 2), "utf-8");
+            writeFileSync(path || this._getConfigPath(), JSON.stringify(configData, null, 2), "utf-8");
         } catch (err) {
             console.error("Failed to save config:", err);
         }
@@ -67,20 +77,21 @@ export class Config {
         this.html_style = html_style;
     }
 
-    load(path: string = "./config.json"): void {
-        console.log("Loading config from:", path);
+    load(path?: string): void {
+        const effectivePath = path || this._getConfigPath();
+        console.log("Loading config from:", effectivePath);
         try {
-            if (!existsSync(path)) {
+            if (!existsSync(effectivePath)) {
                 console.warn("Config file not found, saving default configuration");
-                this.save(path);
+                this.save(effectivePath);
                 return;
             }
-            const file = readFileSync(path, "utf-8");
+            const file = readFileSync(effectivePath, "utf-8");
             const configData = JSON.parse(file);
             this.loadFrom(configData);
         } catch (err) {
             console.error("Failed to load config:", err);
-            this.save(path);
+            this.save(effectivePath);
         }
     }
 

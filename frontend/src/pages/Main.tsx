@@ -98,7 +98,7 @@ export default function Main(props: {
           userId={props.userId}
         />
         <ContentArea>
-          {IsSetings===true?<SettingsPage HtmlPosibleStyles={props.HtmlPosibleStyles} SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError}/>:(<>
+          {IsSetings===true?<SettingsPage HtmlPosibleStyles={props.HtmlPosibleStyles} SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError} userId={props.userId}/>:(<>
             <Materie 
                 setError={props.onError} 
                 selected={Selected} 

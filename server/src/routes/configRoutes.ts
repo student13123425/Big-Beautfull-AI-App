@@ -2,9 +2,29 @@ import { Request, Response } from "express";
 import { broadcastConfigData, config, is_dependecy} from "../index.js";
 import { getSupportedLanguages } from "../services/ocr.js";
 import { htmlStyles, server_os } from "../services/state.js";
+import { Config } from "../objects/Config.js";
+
+function getUserConfigFromRequest(req: Request): Config {
+  const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
+  const userConfig = new Config();
+  userConfig.setUserId(userId);
+  userConfig.load();
+  return userConfig;
+}
 
 export async function getConfig(req: Request, res: Response): Promise<void> {
-  res.json(config);
+  const userId = req.query.userId as string | undefined;
+  
+  if (userId) {
+    // Per-user config: load from user-specific path
+    const userConfig = new Config();
+    userConfig.setUserId(userId);
+    userConfig.load();
+    res.json(userConfig);
+  } else {
+    // Global config (backward compatibility)
+    res.json(config);
+  }
 }
 
 export async function setLanguage(req: Request, res: Response): Promise<void> {
@@ -26,9 +46,22 @@ export async function setLanguage(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  config.set_language(lang);
-  broadcastConfigData();
-  res.send("y");
+  const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
+  
+  if (userId) {
+    // Per-user config
+    const userConfig = new Config();
+    userConfig.setUserId(userId);
+    userConfig.load();
+    userConfig.set_language(lang);
+    userConfig.save();
+    res.send("y");
+  } else {
+    // Global config
+    config.set_language(lang);
+    broadcastConfigData();
+    res.send("y");
+  }
 }
 
 export async function setContextSize(req: Request, res: Response): Promise<void> {
@@ -38,9 +71,22 @@ export async function setContextSize(req: Request, res: Response): Promise<void>
   }
 
   const size: number = req.body.size;
-  config.set_contentx_size(size);
-  broadcastConfigData();
-  res.send("y");
+  const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
+  
+  if (userId) {
+    // Per-user config
+    const userConfig = new Config();
+    userConfig.setUserId(userId);
+    userConfig.load();
+    userConfig.set_contentx_size(size);
+    userConfig.save();
+    res.send("y");
+  } else {
+    // Global config
+    config.set_contentx_size(size);
+    broadcastConfigData();
+    res.send("y");
+  }
 }
 
 export async function setSystemPrompt(req: Request, res: Response): Promise<void> {
@@ -55,9 +101,22 @@ export async function setSystemPrompt(req: Request, res: Response): Promise<void
     return;
   }
 
-  config.setSystemPrompt(prompt);
-  broadcastConfigData();
-  res.send("y");
+  const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
+  
+  if (userId) {
+    // Per-user config
+    const userConfig = new Config();
+    userConfig.setUserId(userId);
+    userConfig.load();
+    userConfig.setSystemPrompt(prompt);
+    userConfig.save();
+    res.send("y");
+  } else {
+    // Global config
+    config.setSystemPrompt(prompt);
+    broadcastConfigData();
+    res.send("y");
+  }
 }
 
 export async function getDependencies(req: Request, res: Response): Promise<void> {
@@ -69,7 +128,18 @@ export async function getOS(req: Request, res: Response): Promise<void> {
 }
 
 export async function getHtmlStyle(req: Request, res: Response): Promise<void> {
-  res.send(htmlStyles.getStyles()[config.html_style].name);
+  const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
+  
+  if (userId) {
+    // Per-user config
+    const userConfig = new Config();
+    userConfig.setUserId(userId);
+    userConfig.load();
+    res.send(htmlStyles.getStyles()[userConfig.html_style].name);
+  } else {
+    // Global config
+    res.send(htmlStyles.getStyles()[config.html_style].name);
+  }
 }
 
 
@@ -80,9 +150,20 @@ export async function setHtmlStyle(req: Request, res: Response): Promise<void> {
   }
 
   const style: number = req.body.style;
-  console.log(style);
+  const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
   
-  config.set_html_style(style);
-  broadcastConfigData();
-  res.send("y");
+  if (userId) {
+    // Per-user config
+    const userConfig = new Config();
+    userConfig.setUserId(userId);
+    userConfig.load();
+    userConfig.set_html_style(style);
+    userConfig.save();
+    res.send("y");
+  } else {
+    // Global config
+    config.set_html_style(style);
+    broadcastConfigData();
+    res.send("y");
+  }
 }

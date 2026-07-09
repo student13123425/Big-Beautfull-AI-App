@@ -50,10 +50,14 @@ export async function DeactivateErrorMessage(
 
 export async function get_config(
   setConfig: Function,
-  setError: Function
+  setError: Function,
+  userId: string | null = null
 ) {
   try {
-    const { data } = await axios.get<Partial<Config>>(`${addr}/config`);
+    // Always include userId in the URL to ensure consistent backend behavior.
+    // When userId is null/empty, the backend will use GUEST_USER_ID fallback.
+    const url = `${addr}/config?userId=${encodeURIComponent(userId ?? '')}`;
+    const { data } = await axios.get<Partial<Config>>(url);
     const config = new Config();
     if (config.loadFrom(data)) {
       setConfig(config);
@@ -76,7 +80,7 @@ export async function get_config(
     }
     else if (err.request) {
       setError(
-        `Network error — no response received when attempting to reach ${addr}/config.`
+        `Network error — no response received when attempting to reach ${addr}/config?userId=***.`
       );
     }
     else {
@@ -87,10 +91,14 @@ export async function get_config(
 
 export async function setLanguageConfig(
   lang: string,
-  setError: Function
+  setError: Function,
+  userId: string | null = null
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`${addr}/set_language`, { lang });
+    const body: { lang: string; userId?: string } = { lang };
+    if (userId) body.userId = userId;
+
+    const { data } = await axios.post<string>(`${addr}/set_language`, body);
 
     if (data === 'y') {
       return;
@@ -115,4 +123,3 @@ export async function setLanguageConfig(
     }
   }
 }
-

@@ -36,7 +36,7 @@ function App() {
 
     async function pollConfig() {
       if (!isMounted) return;
-      await get_config(setConfig, setError);
+      await get_config(setConfig, setError, UserID);
       
       setTimeout(() => {
         if (isMounted) pollConfig();

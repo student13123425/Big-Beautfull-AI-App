@@ -174,6 +174,7 @@ export default function SettingsPage(props: {
   close: Function;
   SupportedModels: string[];
   HtmlPosibleStyles: StyleConfigList;
+  userId?: string | null;
 }) {
   const [contextSize, setContextSize] = useState<number>(props.config.model_token_limit);
   const [tempPrompt, setTempPrompt] = useState(props.config.system_prompt);
@@ -191,7 +192,8 @@ export default function SettingsPage(props: {
   useEffect(() => {
     getHtmlStyleConfig(
       (it: any) => setSelectedStyle(HtmlPosibleStyles.getStyles().map((style: StyleBundle) => style.name).indexOf(it)),
-      props.setError
+      props.setError,
+      props.userId
     );
   }, []);
 
@@ -200,19 +202,19 @@ export default function SettingsPage(props: {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (tempPrompt !== props.config.system_prompt) {
-        setSystemPromptConfig(tempPrompt, props.setError);
+        setSystemPromptConfig(tempPrompt, props.setError, props.userId);
       }
     }, 500);
     return () => clearTimeout(handler);
-  }, [tempPrompt, props.config.system_prompt, props.setError]);
+  }, [tempPrompt, props.config.system_prompt, props.setError, props.userId]);
 
   useEffect(() => {
-    setContextSizeConfig(contextSize, props.setError);
-  }, [contextSize, props.setError]);
+    setContextSizeConfig(contextSize, props.setError, props.userId);
+  }, [contextSize, props.setError, props.userId]);
 
   const handleLanguageSelect = (selectedLanguage: string) => {
     setLanguage(selectedLanguage);
-    setLanguageConfig(selectedLanguage, props.setError);
+    setLanguageConfig(selectedLanguage, props.setError, props.userId);
     
     if (props.config) {
       const updatedConfig = { ...props.config, limba: selectedLanguage };
@@ -222,7 +224,7 @@ export default function SettingsPage(props: {
 
   const handleStyleSelect = (selectedStyle: string) => {
     const index = HtmlPosibleStyles.getStyles().map((it: StyleBundle) => it.name).indexOf(selectedStyle);
-    setHtmlStyleConfig(index, props.setError);
+    setHtmlStyleConfig(index, props.setError, props.userId);
     setSelectedStyle(index);
   };
 

@@ -61,10 +61,13 @@ export async function selectModel(
 
 export async function setSystemPromptConfig(
   prompt: string,
-  setError: Function
+  setError: Function,
+  userId: string | null = null
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`${addr}/set_system_prompt`, { prompt });
+    const body: { prompt: string; userId?: string } = { prompt };
+    if (userId) body.userId = userId;
+    const { data } = await axios.post<string>(`${addr}/set_system_prompt`, body);
 
     if (data === 'y') {
       return;
@@ -92,10 +95,13 @@ export async function setSystemPromptConfig(
 
 export async function setContextSizeConfig(
   size: number,
-  setError: Function
+  setError: Function,
+  userId: string | null = null
 ): Promise<void> {
   try {
-    const { data } = await axios.post<string>(`${addr}/set_context_size`, { size });
+    const body: { size: number; userId?: string } = { size };
+    if (userId) body.userId = userId;
+    const { data } = await axios.post<string>(`${addr}/set_context_size`, body);
 
     if (data === 'y') {
       return;
