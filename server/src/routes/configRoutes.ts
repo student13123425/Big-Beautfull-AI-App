@@ -16,13 +16,11 @@ export async function getConfig(req: Request, res: Response): Promise<void> {
   const userId = req.query.userId as string | undefined;
   
   if (userId) {
-    // Per-user config: load from user-specific path
     const userConfig = new Config();
     userConfig.setUserId(userId);
     userConfig.load();
     res.json(userConfig);
   } else {
-    // Global config (backward compatibility)
     res.json(config);
   }
 }
@@ -49,7 +47,6 @@ export async function setLanguage(req: Request, res: Response): Promise<void> {
   const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
   
   if (userId) {
-    // Per-user config
     const userConfig = new Config();
     userConfig.setUserId(userId);
     userConfig.load();
@@ -57,7 +54,6 @@ export async function setLanguage(req: Request, res: Response): Promise<void> {
     userConfig.save();
     res.send("y");
   } else {
-    // Global config
     config.set_language(lang);
     broadcastConfigData();
     res.send("y");
@@ -74,7 +70,6 @@ export async function setContextSize(req: Request, res: Response): Promise<void>
   const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
   
   if (userId) {
-    // Per-user config
     const userConfig = new Config();
     userConfig.setUserId(userId);
     userConfig.load();
@@ -82,7 +77,6 @@ export async function setContextSize(req: Request, res: Response): Promise<void>
     userConfig.save();
     res.send("y");
   } else {
-    // Global config
     config.set_contentx_size(size);
     broadcastConfigData();
     res.send("y");
@@ -104,7 +98,6 @@ export async function setSystemPrompt(req: Request, res: Response): Promise<void
   const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
   
   if (userId) {
-    // Per-user config
     const userConfig = new Config();
     userConfig.setUserId(userId);
     userConfig.load();
@@ -112,7 +105,6 @@ export async function setSystemPrompt(req: Request, res: Response): Promise<void
     userConfig.save();
     res.send("y");
   } else {
-    // Global config
     config.setSystemPrompt(prompt);
     broadcastConfigData();
     res.send("y");
@@ -131,13 +123,11 @@ export async function getHtmlStyle(req: Request, res: Response): Promise<void> {
   const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
   
   if (userId) {
-    // Per-user config
     const userConfig = new Config();
     userConfig.setUserId(userId);
     userConfig.load();
     res.send(htmlStyles.getStyles()[userConfig.html_style].name);
   } else {
-    // Global config
     res.send(htmlStyles.getStyles()[config.html_style].name);
   }
 }
@@ -153,7 +143,6 @@ export async function setHtmlStyle(req: Request, res: Response): Promise<void> {
   const userId = (req.query.userId as string | undefined) || (req.body.userId as string | undefined);
   
   if (userId) {
-    // Per-user config
     const userConfig = new Config();
     userConfig.setUserId(userId);
     userConfig.load();
@@ -161,7 +150,6 @@ export async function setHtmlStyle(req: Request, res: Response): Promise<void> {
     userConfig.save();
     res.send("y");
   } else {
-    // Global config
     config.set_html_style(style);
     broadcastConfigData();
     res.send("y");

@@ -57,7 +57,6 @@ export class Config {
 
     set_html_style(value: number): void {
         if (value < 0 || value > 9) {
-            console.warn("html_style out of bounds (0-9), resetting to 0");
             this.html_style = 0;
         } else {
             this.html_style = value;
@@ -79,10 +78,8 @@ export class Config {
 
     load(path?: string): void {
         const effectivePath = path || this._getConfigPath();
-        console.log("Loading config from:", effectivePath);
         try {
             if (!existsSync(effectivePath)) {
-                console.warn("Config file not found, saving default configuration");
                 this.save(effectivePath);
                 return;
             }
@@ -103,7 +100,6 @@ export class Config {
             this.model_token_limit = obj.model_token_limit;
         } else {
             isValid = false;
-            console.warn("Invalid model_token_limit, using default");
         }
 
         if (typeof obj.system_prompt === "string") {
@@ -114,21 +110,18 @@ export class Config {
         }
         else {
             isValid = false;
-            console.warn("Invalid system_prompt, using default");
         }
 
         if (typeof obj.limba === "string" && getSupportedLanguages().includes(obj.limba)) {
             this.limba = obj.limba;
         } else {
             isValid = false;
-            console.warn("Invalid language setting, using default");
         }
 
         if (typeof obj.html_style === "number" && obj.html_style >= 0 && obj.html_style <= 9) {
             this.html_style = obj.html_style;
         } else {
             isValid = false;
-            console.warn("Invalid html_style, using default");
             this.html_style = 0;
         }
 
