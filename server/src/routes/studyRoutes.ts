@@ -100,10 +100,6 @@ export async function deleteMaterie(req: Request, res: Response): Promise<void> 
 export async function getStudy(req: Request, res: Response): Promise<void> {
   const userId = req.query.userId as string | undefined;
   
-  // Always create a fresh StudyGroup instance for the requested user.
-  // This ensures consistent behavior regardless of the singleton's state.
-  // When userId is empty/undefined, both getUserFolderPath() and getUserMetaDataSpot()
-  // will fall back to process.env.GUEST_USER_ID internally.
   const userStudy = new (data_study.constructor as typeof StudyGroup)();
   if (userId) {
     (userStudy as any)._userId = userId;

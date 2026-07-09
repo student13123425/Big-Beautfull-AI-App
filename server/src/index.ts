@@ -81,15 +81,6 @@ export function broadcastConfigData() {
   }
 }
 
-// COMMENTED OUT: This 0ms interval caused constant re-broadcasts which triggered
-// repeated OCR calls on every image file via FishierMaterie constructor.
-// Caused CPU max-out as long as server is running.
-// Use event-driven broadcasts or reasonable intervals (e.g., 5-10s) instead.
-// setInterval(() => {
-//   broadcastStudyData();
-//   broadcastConfigData();
-// }, 0);
-
 export async function refresh() {
   try {
     isMemOverflow = await isFolderSizeBiggerThan(max_size);
@@ -99,9 +90,6 @@ export async function refresh() {
 }
 
 refresh();
-// COMMENTED OUT: 0ms interval causes constant refresh calls, maxing CPU.
-// Use event-driven refresh or reasonable intervals (e.g., 30-60s) instead.
-// setInterval(refresh, 0);
 if (!existsSync(TEMP_UPLOAD_DIR)) {
   fs.mkdir(TEMP_UPLOAD_DIR, { recursive: true });
 }
@@ -230,7 +218,6 @@ app.post("/genereaza_sinteza", async (req, res) => {
 });
 
 app.post("/regenereaza_sinteza", async (req, res) => {
-  //todo fix join it with html regeneration
   await regenereazSinteza(req,res);
 });
 
@@ -347,7 +334,6 @@ app.get("/studyDirect", (req, res) => {
 
 app.get('/get_valid_study_lmstudio', async (req, res) => {
   const ip = get_lm_studio_address();
-  // device_ip is now managed by state.ts via set_device_id()
   if (!ip) res.send("no server running lmstudio was found on local network");
   res.send("all valid");
 });
@@ -433,7 +419,6 @@ app.use((req, res, next) => {
 
 evaluateCodeComplexity();
 evaluateDataSize();
-// runTest();
 setTimeout(() => {
     console.log(supported_models);
     console.log("time passed");
