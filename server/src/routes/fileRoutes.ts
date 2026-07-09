@@ -153,7 +153,20 @@ export async function getFile(req: Request, res: Response): Promise<void> {
     let filePath: string;
     const basePath = userId ? getUserFolderPath(userId) : undefined;
     if (basePath) {
+      const pathSegments = req.body.path.split('/').filter(Boolean);
+      const firstSegment = pathSegments[0];
+
+      if (firstSegment === 'data' && pathSegments.length >= 2) {
+        if (pathSegments[1] === userId) {
+          filePath = sanitizePath(req.body.path);
+        } else {
+          filePath = sanitizePath(path.join(basePath, sanitizePath(req.body.path)));
+        }
+      } else if (firstSegment === userId) {
+        filePath = sanitizePath(req.body.path);
+      } else {
         filePath = sanitizePath(path.join(basePath, sanitizePath(req.body.path)));
+      }
     } else {
         filePath = sanitizePath(req.body.path);
     }
