@@ -100,6 +100,15 @@ export function getUserMetaDataSpot(userId: string): string {
   return join("data","UserMetadata", `${effectiveId}.json`);
 }
 
+export function getUserConfig(userId: string): string {
+  const guestUserId = process.env.GUEST_USER_ID;
+  const effectiveId = userId || guestUserId;
+  if (!effectiveId) {
+    throw new Error("No user ID provided and no GUEST_USER_ID configured");
+  }
+  return join("data","UserMetadata", `${effectiveId}_config.json`);
+}
+
 export function getGuestToken(req: Request, res: Response): void {
   const guestUserId = process.env.GUEST_USER_ID;
   if (!guestUserId) {
