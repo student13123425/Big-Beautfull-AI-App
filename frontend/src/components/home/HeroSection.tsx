@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { HomeBackground } from './HomeBackground';
 import { useLanguage } from './LanguageContext';
-import { FaGraduationCap, FaArrowRight } from 'react-icons/fa'; // ✅ Added arrow icon import
+import { FaGraduationCap, FaArrowRight, FaChevronDown } from 'react-icons/fa';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const float = keyframes`
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
+const dropDownFade = keyframes`
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const pulseGlow = keyframes`
@@ -111,10 +111,15 @@ const LanguageDropdownWrapper = styled.div`
   }
 `;
 
-const LanguageSelect = styled.select`
+const DropdownContainer = styled.div`
+  position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+`;
+
+const DropdownTrigger = styled.button<{ $isOpen: boolean }>`
   background: rgba(255, 255, 255, 0.95);
   color: #2563eb;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 0.7rem 1.2rem;
   font-size: 0.95rem;
@@ -122,28 +127,94 @@ const LanguageSelect = styled.select`
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  min-width: 160px;
-  outline: none;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 
   &:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  &:focus {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
-  }
-
-  option {
     background: #ffffff;
-    color: #333;
-    padding: 8px;
+  }
+
+  .flag-icon {
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .icon-right {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+    transform: ${({ $isOpen }) => ($isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
   }
 
   @media (max-width: 768px) {
-    min-width: 120px;
+    min-width: 140px;
     font-size: 0.85rem;
-    padding: 0.5rem 0.8rem;
+    padding: 0.6rem 1rem;
+  }
+`;
+
+const DropdownMenu = styled.ul`
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0.5rem;
+  margin: 0;
+  list-style: none;
+  min-width: 220px;
+  max-height: 320px;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  animation: ${dropDownFade} 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 20;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+`;
+
+const DropdownItem = styled.li<{ $active: boolean }>`
+  padding: 0.75rem 1rem;
+  color: ${({ $active }) => ($active ? '#2563eb' : '#475569')};
+  background: ${({ $active }) => ($active ? '#eff6ff' : 'transparent')};
+  font-weight: ${({ $active }) => ($active ? '600' : '500')};
+  font-size: 0.95rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .item-flag {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: ${({ $active }) => ($active ? '#eff6ff' : '#f8fafc')};
+    color: #2563eb;
   }
 `;
 
@@ -207,22 +278,73 @@ const supportedLanguages: string[] = [
   "Turkish",
 ];
 
+const languageFlags: Record<string, string> = {
+  "English": "🇬🇧",
+  "Mandarin Chinese": "🇨🇳",
+  "Romanian": "🇷🇴",
+  "Spanish": "🇪🇸",
+  "Modern Standard Arabic": "🇸🇦",
+  "French": "🇫🇷",
+  "Russian": "🇷🇺",
+  "German": "🇩🇪",
+  "Japanese": "🇯🇵",
+  "Vietnamese": "🇻🇳",
+  "Turkish": "🇹🇷"
+};
+
 const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
   const { language, setLanguage, texts } = useLanguage();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLanguageSelect = (lang: string) => {
+    setLanguage(lang as typeof language);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <Container>
       <HomeBackground />
       
       <LanguageDropdownWrapper>
-        <LanguageSelect
-          value={language}
-          onChange={(e) => setLanguage(e.target.value as typeof language)}
-        >
-          {supportedLanguages.map((lang) => (
-            <option key={lang} value={lang}>{lang}</option>
-          ))}
-        </LanguageSelect>
+        <DropdownContainer ref={dropdownRef}>
+          <DropdownTrigger 
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            $isOpen={isDropdownOpen}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="flag-icon">{languageFlags[language as string] || "🌐"}</span>
+              <span>{language}</span>
+            </div>
+            <span className="icon-right"><FaChevronDown size={14} /></span>
+          </DropdownTrigger>
+          
+          {isDropdownOpen && (
+            <DropdownMenu>
+              {supportedLanguages.map((lang) => (
+                <DropdownItem 
+                  key={lang} 
+                  $active={language === lang}
+                  onClick={() => handleLanguageSelect(lang)}
+                >
+                  <span className="item-flag">{languageFlags[lang]}</span>
+                  {lang}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          )}
+        </DropdownContainer>
       </LanguageDropdownWrapper>
 
       <Content>
