@@ -50,13 +50,11 @@ const LogoWrapper = styled.div`
 const LogoIcon = styled.div`
   width: 90px;
   height: 90px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 245, 255, 0.9));
   border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   transform: rotate(-5deg);
   transition: transform 0.3s ease;
 
@@ -230,7 +228,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
       <Content>
         <LogoWrapper>
           <LogoIcon>
-            <FaGraduationCap color="#ffffff" size={48} />
+            <FaGraduationCap color="#ffffff" size={128} />
           </LogoIcon>
         </LogoWrapper>
 
