@@ -43,7 +43,7 @@ export class StudyGroup{
         let path:string=`${folderPath}/${it}/${f}`;
         let filled=get_content_filled_file_list()
         this.data[index].files.push(
-          new FishierMaterie(path, it, this.save,!filled.includes(path),config)
+          new FishierMaterie(path, it, this.save,false,config)
         );
       }
     }

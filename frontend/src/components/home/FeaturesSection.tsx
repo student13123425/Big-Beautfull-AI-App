@@ -4,17 +4,17 @@ import { FaBrain, FaQuestionCircle, FaCheckCircle, FaFolderOpen, FaBolt, FaChart
 import { useLanguage } from './LanguageContext';
 
 const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
 const Container = styled.section`
-  padding: 5rem 2rem;
-  background: #ffffff;
+  padding: 6rem 2rem;
+  background: #f8fafc;
   position: relative;
   
   @media (max-width: 768px) {
-    padding: 4rem 1.5rem;
+    padding: 4rem 1.25rem;
   }
 `;
 
@@ -23,52 +23,53 @@ const Inner = styled.div`
   margin: 0 auto;
 `;
 
+const SectionHeader = styled.div`
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 4rem;
+`;
+
 const SectionBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #eff6ff;
+  background: rgba(37, 99, 235, 0.05);
   color: #2563eb;
-  padding: 8px 18px;
-  border-radius: 50px;
-  font-size: 0.85rem;
+  padding: 6px 16px;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: 100px;
+  font-size: 0.75rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   margin-bottom: 1.5rem;
-  letter-spacing: 0.3px;
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 2.8rem;
-  font-weight: 800;
+  font-size: 2.75rem;
+  font-weight: 700;
   color: #0f172a;
-  margin: 0 0 1rem;
-  text-align: center;
-  letter-spacing: -0.5px;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   
   .highlight {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
 `;
 
 const SectionSubtitle = styled.p`
-  font-size: 1.15rem;
-  color: #64748b;
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto 4rem;
-  line-height: 1.6;
-  
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    margin-bottom: 3rem;
-  }
+  font-size: 1.125rem;
+  color: #475569;
+  line-height: 1.7;
+  margin: 0;
 `;
 
 const Grid = styled.div`
@@ -86,52 +87,53 @@ const Grid = styled.div`
   }
 `;
 
-const Card = styled.div<{ $delay?: number }>`
-  background: #f8fafc;
-  border-radius: 20px;
-  padding: 2.5rem 2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+const Card = styled.div`
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem;
   border: 1px solid #e2e8f0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: ${fadeInUp} 0.7s ease-out;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ${fadeInUp} 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: ${props => props.$delay || 0}s;
-  animation-fill-mode: both;
+  opacity: 0;
   
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
-    border-color: #93b4f5;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.12);
+    border-color: #cbd5e1;
   }
   
   @media (max-width: 768px) {
-    padding: 2rem 1.5rem;
+    padding: 2rem;
   }
 `;
 
 const IconWrapper = styled.div`
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
   
   svg {
-    font-size: 28px;
+    font-size: 22px;
   }
 `;
 
 const CardTitle = styled.h3`
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #0f172a;
-  margin: 0 0 0.75rem;
+  margin: 0 0 1rem;
+  letter-spacing: -0.01em;
 `;
 
 const CardDescription = styled.p`
-  font-size: 0.95rem;
-  color: #64748b;
+  font-size: 1rem;
+  color: #475569;
   line-height: 1.6;
   margin: 0;
 `;
@@ -146,30 +148,30 @@ const featureIcons = [
 ];
 
 const featureStyles = [
-  { iconBg: 'linear-gradient(135deg, #dbeafe, #bfdbfe)', iconColor: '#2563eb' },
-  { iconBg: 'linear-gradient(135deg, #fef3c7, #fde68a)', iconColor: '#d97706' },
-  { iconBg: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', iconColor: '#059669' },
-  { iconBg: 'linear-gradient(135deg, #ede9fe, #ddd6fe)', iconColor: '#7c3aed' },
-  { iconBg: 'linear-gradient(135deg, #ffedd5, #fed7aa)', iconColor: '#ea580c' },
-  { iconBg: 'linear-gradient(135deg, #fce7f3, #fbcfe8)', iconColor: '#db2777' },
+  { iconBg: 'rgba(37, 99, 235, 0.08)', iconColor: '#2563eb' },
+  { iconBg: 'rgba(217, 119, 6, 0.08)', iconColor: '#d97706' },
+  { iconBg: 'rgba(5, 150, 105, 0.08)', iconColor: '#059669' },
+  { iconBg: 'rgba(124, 58, 237, 0.08)', iconColor: '#7c3aed' },
+  { iconBg: 'rgba(234, 88, 12, 0.08)', iconColor: '#ea580c' },
+  { iconBg: 'rgba(219, 39, 119, 0.08)', iconColor: '#db2777' },
 ];
 
-const FeaturesSection: React.FC = () => {
+const FeaturesSection = () => {
   const { texts } = useLanguage();
 
   return (
     <Container>
       <Inner>
-        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+        <SectionHeader>
           <SectionBadge>{texts.coreFeaturesBadge}</SectionBadge>
-        </div>
-        <SectionTitle>
-          {texts.sectionTitlePart1}{' '}
-          <span className="highlight">{texts.sectionTitlePart2}</span>
-        </SectionTitle>
-        <SectionSubtitle>
-          {texts.sectionSubtitle}
-        </SectionSubtitle>
+          <SectionTitle>
+            {texts.sectionTitlePart1}{' '}
+            <span className="highlight">{texts.sectionTitlePart2}</span>
+          </SectionTitle>
+          <SectionSubtitle>
+            {texts.sectionSubtitle}
+          </SectionSubtitle>
+        </SectionHeader>
 
         <Grid>
           {texts.featureTitles.map((title, index) => (

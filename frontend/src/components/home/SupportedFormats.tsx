@@ -1,49 +1,52 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { FaFilePdf, FaFileWord, FaFilePowerpoint, FaImage, FaFileAlt } from 'react-icons/fa';
 import { useLanguage } from './LanguageContext';
 
 const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
 const Container = styled.section`
-  padding: 5rem 2rem;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  padding: 6rem 2rem;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  position: relative;
   
   @media (max-width: 768px) {
-    padding: 4rem 1.5rem;
+    padding: 4rem 1.25rem;
   }
 `;
 
 const Inner = styled.div`
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   text-align: center;
 `;
 
+const SectionHeader = styled.div`
+  max-width: 680px;
+  margin: 0 auto 3.5rem;
+`;
+
 const SectionTitle = styled.h2`
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.5rem;
+  font-weight: 700;
   color: #ffffff;
-  margin: 0 0 0.75rem;
-  letter-spacing: -0.5px;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   
   @media (max-width: 768px) {
-    font-size: 1.6rem;
+    font-size: 2rem;
   }
 `;
 
 const SectionSubtitle = styled.p`
-  font-size: 1.05rem;
-  color: #dbeafe;
-  margin: 0 auto 3rem;
-  max-width: 550px;
-  
-  @media (max-width: 768px) {
-    font-size: 0.95rem;
-    margin-bottom: 2.5rem;
-  }
+  font-size: 1.125rem;
+  color: #bfdbfe;
+  line-height: 1.7;
+  margin: 0;
 `;
 
 const FormatsGrid = styled.div`
@@ -53,75 +56,99 @@ const FormatsGrid = styled.div`
   flex-wrap: wrap;
   
   @media (max-width: 768px) {
-    gap: 1rem;
+    gap: 1.25rem;
   }
 `;
 
 const FormatCard = styled.div<{ $delay?: number }>`
   background: #ffffff;
   border-radius: 16px;
-  padding: 2rem 1.5rem;
-  width: 140px;
+  padding: 2.25rem 1.5rem;
+  width: 160px;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
-  animation: ${fadeInUp} 0.6s ease-out;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ${fadeInUp} 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: ${props => props.$delay || 0}s;
-  animation-fill-mode: both;
+  opacity: 0;
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
-    border-color: #ffffff;
+    transform: translateY(-6px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    width: calc(50% - 0.625rem);
+    padding: 2rem 1rem;
   }
 `;
 
-const FormatIcon = styled.div`
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+const IconWrapper = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
-  font-size: 2rem;
+  margin: 0 auto 1.25rem;
+  
+  svg {
+    font-size: 24px;
+  }
 `;
 
 const FormatName = styled.span`
   display: block;
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
   color: #0f172a;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.01em;
 `;
 
 const FormatDesc = styled.span`
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: #64748b;
+  line-height: 1.5;
 `;
 
-const formatIcons = ['📕', '📘', '📙', '📷', '📝'];
-const formatBgs = ['#fef2f2', '#eff6ff', '#fff7ed', '#f0fdf4', '#faf5ff'];
+const formatIcons = [
+  <FaFilePdf />,
+  <FaFileWord />,
+  <FaFilePowerpoint />,
+  <FaImage />,
+  <FaFileAlt />
+];
 
-const SupportedFormats: React.FC = () => {
+const formatStyles = [
+  { bg: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' },
+  { bg: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' },
+  { bg: 'rgba(249, 115, 22, 0.1)', color: '#f97316' },
+  { bg: 'rgba(16, 185, 129, 0.1)', color: '#10b981' },
+  { bg: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }
+];
+
+const SupportedFormats = () => {
   const { texts } = useLanguage();
 
   return (
     <Container>
       <Inner>
-        <SectionTitle>{texts.formatsSectionTitle}</SectionTitle>
-        <SectionSubtitle>
-          {texts.formatsSectionSubtitle}
-        </SectionSubtitle>
+        <SectionHeader>
+          <SectionTitle>{texts.formatsSectionTitle}</SectionTitle>
+          <SectionSubtitle>
+            {texts.formatsSectionSubtitle}
+          </SectionSubtitle>
+        </SectionHeader>
 
         <FormatsGrid>
           {texts.formatNames.map((name, index) => (
             <FormatCard key={index} $delay={index * 0.1}>
-              <FormatIcon style={{ background: formatBgs[index] }}>
+              <IconWrapper style={{ background: formatStyles[index].bg, color: formatStyles[index].color }}>
                 {formatIcons[index]}
-              </FormatIcon>
+              </IconWrapper>
               <FormatName>{name}</FormatName>
               <FormatDesc>{texts.formatDescriptions[index]}</FormatDesc>
             </FormatCard>
