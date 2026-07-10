@@ -1,13 +1,14 @@
 import path from "path";
 import { Request, Response } from "express";
 import { convertPowerPointToPDF, onFileCreate, sanitizeFilename, sanitizePath } from "../services/file-processor.js";
-import { existsSync, statSync, unlinkSync, createReadStream, accessSync, mkdir, mkdtempSync, rm, copyFileSync, renameSync } from "fs";
+import { existsSync, statSync, unlinkSync, createReadStream, accessSync, mkdir, mkdtempSync, rm, copyFileSync, renameSync, readdirSync } from "node:fs";
 import os from "node:os";
 
 import {config, broadcastStudyData, isMemOverflow, refresh } from '../index.js';
 import { mkdirSync, realpath, realpathSync, rmSync } from "node:fs";
 import { data_study } from "../services/state.js";
 import { getUserFolderPath } from "./auth.js";
+import { FishierMaterie, Materie, MaterieImgGroup } from "../objects/subjects.js";
 
 async function withTempDir(fn: Function) {
   const tempBase = realpathSync(os.tmpdir());
@@ -228,5 +229,89 @@ export async function deleteFile(req: Request, res: Response): Promise<void> {
   } catch (err: any) {
     console.error("Error deleting file:", err);
     res.status(500).send("Internal server error");
+  }
+}
+
+export async function uploadImgGroup(req: Request, res: Response): Promise<void> {
+  const files = req.files as Express.Multer.File[];
+  const { title, userId }: { title?: string; userId?: string } = req.body;
+
+  try {
+    if (!title || !title.trim()) {
+      res.status(400).json({ success: false, message: "Title is required." });
+      return;
+    }
+
+    const sanitizedTitle = sanitizeFilename(title);
+    const basePath = userId ? getUserFolderPath(userId) : undefined;
+    const targetDir = basePath ? sanitizePath(path.join(basePath, sanitizedTitle)) : sanitizePath(sanitizedTitle);
+
+    mkdirSync(targetDir, { recursive: true });
+
+    const movedFiles: string[] = [];
+    for (const file of files) {
+      const sanitizedName = sanitizeFilename(path.basename(file.originalname));
+      const finalPath = path.join(targetDir, sanitizedName);
+      renameSync(file.path, finalPath);
+      movedFiles.push(finalPath);
+    }
+
+    data_study.load(config);
+
+    let targetMaterie: Materie | null = null;
+    for (const m of data_study.data) {
+      const parts = targetDir.split('/');
+      if (m.name === parts[parts.length - 2] || m.name === sanitizedTitle) {
+        targetMaterie = m;
+        break;
+      }
+    }
+
+    if (!targetMaterie) {
+      for (const m of data_study.data) {
+        const parts = targetDir.split('/');
+        const expectedMaterieName = parts[parts.length - 2];
+        if (m.name === expectedMaterieName) {
+          targetMaterie = m;
+          break;
+        }
+      }
+    }
+
+    if (!targetMaterie) {
+      data_study.data.push(new Materie(sanitizedTitle));
+      targetMaterie = data_study.data[data_study.data.length - 1];
+    }
+
+    let imgGroup = targetMaterie.imgs.find((g) => g.title === sanitizedTitle);
+    if (!imgGroup) {
+      imgGroup = new MaterieImgGroup(sanitizedTitle);
+      targetMaterie.imgs.push(imgGroup);
+    }
+
+    for (const filePath of movedFiles) {
+      const existingFishier = imgGroup.images.find((f) => f.path === filePath);
+      if (!existingFishier) {
+        const materieName = path.basename(path.dirname(filePath));
+        imgGroup.images.push(
+          new FishierMaterie(filePath, materieName, () => data_study.save(), false, config)
+        );
+      }
+    }
+
+    data_study.save();
+    broadcastStudyData();
+    refresh();
+
+    res.json({ success: true, filePath: targetDir });
+  } catch (error) {
+    console.error("Error processing image group upload:", error);
+    for (const file of files) {
+      if (existsSync(file.path)) {
+        try { unlinkSync(file.path); } catch (e) {}
+      }
+    }
+    refresh();
+    res.status(500).json({ success: false, message: `Image group upload failed: ${(error as Error).message}` });
   }
 }

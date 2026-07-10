@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import type { Materie } from '../../scripts/objects';
-import { Image, ImageGroup } from '../../scripts/objects';
+import { uploadImgGroup } from '../../network/documents';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'tiff'];
 
@@ -338,13 +338,34 @@ const Footer = styled.div`
     background: #f8fafc;
 `;
 
-const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
+const LoadingOverlay = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 100;
+`;
+
+const Spinner = styled.div`
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
 
 const isImageValid = (file: File): boolean => {
     const extension = file.name.slice(file.name.lastIndexOf('.')+1).toLowerCase();
@@ -352,12 +373,16 @@ const isImageValid = (file: File): boolean => {
 };
 
 const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userId }) => {
-    const [imageGroup, setImageGroup] = useState<ImageGroup>(new ImageGroup(''));
+    const [imageItems, setImageItems] = useState<ImageItem[]>([]);
+    const [groupTitle, setGroupTitle] = useState('');
     const [isDragOver, setIsDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [overIndex, setOverIndex] = useState<number | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [error, setError] = useState<string | null>(null);
 
     const getPreviewForFile = useCallback((file: File) => {
         return URL.createObjectURL(file);
@@ -379,7 +404,7 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
         
         const droppedFiles = Array.from(e.dataTransfer.files).filter(isImageValid);
         addFiles(droppedFiles);
-    }, []);
+    }, [imageItems]);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -389,42 +414,36 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
     };
 
     const addFiles = (files: File[]) => {
-        setImageGroup(prev => {
-            const newImages = [...prev.images];
+        setImageItems(prev => {
+            const newItems = [...prev];
             
             files.forEach(file => {
                 const preview = getPreviewForFile(file);
                 const imageItem: ImageItem = { file, preview, title: file.name };
-                const image = new Image(preview, file.name);
-                newImages.push(image);
+                newItems.push(imageItem);
             });
 
-            const updatedGroup = new ImageGroup(prev.title, newImages);
-            return updatedGroup;
+            return newItems;
         });
     };
 
     const removeImage = (index: number) => {
-        setImageGroup(prev => {
-            const removed = prev.removeImageAt(index);
+        setImageItems(prev => {
+            const removed = prev[index];
             if (removed) {
-                URL.revokeObjectURL(removed.path);
+                URL.revokeObjectURL(removed.preview);
             }
-            return new ImageGroup(prev.title, [...prev.images]);
+            return [...prev.slice(0, index), ...prev.slice(index + 1)];
         });
     };
 
-    const updateTitle = (title: string) => {
-        setImageGroup(prev => new ImageGroup(title, [...prev.images]));
-    };
-
     const updateImageTitle = (index: number, title: string) => {
-        setImageGroup(prev => {
-            const images = [...prev.images];
-            if (images[index]) {
-                images[index] = new Image(images[index].path, title);
+        setImageItems(prev => {
+            const items = [...prev];
+            if (items[index]) {
+                items[index] = { ...items[index], title };
             }
-            return new ImageGroup(prev.title, images);
+            return items;
         });
     };
 
@@ -444,12 +463,12 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
         
         if (draggedIndex === null || draggedIndex === targetIndex) return;
         
-        setImageGroup(prev => {
-            const images = [...prev.images];
-            const draggedItem = images[draggedIndex];
-            images.splice(draggedIndex, 1);
-            images.splice(targetIndex, 0, draggedItem);
-            return new ImageGroup(prev.title, images);
+        setImageItems(prev => {
+            const items = [...prev];
+            const draggedItem = items[draggedIndex];
+            items.splice(draggedIndex, 1);
+            items.splice(targetIndex, 0, draggedItem);
+            return items;
         });
         
         setDraggedIndex(null);
@@ -461,24 +480,72 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
         setOverIndex(null);
     };
 
-    const handleUpload = async () => {
-    };
-
     const handleClose = () => {
-        imageGroup.images.forEach(img => {
-            if (img.path.startsWith('blob:')) {
-                URL.revokeObjectURL(img.path);
+        imageItems.forEach(img => {
+            if (img.preview.startsWith('blob:')) {
+                URL.revokeObjectURL(img.preview);
             }
         });
-        setImageGroup(new ImageGroup(''));
+        setImageItems([]);
+        setGroupTitle('');
+        setError(null);
         onClose();
     };
 
-    const images = imageGroup.images;
+    const handleUpload = async () => {
+        if (!groupTitle.trim() || imageItems.length === 0) return;
+
+        setIsUploading(true);
+        setUploadProgress(0);
+
+        try {
+            const files = imageItems.map(item => item.file);
+            const success = await uploadImgGroup(files, groupTitle.trim(), userId ?? null, (msg: string) => setError(msg));
+
+            if (success) {
+                setUploadProgress(100);
+                setTimeout(() => {
+                    handleClose();
+                }, 500);
+            } else {
+                // Error already set by uploadImgGroup
+            }
+        } catch (err: any) {
+            setError(err.message || 'Upload failed');
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     return (
         <Container>
-            <UploadCard>
+            <UploadCard style={{ position: 'relative' }}>
+                {isUploading && (
+                    <LoadingOverlay>
+                        <Spinner />
+                        <div style={{ fontSize: '1.1rem', color: '#3b82f6', fontWeight: 600 }}>
+                            {uploadProgress === 100 ? 'Upload complete!' : `Uploading... ${uploadProgress}%`}
+                        </div>
+                    </LoadingOverlay>
+                )}
+
+                {error && (
+                    <div style={{ 
+                        padding: '1rem 2rem', 
+                        margin: '1rem 2rem', 
+                        background: '#fef2f2', 
+                        border: '1px solid #fecaca', 
+                        borderRadius: '8px',
+                        color: '#dc2626',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        <span>{error}</span>
+                        <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+                    </div>
+                )}
+
                 <Header>
                     <Title>🖼️ Image Group</Title>
                     <Subtitle>Upload and organize images for your image group</Subtitle>
@@ -488,8 +555,8 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
                         <TitleInput
                             id="group-title"
                             type="text"
-                            value={imageGroup.title}
-                            onChange={(e) => updateTitle(e.target.value)}
+                            value={groupTitle}
+                            onChange={(e) => setGroupTitle(e.target.value)}
                             placeholder="Enter image group title..."
                         />
                     </InputGroup>
@@ -524,7 +591,7 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
                     onChange={handleFileSelect}
                 />
 
-                {images.length === 0 ? (
+                {imageItems.length === 0 ? (
                     <EmptyState>
                         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📷</div>
                         <p>No images uploaded yet. Add some images to get started.</p>
@@ -532,7 +599,7 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
                 ) : (
                     <>
                         <ImageGrid>
-                            {images.map((image, index) => (
+                            {imageItems.map((item, index) => (
                                 <ImageCard 
                                     key={index}
                                     $isDragging={draggedIndex === index}
@@ -544,11 +611,11 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
                                     onDragEnd={handleCardDragEnd}
                                 >
                                     <DragHandle>⠿</DragHandle>
-                                    <ImagePreview src={image.path} alt={image.text} />
+                                    <ImagePreview src={item.preview} alt={item.title} />
                                     <ImageActions>
                                         <ImageTitleInput
                                             type="text"
-                                            value={image.text}
+                                            value={item.title}
                                             onChange={(e) => updateImageTitle(index, e.target.value)}
                                             placeholder="Image title..."
                                         />
@@ -565,7 +632,7 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
 
                         <Footer>
                             <span style={{ display: 'flex', alignItems: 'center', color: '#64748b', fontSize: '0.9rem' }}>
-                                {images.length} image{images.length !== 1 ? 's' : ''}
+                                {imageItems.length} image{imageItems.length !== 1 ? 's' : ''}
                             </span>
                             <Button variant="secondary" onClick={handleClose}>
                                 Cancel
@@ -576,7 +643,7 @@ const UploadImgGroup: React.FC<UploadImgGroupProps> = ({ materie, onClose, userI
                             <Button 
                                 variant="primary" 
                                 onClick={handleUpload}
-                                disabled={images.length === 0}
+                                disabled={imageItems.length === 0 || !groupTitle.trim()}
                                 style={{ width: '100%' }}
                             >
                                 📤 Upload Image Group

@@ -13,7 +13,7 @@ import { checkDependencies, evaluateCodeComplexity, evaluateDataSize, getServerO
 import { addMaterie, deleteMaterie, genereazHTML, genereazSinteza, getSintezaHtmlPosilbleStyles, getStudy, handleContentGeneration, regenereazSinteza } from './routes/studyRoutes.js';
 import { askFileQuestion, ClearEvaluare, DeactivateErrorMessage, processEvaluare, stopAnsweringQuestion } from './routes/evaluationRoutes.js';
 import { deleteQuiz, generateQuiz, regenerateQuiz } from './routes/quizRoutes.js';
-import { checkExisting, deleteFile, getFile, sendFile } from './routes/fileRoutes.js';
+import { checkExisting, deleteFile, getFile, sendFile, uploadImgGroup } from './routes/fileRoutes.js';
 import { getConfig, getDependencies, getHtmlStyle, getOS, setContextSize, setHtmlStyle, setLanguage, setSystemPrompt } from './routes/configRoutes.js';
 import { getIP, getModelPaths, getModels, getSelectedModel, setSelectedModel } from './routes/aiRoutes.js';
 import { allowedExtensions, configClients, data_study, deniedExtensions, lastConfigData, lastStudyData, port, setLastConfigData, setLastStudyData, studyClients, supported_models, v_interval } from './services/state.js';
@@ -219,6 +219,10 @@ app.post("/genereaza_sinteza", async (req, res) => {
 
 app.post("/regenereaza_sinteza", async (req, res) => {
   await regenereazSinteza(req,res);
+});
+
+app.post("/upload_img_group", upload.array('files', 50), async (req, res) => {
+  uploadImgGroup(req, res);
 });
 
 app.post("/send_file", upload.single('file'), async (req, res) => {

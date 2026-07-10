@@ -130,6 +130,43 @@ export async function loadDocumentContent(input: DocLoaderParams): Promise<strin
   throw new Error(`Unsupported file type: .${fileExtension}`);
 }
 
+export async function uploadImgGroup(
+  files: File[],
+  title: string,
+  userId: string | null,
+  setError: Function,
+  serverUrl: string = addr
+): Promise<boolean> {
+  try {
+    const formData = new FormData();
+    formData.append('title', title);
+    if (userId) {
+      formData.append('userId', userId);
+    }
+    for (const file of files) {
+      formData.append('files', file);
+    }
+
+    const response = await fetch(`${serverUrl}/upload_img_group`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Failed to upload image group (status ${response.status}): ${errorData.message || response.statusText}`);
+    }
+
+    return true;
+  } catch (error: any) {
+    const message = error.response
+      ? `Failed to upload image group (status ${error.response.status}): ${error.response.data?.message || error.response.statusText}`
+      : `Network error while uploading image group: ${error.message}`;
+    setError(message);
+    return false;
+  }
+}
+
 export const fetchFileFromServer = async (path: string, serverUrl: string = "http://localhost:3000", userId?: string | null): Promise<Uint8Array> => {
   try {
     const body: { path: string; userId?: string } = { path };
