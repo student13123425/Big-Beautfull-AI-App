@@ -142,6 +142,7 @@ export async function getUserFolderPath(userId: number): Promise<string> {
     return path.join(process.cwd(), 'data', user.FolderHash, '/');
 }
 
+
 export async function userExists(identifier: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         const db = new sqlite3.Database(DB_PATH, (err) => {

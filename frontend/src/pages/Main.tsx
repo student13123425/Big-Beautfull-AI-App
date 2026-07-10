@@ -19,7 +19,6 @@ import Materie from '../components/Main/Materie'
 import SettingsPage from './SettingsPage'
 import ErrorModal from '../components/Misc/ErrorModal'
 import { DeactivateErrorMessage } from '../network/app-config'
-import LoadingScreen from '../components/Main/LoadingScreen'
 
 const Container = styled.div`
   display: flex;
@@ -77,41 +76,38 @@ export default function Main(props: {
       setErrorMessages(props.GlobalData.AiServerError)
     }
   }, [props.GlobalData?.AiServerError, props.GlobalData]);
-  if (props.GlobalData !== null) {
-    return (
-      <>
-      {ErrorMessage.length>0?<ErrorModal key={9999} onClose={()=>{
-        DeactivateErrorMessage(ErrorMessage.length-1,props.onError)
-      }} error={ErrorMessage[ErrorMessage.length-1]}/>:<Hide/>}
-      <Container>
-        <TopBar 
-        setIsSetings={setIsSetings}
-          onDelete={(it) => {}} 
-          IsSetings={IsSetings}
-          onError={props.onError} 
-          onLogout={props.onLogout}
-          setSelected={setSelected} 
-          Selected={Selected ?? null}
-          key={Selected ?? 'none'}
-          data={props.GlobalData}
-          language={props.config?.limba || 'romana'}
-          userId={props.userId}
-        />
-        <ContentArea>
-          {IsSetings===true?<SettingsPage HtmlPosibleStyles={props.HtmlPosibleStyles} SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError} userId={props.userId}/>:(<>
-            <Materie 
-                setError={props.onError} 
-                selected={Selected} 
-                data={props.GlobalData}
-                language={props.config?.limba || 'romana'}
-                userId={props.userId}
-              />
-          </>)}
-        </ContentArea>
-      </Container>
-      </>
-    )
-  }
-  
-  return <LoadingScreen/>;
+
+  return (
+    <>
+    {ErrorMessage.length>0?<ErrorModal key={9999} onClose={()=>{
+      DeactivateErrorMessage(ErrorMessage.length-1,props.onError)
+    }} error={ErrorMessage[ErrorMessage.length-1]}/>:<Hide/>}
+    <Container>
+      <TopBar 
+      setIsSetings={setIsSetings}
+        onDelete={(it) => {}} 
+        IsSetings={IsSetings}
+        onError={props.onError} 
+        onLogout={props.onLogout}
+        setSelected={setSelected} 
+        Selected={Selected ?? null}
+        key={Selected ?? 'none'}
+        data={props.GlobalData}
+        language={props.config?.limba || 'romana'}
+        userId={props.userId}
+      />
+      <ContentArea>
+        {IsSetings===true?<SettingsPage HtmlPosibleStyles={props.HtmlPosibleStyles} SupportedModels={props.SupportedModels} close={()=>{setIsSetings(false)}} setConfig={props.setConfig} config={props.config} setError={props.onError} userId={props.userId}/>:(<>
+          <Materie 
+              setError={props.onError} 
+              selected={Selected} 
+              data={props.GlobalData}
+              language={props.config?.limba || 'romana'}
+              userId={props.userId}
+            />
+        </>)}
+      </ContentArea>
+    </Container>
+    </>
+  )
 }

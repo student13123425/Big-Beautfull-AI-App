@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { HomeBackground } from './HomeBackground';
 import { useLanguage } from './LanguageContext';
-import { FaGraduationCap, FaArrowRight, FaChevronDown } from 'react-icons/fa';
+import { FaGraduationCap, FaArrowRight, FaChevronDown, FaGlobe } from 'react-icons/fa';
+import ReactCountryFlag from 'react-country-flag';
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -139,10 +140,11 @@ const DropdownTrigger = styled.button<{ $isOpen: boolean }>`
   }
 
   .flag-icon {
-    font-size: 1.15rem;
     display: flex;
     align-items: center;
     line-height: 1;
+    border-radius: 2px;
+    overflow: hidden;
   }
 
   .icon-right {
@@ -208,8 +210,11 @@ const DropdownItem = styled.li<{ $active: boolean }>`
   gap: 12px;
 
   .item-flag {
-    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
     line-height: 1;
+    border-radius: 2px;
+    overflow: hidden;
   }
 
   &:hover {
@@ -278,18 +283,18 @@ const supportedLanguages: string[] = [
   "Turkish",
 ];
 
-const languageFlags: Record<string, string> = {
-  "English": "🇬🇧",
-  "Mandarin Chinese": "🇨🇳",
-  "Romanian": "🇷🇴",
-  "Spanish": "🇪🇸",
-  "Modern Standard Arabic": "🇸🇦",
-  "French": "🇫🇷",
-  "Russian": "🇷🇺",
-  "German": "🇩🇪",
-  "Japanese": "🇯🇵",
-  "Vietnamese": "🇻🇳",
-  "Turkish": "🇹🇷"
+const languageCodes: Record<string, string> = {
+  "English": "GB",
+  "Mandarin Chinese": "CN",
+  "Romanian": "RO",
+  "Spanish": "ES",
+  "Modern Standard Arabic": "SA",
+  "French": "FR",
+  "Russian": "RU",
+  "German": "DE",
+  "Japanese": "JP",
+  "Vietnamese": "VN",
+  "Turkish": "TR"
 };
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
@@ -324,7 +329,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
             $isOpen={isDropdownOpen}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span className="flag-icon">{languageFlags[language as string] || "🌐"}</span>
+              <span className="flag-icon">
+                {languageCodes[language as string] ? (
+                  <ReactCountryFlag 
+                    countryCode={languageCodes[language as string]} 
+                    svg 
+                    style={{ width: '1.2em', height: '1.2em' }} 
+                  />
+                ) : (
+                  <FaGlobe size={16} />
+                )}
+              </span>
               <span>{language}</span>
             </div>
             <span className="icon-right"><FaChevronDown size={14} /></span>
@@ -338,7 +353,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onLoginClick }) => {
                   $active={language === lang}
                   onClick={() => handleLanguageSelect(lang)}
                 >
-                  <span className="item-flag">{languageFlags[lang]}</span>
+                  <span className="item-flag">
+                    <ReactCountryFlag 
+                      countryCode={languageCodes[lang]} 
+                      svg 
+                      style={{ width: '1.2em', height: '1.2em' }} 
+                    />
+                  </span>
                   {lang}
                 </DropdownItem>
               ))}

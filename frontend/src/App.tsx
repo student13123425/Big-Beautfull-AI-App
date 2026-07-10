@@ -87,7 +87,6 @@ function App() {
     setShowHomePage(true);
   };
 
-  // Show HomePage first, then Login page, then Main app
   if (ShowHomePage && Error == null) {
     return <HomePage onLoginClick={() => setShowHomePage(false)} />;
   }
@@ -96,7 +95,7 @@ function App() {
     return <LoginPage onLoginSuccess={(userId: string | null) => setUserID(userId)} onGuestLogin={handleGuestLogin} onBackToHome={() => setShowHomePage(true)} setError={setError} />;
   }
   
-  if (GlobalData === null && Error == null) {
+  if ((GlobalData === null && Error == null)||true) {
     return <LoadingScreen />;
   }
   
