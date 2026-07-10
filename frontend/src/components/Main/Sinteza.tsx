@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import type { AskQuestion, FileD, Materie } from '../../scripts/objects'
+import type { AskQuestion, FileD, Materie, MaterieImgGroup } from '../../scripts/objects'
 import { styled } from 'styled-components'
-import DisplaySinteza from './DisplaySinteza'
-import ResourceBrowser from '../Misc/ResourceBrowser'
+import DisplaySinteza, { type DisplaySelection } from './DisplaySinteza'
+import ResourceBrowser, { type ResourceSelection } from '../Misc/ResourceBrowser'
 
 let lastSintezaMaterieHash: string = '';
 function getSintezaMaterieHash(materie: Materie): string {
@@ -41,7 +41,7 @@ const BrowserContainer=styled.div`
   }
 `
 
-export default function   Sinteza(props:{File:FileD|null,setFile:Function,AskQustionOutput:AskQuestion,materie:Materie,file_list:FileD[],setError:Function,language?:string}) {
+export default function   Sinteza(props:{File:ResourceSelection,setFile:Function,AskQustionOutput:AskQuestion,materie:Materie,file_list:FileD[],setError:Function,language?:string,serverUrl?:string,userId?:string|null}) {
   useEffect(() => {
     const currentHash = getSintezaMaterieHash(props.materie);
     if (currentHash !== lastSintezaMaterieHash) {
@@ -49,11 +49,22 @@ export default function   Sinteza(props:{File:FileD|null,setFile:Function,AskQus
     }
   }, [props.materie, props.File?.nume]);
 
+  const displaySelection: DisplaySelection = props.File as DisplaySelection;
+
   return (
     <Container>
       {<ResourceBrowser selectedResource={props.File} setError={props.setError} setResource={props.setFile} resourceList={props.file_list} materie={props.materie} type={'file'} language={props.language}/>}
       <BrowserContainer>
-        <DisplaySinteza AskQustionOutput={props.AskQustionOutput} setError={props.setError} global={props.materie} selected={props.File}  file_list={props.file_list} language={props.language} />
+        <DisplaySinteza 
+          AskQustionOutput={props.AskQustionOutput} 
+          setError={props.setError} 
+          global={props.materie} 
+          selected={displaySelection}  
+          file_list={props.file_list} 
+          language={props.language}
+          serverUrl={props.serverUrl}
+          userId={props.userId}
+        />
       </BrowserContainer>
     </Container>
   )

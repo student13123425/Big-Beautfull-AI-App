@@ -1,12 +1,24 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import type { FileD, Materie, FishierMaterie, AskQuestion } from '../../scripts/objects'
+import type { FileD, Materie, FishierMaterie, AskQuestion, MaterieImgGroup } from '../../scripts/objects'
 import DisplaySintezaItem from './DisplaySintezaItem'
+import ImageGroupViewer from '../Misc/ImageGroupViewer'
 import { getMaterieFile } from '../../scripts/aox'
 
+export type DisplaySelection = FileD | MaterieImgGroup | null;
+
 let lastDisplaySintezaHash: string = '';
-function getDisplaySintezaHash(global: Materie, selected: FileD | null): string {
-  let hash = `${global.name}:${selected?.nume ?? 'none'}:`;
+function getDisplaySintezaHash(global: Materie, selected: DisplaySelection): string {
+  if (selected && typeof selected === 'object' && 'title' in selected && 'images' in selected) {
+    const imgGroup = selected as MaterieImgGroup;
+    let hash = `${global.name}:IMG:${imgGroup.title || 'untitled'}:`;
+    for (const img of imgGroup.images) {
+      hash += `${img.path}|`;
+    }
+    return hash;
+  }
+  const file = selected as FileD | undefined;
+  let hash = `${global.name}:${file?.nume ?? 'none'}:`;
   for (const f of global.files) {
     hash += `${f.path}=${f.sinteza?.length ?? -1},${f.html_file?.length ?? -1}|`;
   }
@@ -74,11 +86,13 @@ const EmptyState = styled.div`
 
 export default function DisplaySinteza(props: { 
   global: Materie, 
-  selected: FileD | null, 
+  selected: DisplaySelection, 
   file_list: FileD[] ,
   setError:Function,
   AskQustionOutput:AskQuestion,
-  language?: string
+  language?: string,
+  serverUrl?: string,
+  userId?: string | null
 }) {
   useEffect(() => {
     if (!props.selected) return;
@@ -88,6 +102,10 @@ export default function DisplaySinteza(props: {
       lastDisplaySintezaHash = currentHash;
     }
   }, [props.global, props.selected]);
+
+  const isImageGroup = (selection: DisplaySelection): selection is MaterieImgGroup => {
+    return selection !== null && 'title' in selection && 'images' in selection;
+  };
 
   if (props.selected === null) {
     const lang = (props.language as PlaceholderLanguage) || 'English';
@@ -103,12 +121,26 @@ export default function DisplaySinteza(props: {
     );
   }
 
+  if (isImageGroup(props.selected)) {
+    const serverUrl = props.serverUrl || 'http://localhost:3000';
+    return (
+      <Container>
+        <ImageGroupViewer 
+          group={props.selected} 
+          serverUrl={serverUrl} 
+          userId={props.userId}
+          onClose={() => {}}
+        />
+      </Container>
+    );
+  }
+
   return (
     <Container>
         <DisplaySintezaItem
-              selected={props.selected} 
-              key={props.selected?.nume ?? 'none'} 
-              file={getMaterieFile(props.selected===null?"":props.selected.nume, props.global)} 
+              selected={props.selected as FileD | null} 
+              key={(props.selected as FileD)?.nume ?? 'none'} 
+              file={getMaterieFile((props.selected as FileD)===null?"":(props.selected as FileD).nume, props.global)} 
               materie={props.global}
               AskQustionOutput={props.AskQustionOutput}
               setError={props.setError}

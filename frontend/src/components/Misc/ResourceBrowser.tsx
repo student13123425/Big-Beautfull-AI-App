@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
-import { FaPlus } from 'react-icons/fa';
-import type { FileD, Quiz, Materie } from '../../scripts/objects';
+import { FaPlus, FaImages } from 'react-icons/fa';
+import type { FileD, Quiz, Materie, MaterieImgGroup } from '../../scripts/objects';
 import UploadPage from '../../pages/UploadPage';
 import QuizCreatePage from '../Main/QuizCreatePage';
 import BrowserItem from './BrowserItem';
@@ -158,6 +158,8 @@ const Hide = styled.div`
   display: none;
 `;
 
+export type ResourceSelection = FileD | MaterieImgGroup | Quiz | null;
+
 interface ResourceBrowserProps {
   type: 'file' | 'quiz';
   materie: Materie;
@@ -165,10 +167,55 @@ interface ResourceBrowserProps {
   onResourceDelete?: Function;
   setResource: Function;
   setError: Function;
-  selectedResource: FileD | Quiz | null;
+  selectedResource: ResourceSelection;
   language?: string;
   userId?: string | null;
 }
+
+const SectionDivider = styled.div<{ $isExpanded: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  opacity: ${({ $isExpanded }) => ($isExpanded ? 1 : 0)};
+  pointer-events: ${({ $isExpanded }) => ($isExpanded ? 'all' : 'none')};
+`;
+
+const ImgGroupItem = styled.div<{ $isExpanded: boolean; $isSelected: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: ${props => props.$isSelected ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${props => props.$isSelected ? '#1e40af' : 'rgba(255, 255, 255, 0.9)'};
+  transition: all 0.2s ease;
+  opacity: ${({ $isExpanded }) => ($isExpanded ? 1 : 0)};
+  pointer-events: ${({ $isExpanded }) => ($isExpanded ? 'all' : 'none')};
+
+  &:hover {
+    background: ${props => props.$isSelected ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.2)'};
+  }
+
+  span:first-child {
+    display: flex;
+    align-items: center;
+  }
+
+  span:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+`;
 
 const MobileGap = styled.div`
   height: 100%;
@@ -249,6 +296,32 @@ const ResourceBrowser: React.FC<ResourceBrowserProps> = ({
               userId={userId}
             />
           ))}
+
+          {type === 'file' && materie.imgs && materie.imgs.length > 0 && (
+            <>
+              <SectionDivider $isExpanded={isExpanded}>
+                <span>🖼️</span>
+                <span>Image Groups ({materie.imgs.length})</span>
+              </SectionDivider>
+              {materie.imgs.map((imgGroup, index) => (
+                <ImgGroupItem
+                  key={`imggroup-${index}`}
+                  $isExpanded={isExpanded}
+                  $isSelected={selectedResource === imgGroup}
+                  onClick={() => {
+                    if(IsMobile) setIsExpanded(false);
+                    setResource(imgGroup);
+                  }}
+                >
+                  <FaImages size={16} />
+                  <span>{imgGroup.title || `Image Group ${index + 1}`}</span>
+                  <span style={{ marginLeft: 'auto', opacity: 0.7, fontSize: '0.8rem' }}>
+                    {imgGroup.images.length} img{imgGroup.images.length !== 1 ? 's' : ''}
+                  </span>
+                </ImgGroupItem>
+              ))}
+            </>
+          )}
         </Content>
 
         {!isModalOpen && (
