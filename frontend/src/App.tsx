@@ -95,7 +95,7 @@ function App() {
     return <LoginPage onLoginSuccess={(userId: string | null) => setUserID(userId)} onGuestLogin={handleGuestLogin} onBackToHome={() => setShowHomePage(true)} setError={setError} />;
   }
   
-  if ((GlobalData === null && Error == null)||true) {
+  if ((GlobalData === null && Error == null)) {
     return <LoadingScreen />;
   }
   
