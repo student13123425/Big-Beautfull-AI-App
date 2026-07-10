@@ -354,3 +354,26 @@ export function setIsHtmlState(value: boolean): void {
     console.warn('Failed to persist isHtml:', error);
   }
 }
+
+const TOKEN_STORAGE_KEY = 'userId';
+
+export function getTokenFromStorage(): string | null {
+  try {
+    const stored = localStorage.getItem(TOKEN_STORAGE_KEY);
+    return stored ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setTokenInStorage(token: string | null): void {
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch (error) {
+    console.warn('Failed to persist userId:', error);
+  }
+}

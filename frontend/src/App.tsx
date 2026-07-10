@@ -4,6 +4,7 @@ import { get_config } from './network/app-config';
 import { get_data } from './network/study-groups';
 import { getAvailableStyles } from './network/html-generator';
 import { getGuestToken, getSupportedModels } from './network/ai-models';
+import { getTokenFromStorage, setTokenInStorage } from './scripts/aox';
 import Main from './pages/Main';
 import LoadingScreen from './components/Main/LoadingScreen';
 import "./scss/main.scss";
@@ -18,9 +19,14 @@ function App() {
   const [isLmstudio] = useState<string>('all valid');
   const [config, setConfig] = useState<null | Config>(null);
   const [SupportedModels, setSupportedModel] = useState<string[]>([]);
-  const [UserID, setUserID] = useState<string | null>(null);
+  const [UserID, setUserIDState] = useState<string | null>(() => getTokenFromStorage());
   const [HtmlPosibleStyles, setHtmlPosibleStyles] = useState<StyleConfigList | null>(null);
-  const [ShowHomePage, setShowHomePage] = useState<boolean>(true);
+  const [ShowHomePage, setShowHomePage] = useState<boolean>(() => !getTokenFromStorage());
+
+  const setUserID = (userId: string | null) => {
+    setUserIDState(userId);
+    setTokenInStorage(userId);
+  };
 
   useEffect(() => {
     let isMounted = true;
