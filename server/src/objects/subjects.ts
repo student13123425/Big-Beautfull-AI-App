@@ -68,11 +68,9 @@ export class Materie {
 
     getAllNames(): string[] {
         const names: string[] = [];
-        // Add all image group titles
         for (const group of this.imgs) {
             names.push(group.title);
         }
-        // Add all FishierMaterie file names (last segment of path)
         for (const file of this.files) {
             const parts = file.path.split('/');
             names.push(parts[parts.length - 1]);
