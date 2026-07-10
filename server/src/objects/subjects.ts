@@ -8,10 +8,30 @@ import { get_compleation } from "../services/llm.js";
 import { Quiz } from "./quiz.js";
 import { htmlStyles, supported_models } from "../services/state.js";
 
+export class MaterieImgGroup {
+    title: string;
+    images: FishierMaterie[] = [];
+
+    constructor(title: string, images?: FishierMaterie[]) {
+        this.title = title;
+        this.images = images || [];
+    }
+
+    addImage(image: FishierMaterie): void {
+        this.images.push(image);
+    }
+
+    removeImageAt(index: number): FishierMaterie | null {
+        if (index < 0 || index >= this.images.length) return null;
+        return this.images.splice(index, 1)[0];
+    }
+}
+
 export class Materie {
     name: string;
     quizs: Quiz[] = [];
     files: FishierMaterie[] = [];
+    imgs: MaterieImgGroup[] = [];
 
     constructor(name: string) {
         this.name = name;
@@ -44,6 +64,20 @@ export class Materie {
             file.is_computing_html ||
             this.quizs.some(quiz => quiz.is_computing)
         );
+    }
+
+    getAllNames(): string[] {
+        const names: string[] = [];
+        // Add all image group titles
+        for (const group of this.imgs) {
+            names.push(group.title);
+        }
+        // Add all FishierMaterie file names (last segment of path)
+        for (const file of this.files) {
+            const parts = file.path.split('/');
+            names.push(parts[parts.length - 1]);
+        }
+        return names;
     }
 }
 
