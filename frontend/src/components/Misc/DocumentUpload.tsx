@@ -344,7 +344,9 @@ export default function DocumentUpload(props: DocumentUploadProps) {
     const langToUse = (props.language as UploadLanguage) || 'English';
     const texts = getUploadPageText(langToUse);
 
-    const basePath = props.materie.name.toLowerCase();
+    // Use the exact materie name (preserve case) to ensure uploads go to the correct folder
+    // and match the metadata in UserMetadata.json
+    const basePath = props.materie.name;
 
     useKeyPress('Escape', () => {
         props.onClose()

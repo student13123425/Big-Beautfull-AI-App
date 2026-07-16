@@ -166,9 +166,10 @@ const UploadPage: React.FC<UploadPageProps> = ({ materie, onClose, language, use
 
   useDocumentTitle(`AI App - Upload: ${materie.name}`);
 
+  // Use the exact materie name (preserve case) to ensure consistency with folder names and metadata
   const basePath = userId 
-    ? `./data/${userId}/${materie.name.toLowerCase()}`
-    : `./data/${materie.name.toLowerCase()}`;
+    ? `./data/${userId}/${materie.name}`
+    : `./data/${materie.name}`;
   const subjectInitial = materie.name.charAt(0).toUpperCase();
 
   return (
