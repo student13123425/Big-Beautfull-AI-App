@@ -444,7 +444,7 @@ export default function DocumentUpload(props: DocumentUploadProps) {
         }
         
         try {
-            const response = await axios.post(`http://localhost:3000/upload`, formData, {
+            const response = await axios.post(`http://localhost:3000/send_file`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -620,7 +620,7 @@ export default function DocumentUpload(props: DocumentUploadProps) {
                             onClick={handleUpload}
                             disabled={uploading || files.length === 0}
                         >
-                            {uploading ? '⏳ Uploading...' : `📤 ${texts.uploadButton}`}
+                            {uploading ? '⏳ Uploading...' : `📤 ${texts.uploadButtonText}`}
                         </UploadButton>
                     </>
                 )}
