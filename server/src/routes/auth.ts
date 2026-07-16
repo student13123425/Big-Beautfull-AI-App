@@ -97,7 +97,7 @@ export function getUserMetaDataSpot(userId: string): string {
   if (!effectiveId) {
     throw new Error("No user ID provided and no GUEST_USER_ID configured");
   }
-  return join("data","UserMetadata", `${effectiveId}.json`);
+  return join("data", "UserMetadata", `${effectiveId}.json`);
 }
 
 export function getUserConfig(userId: string): string {
@@ -106,7 +106,7 @@ export function getUserConfig(userId: string): string {
   if (!effectiveId) {
     throw new Error("No user ID provided and no GUEST_USER_ID configured");
   }
-  return join("data","UserMetadata", `${effectiveId}_config.json`);
+  return join("data", "UserMetadata", `${effectiveId}_config.json`);
 }
 
 export function getGuestToken(req: Request, res: Response): void {

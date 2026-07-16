@@ -4,6 +4,7 @@ import axios from 'axios';
 import useKeyPress from '../../hooks/useKeyPress';
 import type { Materie } from '../../scripts/objects';
 import { getUploadPageText, type UploadLanguage } from '../../lang/uploadLang';
+import { addr } from '../../network/utils';
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
@@ -343,9 +344,7 @@ export default function DocumentUpload(props: DocumentUploadProps) {
     const langToUse = (props.language as UploadLanguage) || 'English';
     const texts = getUploadPageText(langToUse);
 
-    const basePath = props.userId 
-        ? `./data/${props.userId}/${props.materie.name.toLowerCase()}`
-        : `./data/${props.materie.name.toLowerCase()}`;
+    const basePath = props.materie.name.toLowerCase();
 
     useKeyPress('Escape', () => {
         props.onClose()
@@ -424,7 +423,7 @@ export default function DocumentUpload(props: DocumentUploadProps) {
         const filePaths = files.map(file => `${basePath}/${file.name}`);
         
         try {
-            const response = await axios.post('http://localhost:3000/check_existing', {
+            const response = await axios.post(`${addr}/check_existing`, {
                 paths: filePaths,
                 userId: props.userId || undefined
             });
@@ -444,7 +443,8 @@ export default function DocumentUpload(props: DocumentUploadProps) {
         }
         
         try {
-            const response = await axios.post(`http://localhost:3000/send_file`, formData, {
+            console.log('[DocumentUpload] Uploading to:', `${addr}/send_file`, 'path:', basePath, 'file:', file.name);
+            const response = await axios.post(`${addr}/send_file`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
