@@ -233,8 +233,26 @@ export async function deleteFile(req: Request, res: Response): Promise<void> {
       return;
     }
     const basePath = getUserFolderPath(effectiveUserId);
+
     let cleanPath = filename.replace(/^\.\//, '');
-    const sanitizedFilename = sanitizePath(path.join(basePath, cleanPath));
+    
+    // Check if the path already starts with basePath (absolute path from frontend)
+    // to avoid double-prepending the basePath which causes 404 errors
+    let sanitizedFilename: string;
+    if (cleanPath.startsWith(basePath)) {
+      // Path is already absolute and includes basePath, use directly after sanitization
+      sanitizedFilename = sanitizePath(cleanPath);
+    } else {
+      // Relative path - join with basePath
+      const joinedPath = path.join(basePath, cleanPath);
+      sanitizedFilename = sanitizePath(joinedPath);
+    }
+
+    console.log('[DELETE_FILE] Original filename:', filename);
+    console.log('[DELETE_FILE] BasePath:', basePath);
+    console.log('[DELETE_FILE] CleanPath:', cleanPath);
+    console.log('[DELETE_FILE] Final path being checked:', sanitizedFilename);
+    console.log('[DELETE_FILE] File exists:', existsSync(sanitizedFilename));
 
     if (!sanitizedFilename || !existsSync(sanitizedFilename)) {
       res.status(404).send("File not found");

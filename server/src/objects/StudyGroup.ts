@@ -132,16 +132,16 @@ export class StudyGroup{
           }
           const existingSinteza = this.data[index_materie].files[index_fishier].sinteza;
           if (f.sinteza != null && f.sinteza !== existingSinteza) {
-            console.log(`[StudyGroup.load] Restored sinteza (${(f.sinteza||"").length} chars) for ${storedFileName}`);
+            // console.log(`[StudyGroup.load] Restored sinteza (${(f.sinteza||"").length} chars) for ${storedFileName}`);
             this.data[index_materie].files[index_fishier].sinteza = f.sinteza;
           }
           if (f.content != null && f.content !== existingSinteza) {
-            console.log(`[StudyGroup.load] Restored content (${(f.content||"").length} chars) for ${storedFileName}`);
+            // console.log(`[StudyGroup.load] Restored content (${(f.content||"").length} chars) for ${storedFileName}`);
             this.data[index_materie].files[index_fishier].content = f.content;
           }
           const existingHtml = this.data[index_materie].files[index_fishier].html_file;
           if (f.html_file != null && f.html_file !== existingHtml) {
-            console.log(`[StudyGroup.load] Restored html_file (${(f.html_file||"").length} chars) for ${storedFileName}`);
+            // console.log(`[StudyGroup.load] Restored html_file (${(f.html_file||"").length} chars) for ${storedFileName}`);
             this.data[index_materie].files[index_fishier].html_file = f.html_file;
           }
         }
@@ -170,16 +170,16 @@ export class StudyGroup{
               }
               const existingSinteza = foundGroup.images[index_img].sinteza;
               if (imgData.sinteza != null && imgData.sinteza !== existingSinteza) {
-                console.log(`[StudyGroup.load] Restored sinteza (${(imgData.sinteza||"").length} chars) for ${storedImgName} in group "${groupData.title}"`);
+                // console.log(`[StudyGroup.load] Restored sinteza (${(imgData.sinteza||"").length} chars) for ${storedImgName} in group "${groupData.title}"`);
                 foundGroup.images[index_img].sinteza = imgData.sinteza;
               }
               if (imgData.content != null && imgData.content !== existingSinteza) {
-                console.log(`[StudyGroup.load] Restored content (${(imgData.content||"").length} chars) for ${storedImgName} in group "${groupData.title}"`);
+                // console.log(`[StudyGroup.load] Restored content (${(imgData.content||"").length} chars) for ${storedImgName} in group "${groupData.title}"`);
                 foundGroup.images[index_img].content = imgData.content;
               }
               const existingHtml = foundGroup.images[index_img].html_file;
               if (imgData.html_file != null && imgData.html_file !== existingHtml) {
-                console.log(`[StudyGroup.load] Restored html_file (${(imgData.html_file||"").length} chars) for ${storedImgName} in group "${groupData.title}"`);
+                // console.log(`[StudyGroup.load] Restored html_file (${(imgData.html_file||"").length} chars) for ${storedImgName} in group "${groupData.title}"`);
                 foundGroup.images[index_img].html_file = imgData.html_file;
               }
             }
