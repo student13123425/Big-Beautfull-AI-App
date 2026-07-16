@@ -124,6 +124,12 @@ export async function regenereazSinteza(req: Request, res: Response): Promise<vo
             for (let j of it.files) {
                 let name: string = get_file_name(j.path);
                 if (name === file_name) {
+                    // Clear existing sinteza and html_file before regeneration
+                    j.sinteza = null;
+                    j.html_file = null;
+                    data_study.save();
+                    broadcastStudyData();
+
                     await new Promise<void>(async (resolve) => {
                         j.regenerate_sinteza(
                             ai_models_available,
@@ -299,17 +305,19 @@ export async function handleContentGeneration(req: Request, res: Response) {
         return res.send("n");
     }
 
-    // Preserve existing sinteza in case generation fails.
-    const savedSinteza = targetFile.sinteza;
-    const savedHtml = targetFile.html_file;
+    // Clear existing sinteza and html_file before generation
+    targetFile.sinteza = null;
+    targetFile.html_file = null;
+    data_study.save();
+    broadcastStudyData();
 
     console.log('[handleContentGeneration] Starting sinteza generation...');
     const sintezaSuccess = await genereazSinteza(name_materie, file_name);
     if (!sintezaSuccess) {
-        console.log('[handleContentGeneration] Sinteza generation failed — restoring previous data.');
-        // Restore previously saved values (genereaza_sinteza error callback sets them to null).
-        targetFile.sinteza = savedSinteza;
-        targetFile.html_file = savedHtml;
+        console.log('[handleContentGeneration] Sinteza generation failed.');
+        // Content already cleared before generation; save the cleared state.
+        targetFile.sinteza = null;
+        targetFile.html_file = null;
         data_study.save();
         broadcastStudyData();
         return res.send("n");
@@ -321,9 +329,9 @@ export async function handleContentGeneration(req: Request, res: Response) {
     console.log('[handleContentGeneration] Starting HTML generation...');
     const htmlSuccess = await genereazHTML(name_materie, file_name);
     if (!htmlSuccess) {
-        console.log('[handleContentGeneration] HTML generation failed — keeping existing sinteza.');
-        // Keep the successfully generated sinteza; restore html_file if it was valid before.
-        targetFile.html_file = savedHtml;
+        console.log('[handleContentGeneration] HTML generation failed.');
+        // Keep the cleared state (sinteza was already set by successful sinteza generation).
+        targetFile.html_file = null;
         data_study.save();
         broadcastStudyData();
         return res.send("n");
