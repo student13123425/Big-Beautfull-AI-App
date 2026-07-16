@@ -10,14 +10,13 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-// Image formats: jpg, jpeg, png, gif, bmp, webp, svg, tiff
 
 const Container = styled.div`
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  height: calc(100vh - 4rem);
+  height: 100vh;
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
